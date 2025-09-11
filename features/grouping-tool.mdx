@@ -1,0 +1,44 @@
+---
+title: "Labellerr Grouping Tool Feature"
+description: "Discover Labellerr's grouping tool, which allows you to group labels for a single object into one unit, enhancing AI model understanding and improving annotation consistency."
+icon: object-group
+---
+
+Labellerr has introduced a **grouping tool feature** that enables grouping all labels for a single object into one unit. This helps the AI model better understand the relationship between different parts of an object.
+
+### Steps to Implement the Grouping Tool
+
+1.  **Annotate** all parts of the object.
+2.  **Enable** the grouping icon button at the top.
+3.  **Draw an area** that covers all annotations of the object.
+4.  A **unique ID** will be automatically assigned to all parts of that object.
+
+<Note>
+The ID can be changed if any part of the object is mistakenly grouped with another object.
+</Note>
+
+<Video url="https://player.vimeo.com/video/1102128559" />
+
+### How to Identify Incorrect IDs?
+
+Labellerr has introduced a **Filter Annotations** icon in front of the annotated objects list.
+
+1.  **Apply the ‘Group’ filter** to check:
+    *   If any ID is missing from a group, it will appear under the **‘Ungrouped’** section.
+    *   The **‘Grouped’** section will show grouped objects. Hover over them to review.
+
+2.  **Switch to the ‘Question’ option** to see the objects list in their original view.
+
+3.  **Click the ‘Filters’ icon** to:
+    *   View grouped and ungrouped objects.
+    *   Check objects with remarks left by annotators or reviewers. Users can apply this filter to view remarked annotations, and the count will be displayed in the left panel.
+    *   Identify issues like:
+        *   ID mismatches between parts of a single object.
+        *   Missing attributes where mandatory.
+        *   Missing IDs for any annotated object.
+
+4.  **Review a specific object’s annotations.**
+
+This feature improves annotation consistency, reduces errors, and ensures better AI model performance.
+
+<Video url="https://player.vimeo.com/video/1102128527" />

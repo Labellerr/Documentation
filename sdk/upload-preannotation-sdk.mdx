@@ -1,0 +1,92 @@
+---
+title: "How to Upload Preannotation Using SDK"
+description: "Learn how to upload pre-annotations to Labellerr projects using the SDK, with synchronous and asynchronous methods, to speed up manual annotation."
+icon: upload
+---
+
+## Uploading Pre-annotations
+
+---
+
+**Pre-annotations** are labels which can be pre-loaded to a project which can speed up manual annotation. Size limit for uploading pre-annotations is **25 MB.**
+
+#### Example Usage (Synchronous):
+
+```python Synchronous Pre-annotation Upload lines icon="upload" highlight={5-10,12-14}
+from labellerr.client import LabellerrClient
+from labellerr.exceptions import LabellerrError
+
+# Initialize the client with your API credentials
+client = LabellerrClient('your_api_key', 'your_api_secret')
+project_id = 'project_123'
+client_id = '12345'
+annotation_format = 'coco'
+annotation_file = '/path/to/annotations.json'
+
+try:
+    # Upload and wait for processing to complete
+    result = client.upload_preannotation_by_project_id(project_id, client_id, annotation_format, annotation_file)
+    # Check the final status
+    if result['response']['status'] == 'completed':
+        print("Pre-annotations processed successfully")
+        # Access additional metadata if needed
+        metadata = result['response'].get('metadata', {})
+        print("metadata",metadata)
+except LabellerrError as e:
+    print(f"Pre-annotation upload failed: {str(e)}")
+```
+
+#### Example Usage (Asynchronous):
+
+```python Asynchronous Pre-annotation Upload lines icon="clock" highlight={6-10,12-14,16-18}
+from labellerr.client import LabellerrClient
+from labellerr.exceptions import LabellerrError
+
+# Initialize the client with your API credentials
+client = LabellerrClient('your_api_key', 'your_api_secret')
+project_id = 'project_123'
+client_id = '12345'
+annotation_format = 'coco'
+annotation_file = '/path/to/annotations.json'
+
+try:
+    # Start the async upload - returns immediately
+    future = client.upload_preannotation_by_project_id_async(project_id, client_id, annotation_format, annotation_file)
+    print("Upload started, you can do other work here...")
+    # When you need the result, wait for completion
+    try:
+        result = future.result(timeout=300)  # 5 minutes timeout
+        if result['response']['status'] == 'completed':
+            print("Pre-annotations processed successfully")
+            metadata = result['response'].get('metadata', {})
+            print("metadata",metadata)
+    except TimeoutError:
+        print("Processing took too long")
+    except Exception as e:
+        print(f"Error in processing: {str(e)}")
+except LabellerrError as e:
+    print(f"Failed to start upload: {str(e)}")
+```
+
+#### Choosing Between Sync and Async
+
+1.  **Synchronous Method**:
+    1.  Simpler to use - just call and wait for result
+    2.  Blocks until processing is complete
+    3.  Good for scripts and sequential processing
+
+2.  **Asynchronous Method**:
+    1.  Returns immediately with a Future object
+    2.  Allows you to do other work while processing
+    3.  Can set timeouts and handle long-running uploads
+    4.  Better for applications that need to stay responsive
+
+Both methods will:
+
+1.  Upload your annotation file
+2.  Monitor the processing status
+3.  Return the final result with complete status information
+
+**Note**: The processing time depends on the size of your annotation file and the number of annotations. For the sync method, this means waiting time. For the async method, you can do other work during this time.
+
+---

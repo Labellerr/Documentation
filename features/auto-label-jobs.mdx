@@ -1,0 +1,95 @@
+---
+title: "Auto Label Jobs by Active Learning"
+description: "Learn how to use active learning and zero-shot learning in Labellerr to autolabel datasets efficiently, select informative samples, and manage auto label jobs."
+icon: brain-circuit
+---
+
+In Labellerr, we have implemented active learning to autolabel datasets by selecting the most informative samples for labeling, complemented by zero-shot learning. The results in the datasets are excellent. Here's how to perform auto label jobs on Labellerr:
+
+### To create a new job or view the status and details of past jobs, including attached model details and predictions, follow these steps:
+
+1.  Go to '**Settings**' on the dashboard and select '**Autolabel Jobs**'.
+
+<Frame>
+  <img src="https://cdn.labellerr.com/1%20%20Documentation/9e736296-752a-4a7c-820c-1a509ed26ddd.webp" alt="Autolabel Jobs Settings" />
+</Frame>
+
+2.  You will see previously created jobs and their details. To create a new job, select '**Create New Job**'.
+
+<Frame>
+  <img src="https://cdn.labellerr.com/1%20%20Documentation/84f58f6f-9807-4513-937e-1409c0b72d43.webp" alt="Create New Job Button" />
+</Frame>
+
+3.  First, select the **use case**, such as the type of annotation like bounding box, image segmentation, etc.
+
+<Frame>
+  <img src="https://cdn.labellerr.com/1%20%20Documentation/14d33467-0fcf-4011-8cb9-9b63584d5f51.webp" alt="Select Use Case" />
+</Frame>
+
+<Frame>
+  <img src="https://cdn.labellerr.com/1%20%20Documentation/f84b3ec1-9168-437c-8abd-f39bbeec7511.webp" alt="Use Case Options" />
+</Frame>
+
+4.  Next, you can select current and previous batches/projects with labeled data.
+
+Options on the right side include 'accept', 'review', and 'client_review'—these indicate the statuses of annotated files in current or past projects that can be used as labeled data for labeling new data. Select '**Select labels to train**' to choose the labels needed for the current project. After selecting the required options, click '**Next**'.
+
+<Frame>
+  <img src="https://cdn.labellerr.com/1%20%20Documentation/99e691a2-9e2f-4b91-b449-cb46595ab5a0.webp" alt="Select Labels to Train" />
+</Frame>
+
+5.  Review the job details, enter the Job name and description, and specify the number of training hyperparameters (epochs) required to execute the job.
+
+<Info>
+An epoch is when all the training data is used at once and is defined as the total number of iterations of all the training data in one cycle for training the machine learning model.
+</Info>
+
+Click '**Start Job**'. The job will begin, and the details will be displayed on your autolabel screen while the job is in progress.
+
+<Frame>
+  <img src="https://cdn.labellerr.com/1%20%20Documentation/9ec585bb-1518-43f3-afdc-5c5b5ab9058e.webp" alt="Autolabel Job in Progress" />
+</Frame>
+
+6.  Attach a model to the completed job in the '**Models**' section to run autolabeling. You can view job details, metrics, and model attachment status here.
+
+<Frame>
+  <img src="https://cdn.labellerr.com/1%20%20Documentation/733417f9-c7a8-4e2a-b7a1-1d4293dade4a.webp" alt="Attach Model" />
+</Frame>
+
+7.  Additional options are available by clicking the three-dot button. You have the option to detach the model from the job.
+
+<Frame>
+  <img src="https://cdn.labellerr.com/1%20%20Documentation/8e8515b0-673a-4373-9ddf-127ea130346a.webp" alt="Detach Model Option" />
+</Frame>
+
+### To run Autolabel and see the results on a set of files, follow these steps:
+
+After completing this process, you can run autolabeling on individual files or on the entire dataset at once.
+
+1.  Go to the labeling screen by clicking '**Label**' on the dashboard and select '**Use Autolabel**'.
+
+<Frame>
+  <img src="https://cdn.labellerr.com/1%20%20Documentation/ac5e09f6-8e97-4d70-ad98-785d172cc630.webp" alt="Use Autolabel" />
+</Frame>
+
+2.  The autolabel model details will be displayed in a popup. Click '**Get Predictions**'.
+
+<Frame>
+  <img src="https://cdn.labellerr.com/1%20%20Documentation/9d7f0090-aff0-45ae-abac-4e086a18e712.webp" alt="Get Predictions" />
+</Frame>
+
+3.  Fetching labels will start, showing 'fetching labels' while in progress.
+
+<Frame>
+  <img src="https://cdn.labellerr.com/1%20%20Documentation/ca4acfd0-603b-4f12-baef-b818fefcd57c.webp" alt="Fetching Labels" />
+</Frame>
+
+4.  After fetching, the results will be displayed on your screen, showing the labeled objects.
+
+<Frame>
+  <img src="https://cdn.labellerr.com/1%20%20Documentation/336756df-7842-436b-8a97-131aec370316.webp" alt="Labeled Objects" />
+</Frame>
+
+<Note>
+See the video tutorial.
+</Note>

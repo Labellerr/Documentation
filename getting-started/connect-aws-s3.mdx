@@ -1,0 +1,294 @@
+---
+title: "How to Connect AWS S3 with Labellerr"
+description: "Learn how to establish a secure connection between your Amazon S3 bucket and Labellerr using IAM User Access for data import and export."
+icon: aws
+---
+
+Welcome to the User Guide for connecting an Amazon S3 bucket with LABELLERR, a powerful SaaS product for data annotation and labeling. In this guide, we will walk you through the process of establishing a connection between your S3 bucket and Labellerr, leveraging IAM User Access within the same AWS account.
+
+To establish the connection between your S3 bucket and Labellerr, we will utilize IAM User Access. IAM (Identity and Access Management) is an AWS service that enables you to manage access to your AWS resources securely. By creating an IAM user with appropriate permissions, you can grant Labellerr the necessary access to your S3 bucket while ensuring the security of your data.
+
+Throughout this guide, we will provide step-by-step instructions, along with detailed explanations, to help you successfully configure the connection. It is assumed that you have a basic understanding of AWS services, including S3 and IAM. If you are new to AWS or require additional information on these services, we recommend referring to the AWS documentation for a more comprehensive understanding.
+
+<Note>
+Please note that the procedures outlined in this guide pertain to connecting an S3 bucket and LABELLERR within the same AWS account.
+</Note>
+
+## Prerequisites
+
+- **AWS Account:** You must have an active AWS account to access and utilize the IAM service. If you don't have an account, you can sign up for one at the AWS website.
+
+- **IAM Permissions:** Ensure that you have the necessary permissions to create IAM users and policies. You need to have IAM administrative access or consult with your AWS account administrator to grant you the required permissions.
+
+- **IAM User Creation:** Decide on the user(s) you want to create in IAM. Consider the appropriate naming conventions and the level of access each user should have. Determine the number of users you need to create and the specific roles and permissions they require.
+
+- **User Credentials:** Plan how you will manage the user credentials. Determine whether you will generate initial passwords for the users or require them to set their own passwords upon first login. Alternatively, you can leverage AWS Single Sign-On or other authentication mechanisms.
+
+- **IAM Policies:** Identify the specific permissions and access levels required for each user. You can create custom policies to grant fine-grained permissions or leverage existing AWS managed policies. Define the policies that align with your security and access control requirements.
+
+- **IAM Best Practices:** Familiarize yourself with IAM best practices, such as implementing the principle of least privilege, regularly reviewing and rotating credentials, and enabling multi-factor authentication (MFA) for added security.
+
+Please follow the reference link for more information
+
+## CREATE IAM USER
+
+<Steps>
+  <Step title="Access IAM Users">
+    Go to **IAM** ⇒ **Users** and click to **Add users** button
+
+    <Frame>
+      <img src="https://cdn.labellerr.com/1%20%20Documentation/01bf539e-2a8c-47bf-931a-c5be4056ae3d.webp" alt="IAM Users page" />
+    </Frame>
+  </Step>
+
+  <Step title="Create User">
+    Now write a **User name** and click to **Next** button
+
+    <Frame>
+      <img src="https://cdn.labellerr.com/1%20%20Documentation/6ff432ba-a19a-49b6-bc91-ce14a89988f0.webp" alt="Create user form" />
+    </Frame>
+  </Step>
+
+  <Step title="Set Permissions">
+    In the **Set Permissions** section you will see the **Permissions options.** Choose **Attach Policies Directly**
+
+    <Frame>
+      <img src="https://cdn.labellerr.com/1%20%20Documentation/6511d64e-bc48-4fa1-be11-1b9193e8ac3c.webp" alt="Set permissions options" />
+    </Frame>
+
+    After choosing the above option you can see the list of existing policies
+
+    <Frame>
+      <img src="https://cdn.labellerr.com/1%20%20Documentation/9a5111d7-02d2-4a39-8b84-f74a8b7e0c90.webp" alt="Existing policies list" />
+    </Frame>
+  </Step>
+
+  <Step title="Create Custom Policy">
+    Create a new policy for the user to access the bucket. Now click on the **Create policy** button. After this you will be redirected to a window **IAM** ⇒ **Policies** ⇒ **Create Policy** as we can see following.
+
+    <Frame>
+      <img src="https://cdn.labellerr.com/1%20%20Documentation/4aaaaf29-40e7-496b-a3a2-a7e197acaeae.webp" alt="Create policy page" />
+    </Frame>
+
+    Choose the **JSON** option from the **RIGHT-HAND-SIDE** of the window. After choosing the JSON option you will see the window as follow
+
+    <Frame>
+      <img src="https://cdn.labellerr.com/1%20%20Documentation/88636772-4917-4ef4-8f33-2aeac6b377ce.webp" alt="JSON policy editor" />
+    </Frame>
+  </Step>
+
+  <Step title="Configure Policy Permissions">
+    Update the JSON as follow and replace the **your-bucket-name** with **bucket-name**
+
+    <Frame>
+      <img src="https://cdn.labellerr.com/1%20%20Documentation/35c2200a-7a1f-416d-b948-9d809d3374cb.webp" alt="JSON policy configuration" />
+    </Frame>
+
+    <Warning>
+    Ensure to include '*' at the end of Resource URL in case of S3:GetObject & S3:PutObject like 'arn:aws:s3:::bucket-name/*'. The '*' ensures that the required permission is added to the sub-folders also
+    </Warning>
+
+    Now, update the JSON policy. We will create two permission sets: one for importing data from S3 and another for exporting data to S3.
+
+    ## A. Policy for Importing Data
+
+    To allow Labellerr to read data from your bucket, paste the following JSON code. Replace `your-bucket-name` with the actual name of your S3 bucket.
+
+    ```json
+    {
+      "Version": "2012-10-17",
+      "Statement": [
+        {
+          "Sid": "S3ObjectAccess",
+          "Effect": "Allow",
+          "Action": [
+            "s3:GetObject"
+          ],
+          "Resource": "arn:aws:s3:::your-bucket-name/*"
+        },
+        {
+          "Sid": "S3BucketReadAccess",
+          "Effect": "Allow",
+          "Action": [
+            "s3:ListBucket",
+            "s3:GetBucketCors",
+            "s3:GetBucketLocation"
+          ],
+          "Resource": "arn:aws:s3:::your-bucket-name"
+        },
+        {
+          "Sid": "S3PutCorsAccess",
+          "Effect": "Allow",
+          "Action": [
+            "s3:PutBucketCors"
+          ],
+          "Resource": "arn:aws:s3:::your-bucket-name"
+        }
+      ]
+    }
+    ```
+
+    <Info>
+    **Note:** If you prefer not to grant `s3:PutBucketCors` permission, you can set the CORS policy on your S3 bucket manually with the following configuration. For more details, refer to the official AWS documentation on CORS.
+
+    ```json
+    [
+      {
+          "AllowedHeaders": ["*.labellerr.com"],
+          "AllowedMethods": ["GET", "HEAD"],
+          "AllowedOrigins": ["*.labellerr.com"],
+          "ExposeHeaders": [],
+          "MaxAgeSeconds": 3600
+       }
+    ]
+    ```
+    </Info>
+
+    ## B. Policy for Exporting Data
+
+    To allow Labellerr to write (export) annotations back to your S3 bucket, add the following permissions to your policy. These are required **in addition** to the import permissions above.
+
+    ```json
+    {
+      "Version": "2012-10-17",
+      "Statement": [
+        {
+          "Sid": "S3ObjectWriteDeleteAccess",
+          "Effect": "Allow",
+          "Action": [
+            "s3:PutObject",
+            "s3:DeleteObject"
+          ],
+          "Resource": "arn:aws:s3:::your-bucket-name/*"
+        },
+        {
+          "Sid": "S3BucketListAccess",
+          "Effect": "Allow",
+          "Action": [
+            "s3:ListBucket"
+          ],
+          "Resource": "arn:aws:s3:::your-bucket-name"
+        }
+      ]
+    }
+    ```
+  </Step>
+
+  <Step title="Finalize Policy">
+    Click on **Next** button
+
+    <Frame>
+      <img src="https://cdn.labellerr.com/1%20%20Documentation/e31c3f3b-aafa-4912-aa02-07ea526f5b7b.webp" alt="Policy review page" />
+    </Frame>
+
+    Fill the **Policy name** & **Policy Description** and click on **Create policy** button
+
+    <Frame>
+      <img src="https://cdn.labellerr.com/1%20%20Documentation/99e264a0-6854-49b5-ac8d-2c1e06c051c9.webp" alt="Policy details form" />
+    </Frame>
+
+    <Frame>
+      <img src="https://cdn.labellerr.com/1%20%20Documentation/ad9368ab-f396-4666-a1bb-32292f88b7d2.webp" alt="Create policy button" />
+    </Frame>
+
+    After this the policy will be created and listed
+
+    <Frame>
+      <img src="https://cdn.labellerr.com/1%20%20Documentation/089f2488-21f1-4cf1-9921-5c855e972473.webp" alt="Policy created successfully" />
+    </Frame>
+  </Step>
+
+  <Step title="Attach Policy to User">
+    Now go to the previous **user-creation** window and after reloading and entering the **User Name** and selecting the option **Attach policies directly** we can see the policy that we created. Choose the same policy and click on **Next** button
+
+    <Frame>
+      <img src="https://cdn.labellerr.com/1%20%20Documentation/eee79fb8-125e-471b-8861-b1ecc129952e.webp" alt="Select policy for user" />
+    </Frame>
+
+    <Frame>
+      <img src="https://cdn.labellerr.com/1%20%20Documentation/3cb025ba-2dc1-4b3b-ad79-b3f8aad0a45d.webp" alt="Policy attached to user" />
+    </Frame>
+
+    Now click on Create user button and user will be created
+
+    <Frame>
+      <img src="https://cdn.labellerr.com/1%20%20Documentation/ac124329-39ad-4a6e-b3a7-5b7ceb156fe3.webp" alt="Create user final step" />
+    </Frame>
+
+    <Frame>
+      <img src="https://cdn.labellerr.com/1%20%20Documentation/e3cce603-c13f-44cb-8c9c-af26f6db1737.webp" alt="User created successfully" />
+    </Frame>
+  </Step>
+</Steps>
+
+## Generate Access Key
+
+<Steps>
+  <Step title="Create Access Key">
+    Now go to **IAM ⇒ user ⇒ user_name** and click on **Create access** key button.
+
+    <Frame>
+      <img src="https://cdn.labellerr.com/1%20%20Documentation/3b84e088-acdf-4181-8071-12cbfea6933e.webp" alt="User details page" />
+    </Frame>
+
+    <Frame>
+      <img src="https://cdn.labellerr.com/1%20%20Documentation/c4634678-2c9a-430c-813e-fc48ed0d711a.webp" alt="Create access key button" />
+    </Frame>
+  </Step>
+
+  <Step title="Configure Access Key">
+    Choose the option **Application running outside AWS** & click on **Next .** Enter a description and click on the **Create access key** button. Now you can copy the **Access keys** & **Secret access key** or download a **CSV** file for the same for future use while connecting with Labellerr
+
+    <Frame>
+      <img src="https://cdn.labellerr.com/1%20%20Documentation/4eff9cd1-3cef-49f8-be32-e095847e3725.webp" alt="Access key use case" />
+    </Frame>
+
+    <Frame>
+      <img src="https://cdn.labellerr.com/1%20%20Documentation/56061786-5a93-4c2d-89c7-fd3ece2f766f.webp" alt="Access key description" />
+    </Frame>
+
+    <Frame>
+      <img src="https://cdn.labellerr.com/1%20%20Documentation/42fc68e0-37eb-4e1d-afa3-3e415f2552a5.webp" alt="Access key generated" />
+    </Frame>
+  </Step>
+</Steps>
+
+## Creating Dataset & Annotation Project at LABELLERR
+
+<Steps>
+  <Step title="Select Amazon S3">
+    While creating a project dataset **choose Amazon S3** to connect data-source and click on Create new connection button.
+
+    <Frame>
+      <img src="https://cdn.labellerr.com/1%20%20Documentation/fa5cc41d-689d-4129-8b12-0bc29c0dec5d.webp" alt="Select Amazon S3 connector" />
+    </Frame>
+  </Step>
+
+  <Step title="Configure Connection">
+    Fill in the details. Fill the **Access key** & **Secret Access Key** generated in previous steps along with **s3 URI.** To find the **s3 URI** go to your bucket and copy the path of the images **folder.** Also remove the **s3:// prefix** from the URL. Now click on **connect** button
+
+    <Frame>
+      <img src="https://cdn.labellerr.com/1%20%20Documentation/65890f6a-7f82-41b5-a999-1a19bc23e336.webp" alt="S3 connection configuration" />
+    </Frame>
+
+    If you fill in the details correctly you will receive this message.
+
+    <Frame>
+      <img src="https://cdn.labellerr.com/1%20%20Documentation/2c6947cd-f74f-450e-80fb-1911d8af1f38.webp" alt="Connection successful" />
+    </Frame>
+
+    If you messed up somewhere you will get an error.
+
+    <Frame>
+      <img src="https://cdn.labellerr.com/1%20%20Documentation/87195405-1c70-4caf-84e6-68b020f9c88f.webp" alt="Connection error" />
+    </Frame>
+
+    After successfully testing the connection you will be required to fill the **Connection Name** and **Connection Description(Optional).**
+
+    <Frame>
+      <img src="https://cdn.labellerr.com/1%20%20Documentation/720de949-0870-42e5-a13f-60d795c00670.webp" alt="Connection name and description" />
+    </Frame>
+  </Step>
+</Steps>
+
+That's it, this is how you can connect AWS S3 with our Labellerr Data Connector. Now you can successfully, Create a Project.

@@ -1,0 +1,69 @@
+---
+title: "Status Bar Elements Guide"
+description: "Learn about the different elements in the status bar that track annotation progress and file states in real-time."
+icon: chart-bar
+---
+
+The status bar displays the status of the samples at all times.
+
+<Frame>
+  <img src="https://cdn.labellerr.com/1%20%20Documentation/95355c1d-4962-4828-b1fc-c8f1258b1f38.webp" alt="Status bar overview" />
+</Frame>
+
+**Total** shows the total number of samples for labelling in the current set.
+
+<Card title="Status Bar Elements Overview" icon="chart-bar">
+The status bar provides real-time tracking of annotation progress across different file states:
+</Card>
+
+<Card title="📊 Total" icon="hashtag">
+Shows the total number of samples active in the current dataset for annotation
+</Card>
+
+<Card title="✅ Accepted" icon="check-circle">
+Shows the annotated files that are accepted by client and are ready for export
+</Card>
+
+<Card title="⏳ Remaining" icon="clock">
+Shows the number of files unlabelled in the project
+</Card>
+
+<Card title="👤 Assigned" icon="user-check">
+Shows the total number of files that have already been assigned to annotators for annotation
+</Card>
+
+<Card title="🔄 Partial Annotation" icon="arrows-rotate">
+Shows partially annotated files completed by a single annotator (used when multiple rounds of annotations are needed for a single file)
+</Card>
+
+<Card title="👁️ In Review" icon="eye">
+Shows the no. of files sent for review
+</Card>
+
+<Card title="👨‍💼 In Client Review" icon="user-tie">
+Shows the no. of files sent for client review
+</Card>
+
+<Card title="❌ Client Rejected" icon="xmark-circle">
+Shows the no. of files rejected by the client
+</Card>
+
+<Card title="⏭️ Skipped" icon="forward">
+Shows the number of files that were not annotated and were skipped by annotators due to complexity or questions. These files are shown one by one at the end, after all unlabeled files have been annotated
+</Card>
+
+<Card title="🔍 Review Skipped" icon="magnifying-glass">
+Shows the number of files currently skipped by the reviewer during the internal review process due to specific queries or issues. These files will reappear one by one at the end of the review process, after all other files have completed one full round of review. This ensures that each file is revisited for resolution once initial reviews are complete.
+</Card>
+
+<Card title="👀 Client Review Skipped" icon="user-magnifying-glass">
+Shows the number of files skipped by the client while reviewing due to specific queries or issues. These files will reappear one by one at the end of the review process, after all other files have completed one full round of review.
+</Card>
+
+<Card title="🚫 Rejected" icon="ban">
+Shows the number of annotated files that were rejected by reviewers during the internal review process
+</Card>
+
+<Card title="📈 Completed" icon="chart-line">
+Tracks the completion percentage based on the number of accepted files compared to the total number of files
+</Card>

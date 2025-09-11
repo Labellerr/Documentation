@@ -1,0 +1,82 @@
+---
+title: "CLIP Mode and Gap Filler"
+description: "Explore Labellerr’s advanced CLIP Mode and Gap Filler features for precise image segmentation, refining annotation edges, and seamlessly filling unlabeled spaces."
+icon: scissors
+---
+
+## Introduction
+
+Labellerr’s **CLIP Mode** and **Gap Filler** are advanced annotation features built to save time, boost accuracy, and streamline the process of precise image segmentation—especially when traditional keypoint dragging and manual corrections fall short. These tools are ideal for handling overlapping, missing, or messy annotation borders encountered in real-world datasets across fields like medical imaging, autonomous driving, retail, and agriculture.
+
+## What is CLIP Mode?
+
+**CLIP Mode** is a smart boundary editing tool that automates the process of refining annotation edges and clearing overlaps in a single step. Instead of laboriously stretching keypoints or editing polygons to fix borders, users can quickly:
+
+*   Sharpen and correct polygon edges.
+*   Instantly resolve overlapping segments between adjacent objects.
+*   Achieve precise, pixel-level correction—no manual shape manipulation required.
+
+CLIP Mode works seamlessly with annotations generated from automatic tools like SAM (Segment Anything Model), where artifacts such as missing pixels or overlapping masks are common.
+
+## Gap Filler
+
+**Gap Filler** is designed to effortlessly fill unlabeled spaces—“gaps”—that are often left between objects after auto-annotation or manual masking. Combining Gap Filler and CLIP Mode allows for ultra-fast, accurate segmentation by letting users:
+
+*   Auto-complete annotation masks in a single step.
+*   Repair incomplete labeling between objects (e.g., between people in a group photo).
+*   Perfect common borders between objects for clean, contiguous masks.
+
+## How to Use CLIP Mode
+
+<Video url="https://www.youtube.com/embed/pY_o4EvYMz8" />
+
+1.  **Identify a Problem Area:**
+    *   Look for jagged edges, overlaps, or unlabeled gaps between two annotated objects.
+
+2.  **Activate the Proper Polygon:**
+    *   Select the object (polygon) you wish to refine.
+
+3.  **Enable CLIP Mode:**
+    *   Turn on the **CLIP Mode** button in the annotation panel.
+
+4.  **Adjust Boundaries:**
+    *   With CLIP Mode active, the software will automatically correct and align the selected polygon's border along the shared edge with the neighboring object.
+    *   For overlapping segments, the correct object keeps ownership of the pixels.
+
+5.  **Review and Fine-Tune:**
+    *   Instantly see the corrected, sharp boundary.
+    *   Inspect for any remaining irregularities; use **Magic Filler** or manual edits for further refinement.
+
+## How to Use Gap Filler
+
+<Video url="https://www.youtube.com/embed/b6pxZZiV9jk" />
+
+1.  **Detect Gaps:**
+    *   After labeling with SAM or another method, examine the image for spaces between labels.
+
+2.  **Activate Gap Filler (Magic Filler):**
+    *   Fill in the empty region between polygons by selecting the area or using shortcut keys as per the interface.
+
+3.  **Combine With CLIP Mode:**
+    *   For adjoining objects, after filling gaps, use CLIP Mode to align borders and ensure a seamless, overlap-free mask.
+
+## Example Use Cases
+
+*   **Medical Imaging:** Segment organs, tumors, and tissue boundaries with extreme precision, eliminating errors from overlapping or incomplete mask borders.
+*   **Autonomous Driving:** Cleanly separate objects like pedestrians, vehicles, and road signs for robust training data.
+*   **Retail & Agriculture:** Accurately outline products on shelves or distinguish between healthy/diseased crops, even against cluttered backgrounds.
+
+## Key Benefits
+
+*   **Fast:** Up to 10x quicker than manual keypoint editing.
+*   **Accurate:** Ensures crisp, correct segmentation along shared object borders.
+*   **Flexible:** Works across industries and annotation types, from people and animals to complex industrial scenes.
+*   **Seamless Workflow:** Easily integrates with other Labellerr features like SAM, Magic Editor, and Auto-Label for end-to-end annotation efficiency.
+
+## Best Practices
+
+*   Use CLIP Mode after initial annotation (especially after SAM or Magic Filler) to finalize object boundaries.
+*   Use Gap Filler to catch missing pixels between adjacent masks before activating CLIP Mode.
+*   Always review the adjustment, especially in cases with complex object overlaps.
+
+CLIP Mode and Gap Filler together represent a major upgrade in Labellerr’s image annotation toolkit, making precise segmentation fast for any annotation project.

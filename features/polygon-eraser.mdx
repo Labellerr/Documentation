@@ -1,0 +1,60 @@
+---
+title: "Polygon Eraser"
+description: "Master Labellerr's Polygon Eraser and CLIP Mode for effortless image annotation refinement, selective erasing, and precise boundary adjustments in complex scenarios."
+icon: eraser
+---
+
+## Introduction
+
+Labellerr’s latest features—**Polygon Eraser** and **CLIP Mode**—make tackling complex image annotation challenges effortless. When used alongside tools like SAM (Segment Anything Model), these features enable users to refine, adjust, and perfect masks in fewer steps, ensuring both accuracy and flexibility in their labeling workflow.
+
+## What is Polygon Eraser?
+
+The **Polygon Eraser** lets users selectively erase parts of an existing annotation polygon. It is designed to:
+
+*   Remove mislabeled or unwanted regions from a polygon mask with precision.
+*   Instantly correct labeling mistakes or refine the shape of the annotation, especially in crowded or overlapping scenarios.
+
+### How to Use Polygon Eraser
+
+1.  **Select the Polygon:** Click on the annotated object you wish to modify.
+2.  **Activate Polygon Eraser:** Enable the Polygon Eraser tool from the annotation panel.
+3.  **Erase the Area:** Sketch over the area you want to remove from the annotation. This region will be instantly removed from the label.
+4.  **Refine Borders:** Drag polygon keypoints to further adjust and perfect the shape as needed for accuracy.
+
+## What is CLIP Mode?
+
+**CLIP Mode** streamlines the process of re-annotating complex regions and aligning borders between objects. It is ideal when:
+
+*   Multiple objects overlap or share complex boundaries.
+*   You want to quickly reassign regions from one label to another without laborious manual work.
+
+### How to Use CLIP Mode
+
+1.  **Select the Object:** Choose the object you wish to adjust.
+2.  **Activate CLIP Mode:** Toggle the CLIP Mode switch in the annotation panel.
+3.  **Sketch the Desired Area:** Draw the region that should now belong to the selected object. The tool automatically creates a void in the adjacent annotation and reassigns the selected area.
+4.  **Delete with Polygon Eraser:** You can even delete parts of the annotation created by Polygon Eraser if needed, for even more flexibility.
+
+## Example Workflow
+
+1.  **Annotate with SAM:** Annotate multiple objects (e.g., a person and the ocean).
+2.  **Spot a Problem Area:** Notice parts of the scene mislabeled (e.g., ocean incorrectly labeled as the person).
+3.  **Erase & Refine:** Use Polygon Eraser to remove the region from the incorrect object.
+4.  **Reassign with CLIP Mode:** Select the correct object, activate CLIP Mode, and sketch the region to add it to the correct label. The boundary between the objects is instantly resolved to avoid overlap or confusion.
+5.  **Adjust Keypoints:** If needed, fine-tune the polygons for pixel-perfect segmentation.
+
+## Benefits
+
+*   **Speeds Up Work:** Reduces multi-step corrections to just a few clicks.
+*   **Improves Accuracy:** Ensures each labeled region belongs to the correct object with no overlap or ambiguity.
+*   **Highly Flexible:** Suits complicated scenes and integrates perfectly with semi-automated methods like SAM.
+*   **Non-destructive:** Erased parts and CLIP corrections can be further adjusted, preserving editing flexibility.
+
+## Best Practices
+
+*   Use Polygon Eraser to clean up annotated areas before reassigning regions with CLIP Mode.
+*   Rely on keypoint adjustments for perfecting boundaries after using the eraser or CLIP.
+*   Review the final label assignments, especially when multiple objects are close together.
+
+Polygon Eraser and CLIP Mode together make Labellerr’s platform one of the most versatile and efficient tools for image annotation, handling both routine and highly intricate labeling tasks with ease.

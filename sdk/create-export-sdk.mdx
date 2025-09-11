@@ -1,0 +1,116 @@
+---
+title: "How to Create an Export Using SDK"
+description: "Learn how to use the Labellerr SDK to export project data locally in various formats, check export status, and fetch downloadable URLs."
+icon: file-export
+---
+
+### Local Export
+
+---
+
+The SDK provides functionality to export project data locally. This feature allows you to export annotations in various formats for further analysis or backup purposes.
+
+**The export created will be available in the exports section of Labellerr dashboard. Here is where you can find the** [**export in our tool**](/actions/create-export)**.**
+
+#### Acceptable values:
+
+*   statuses:
+    *   `'review'`, `'r_assigned'`,`'client_review'`, `'cr_assigned'`,`'accepted'`
+*   export_format:
+    *   `'json'`, `'coco_json'`, `'csv'`, `'png'`
+
+#### Example Usage:
+
+```python Local Export Example lines icon="download" highlight={10-14,16-17}
+from labellerr.client import LabellerrClient
+from labellerr.exceptions import LabellerrError
+
+# Initialize the client with your API credentials
+client = LabellerrClient(api_key, api_secret)
+project_id = project_id
+client_id = client_id
+
+export_config = {
+    "export_name": "Weekly Export",
+    "export_description": "Export of all accepted annotations",
+    "export_format": "coco_json",
+    "statuses": ['review', 'r_assigned','client_review', 'cr_assigned','accepted']
+}
+
+try:
+    result = client.create_local_export(project_id, client_id, export_config)
+    export_id = result["response"]['report_id']
+    print(f"Local export created successfully. Export ID: {export_id}")
+except LabellerrError as e:
+    print(f"Local export creation failed: {str(e)}")
+```
+
+**Note**: The export process creates a downloadable file link of your project's annotations based on the specified status filters. This is useful for backup purposes or when you need to process the annotations offline.
+
+---
+
+### Check Export Status
+
+---
+
+This method allows users to check the export status of a previously triggered export task. The status will indicate whether the export is still processing, completed, or failed. Moreover, if the export is successful then the function also sends the downloadable file link url with it expire time and status.
+
+#### Example Usage :
+
+```python Check Export Status Example lines icon="magnifying-glass" highlight={8,10-15}
+from labellerr.client import LabellerrClient
+from labellerr.exceptions import LabellerrError
+
+# Initialize the client with your API credentials
+client = LabellerrClient(api_key, api_secret)
+
+# Example input
+project_id = project_id
+client_id = client_id
+report_ids = [result['response']['report_id']]
+
+status = client.check_export_status(
+    api_key="your_api_key",
+    api_secret="your_api-secret",
+    project_id=project_id,
+    report_ids=report_ids,
+    client_id=client_id
+)
+
+print(status)
+```
+
+---
+
+### Fetch Export Download URL
+
+---
+
+This endpoint is used to fetch the **downloadable link** for a previously created export using the export's UUID and report ID. The response includes a signed URL from which the export file can be downloaded with the time left to expire.
+
+#### Example Usage :
+
+```python Fetch Download URL Example lines icon="link" highlight={6,14-20}
+from labellerr.client import LabellerrClient
+from labellerr.exceptions import LabellerrError
+import uuid
+
+# Initialize the client with your API credentials
+client = LabellerrClient(api_key, api_secret)
+project_id = project_id
+client_id = client_id
+report_ids = report_ids # make sure it is a list
+uuid = str(uuid.uuid4())
+
+status = client.fetch_download_url(
+    api_key="your_api_key",
+    api_secret="your_api_secret",
+    project_id = project_id,
+    uuid = uuid,
+    export_id = report_ids[0],
+    client_id = client_id
+)
+print(status)
+```
+
+---

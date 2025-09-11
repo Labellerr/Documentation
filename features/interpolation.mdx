@@ -1,0 +1,48 @@
+---
+title: "Interpolation Feature"
+description: "Learn about Labellerr's interpolation feature for video annotation, which automates bounding box tracking across multiple frames to save time and ensure consistency."
+icon: arrows-left-right-to-line
+---
+
+<Card title="Introduction to Video Annotation">
+  Labellerr provides a user-friendly platform to annotate videos with bounding boxes, making it easy to track and mark moving objects, such as cars, throughout the entire frame sequence. This process ensures accurate and efficient video annotation for various computer vision and AI projects.
+</Card>
+
+## What is Bounding Box Interpolation?
+
+Interpolation in Labellerr is a feature that automates the process of marking object movement across multiple video frames. After annotating key frames (i.e., manually marking bounding boxes on certain frames), the platform intelligently fills in (interpolates) the object's bounding boxes between those frames. This saves time, reduces manual work, and maintains labeling consistency.
+
+## Using the Interpolation Feature
+
+<Steps>
+  <Step title="Start Bounding Box Annotation">
+    *   Begin by uploading your video to the Labellerr platform.
+    *   Select the bounding box annotation tool from the interface.
+  </Step>
+
+  <Step title="Mark Key Frames">
+    *   Play the video and pause at the first frame where the object (e.g., a car) appears.
+    *   Draw a bounding box around the object.
+    *   Advance the video to another significant frame where the object's position has changed (key frame).
+    *   Adjust or redraw the bounding box to fit the object in its new position.
+  </Step>
+
+  <Step title="Adjust the Bounding Boxes">
+    *   For frames in between these key frames, you may adjust the bounding boxes as needed, especially if the object changes shape or direction.
+  </Step>
+
+  <Step title="Apply Interpolation">
+    *   Once bounding boxes are marked on multiple key frames, use the Interpolation feature.
+    *   Labellerr will automatically generate bounding boxes for all intermediate frames by calculating how the object moves from one key frame to the next.
+    *   This process “fills the gaps” so you don’t have to annotate every single frame manually.
+  </Step>
+
+  <Step title="Review & Edit">
+    *   Review the interpolated bounding boxes across the video sequence.
+    *   Make any necessary adjustments if the automatically generated boxes need refinement.
+  </Step>
+</Steps>
+
+For a detailed guide, watch the video.
+
+<Video url="https://www.youtube.com/embed/PZSbnSm8lc4" />

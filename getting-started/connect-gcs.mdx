@@ -1,0 +1,150 @@
+---
+title: "How to Connect Google Cloud Storage with Labellerr"
+description: "Learn how to establish a secure connection between your Google Cloud Storage bucket and Labellerr using IAM Service Account for data access."
+icon: google
+---
+
+Welcome to the User Guide for connecting a Google Cloud Storage (GCS) bucket with Labellerr, a powerful SaaS product for data annotation and labeling. In this guide, we will walk you through the process of establishing a connection between your GCS bucket and Labellerr, leveraging IAM User Access within the same Google Cloud account.
+
+To establish the connection between your GCS bucket and Labellerr, we will utilize IAM (Identity and Access Management). IAM is a Google Cloud service that enables you to manage access to your Google Cloud resources securely.
+
+By creating an IAM user with appropriate permissions, you can grant Labellerr the necessary access to your GCS bucket while ensuring the security of your data.
+
+<Note>
+Please note that the procedures outlined in this guide pertain to connecting a GCS bucket and LABELLERR within the same Google Cloud account.
+</Note>
+
+To connect data with GCS in Labellerr:
+
+## Prerequisites
+
+<Steps>
+  <Step title="Role Creation">
+    **Go to the IAM & Admin Console:**
+    - Open the Google Cloud Console
+    - Navigate to **IAM & Admin > Roles**
+
+    **Create a Custom Role:**
+    - Click on **+ CREATE ROLE**
+    - Enter a **Title, ID,** and **Description** for the role
+    - Click **CONTINUE**
+
+    <Frame>
+      <img src="https://storage.googleapis.com/labellerr-cdn/1%20%20Documentation/7f51008c-9be2-4efb-bf90-8d7d64f7e635.webp" alt="Create custom role in GCS" />
+    </Frame>
+
+    **Add Permissions:**
+    - In the **Permissions** section, add the necessary permissions
+
+    For accessing a GCS bucket, you typically need:
+    1. `storage.buckets.get`
+    2. `storage.buckets.update`
+    3. `storage.objects.get`
+    4. `storage.objects.list`
+
+    - Click **CONTINUE**
+    - Review the role details
+    - Click **CREATE**
+
+    <Frame>
+      <img src="https://storage.googleapis.com/labellerr-cdn/1%20%20Documentation/9bec68e9-2278-459f-8130-cadb90585153.webp" alt="GCS role permissions" />
+    </Frame>
+  </Step>
+
+  <Step title="Service Account Creation">
+    **Go to the Service Accounts Console:**
+    - In the Google Cloud Console, navigate to **IAM & Admin** > **Service Accounts**
+
+    <Frame>
+      <img src="https://cdn.labellerr.com/1%20%20Documentation/0546dc10-d12a-491f-9473-8d8fbc899844.webp" alt="GCS service accounts console" />
+    </Frame>
+
+    **Create a Service Account:**
+    - Click on + CREATE SERVICE ACCOUNT
+    - Enter a Service account name and Description
+    - Click CREATE AND CONTINUE
+
+    **Grant Access to Project:**
+    - In the Grant this service account access to project section, add the role created in the previous step
+    - Click **CONTINUE**
+
+    <Frame>
+      <img src="https://cdn.labellerr.com/1%20%20Documentation/57bca734-d5fd-4c03-a88c-eb386a02f24d.webp" alt="Grant role to service account" />
+    </Frame>
+
+    **Grant Users Access to this Service Account (Optional):**
+    - If needed, add users who can manage this service account
+    - Click DONE
+  </Step>
+
+  <Step title="Generate and Download Service Account Key">
+    **Select Service Account:**
+    - In the Service Accounts console, find the service account you created
+    - Click the ⋮ (three vertical dots) next to the service account and select Manage keys
+
+    <Frame>
+      <img src="https://cdn.labellerr.com/1%20%20Documentation/1dca924b-8714-446a-9168-ca4577f96bf7.webp" alt="Manage service account keys" />
+    </Frame>
+
+    **Create Key:**
+    - Click ADD KEY > Create new key
+
+    <Frame>
+      <img src="https://cdn.labellerr.com/1%20%20Documentation/db166b42-7618-44c3-a834-66d3ade507c3.webp" alt="Create new key" />
+    </Frame>
+
+    <Frame>
+      <img src="https://cdn.labellerr.com/1%20%20Documentation/e264b973-fee0-4a76-a484-cac8c72b23b8.webp" alt="Select key type" />
+    </Frame>
+
+    <Frame>
+      <img src="https://cdn.labellerr.com/1%20%20Documentation/5e8fa837-bf4e-414d-b019-0506b2cf057a.webp" alt="Download key file" />
+    </Frame>
+
+    - Click CREATE
+    - A JSON key file will be downloaded. Keep this file secure as it contains the credentials needed to access the GCS bucket
+  </Step>
+
+  <Step title="Assign IAM Policy to GCS Bucket">
+    1. **Go to the Cloud Storage Console:** Navigate to Cloud Storage > Buckets in the Google Cloud Console
+    2. **Select Your Bucket:** Click on the name of your private bucket. You will see the bucket details, including its Name, Location, and other information
+    3. **Open Permissions:** Click on the Permissions tab
+    4. **Add Member:** 
+       - Click ADD
+       - In the New members field, enter the service account email
+       - Select the role you created earlier
+       - Click SAVE
+  </Step>
+
+  <Step title="Use the Labellerr tool to Access the GCS Data">
+    Click 'Google Cloud Storage' from the sources list and then 'Create New Connection'. There are two options to connect your data through 'Private Bucket' and 'Public Bucket'.
+
+    <Frame>
+      <img src="https://cdn.labellerr.com/1%20%20Documentation/95209a3a-97c8-47cb-9b64-fba1b657f04e.webp" alt="Labellerr GCS connector" />
+    </Frame>
+
+    <Frame>
+      <img src="https://cdn.labellerr.com/1%20%20Documentation/f2ff518c-47e2-45e2-a384-895c2d82f794.webp" alt="GCS connection form" />
+    </Frame>
+
+    After filling the details successfully, click on **Test Connection**, if the details are correct, you should see this.
+
+    <Frame>
+      <img src="https://cdn.labellerr.com/1%20%20Documentation/8171bd27-ac19-458d-97d5-33bb9b49fb0a.webp" alt="GCS test connection success" />
+    </Frame>
+
+    Else you will get this error.
+
+    <Frame>
+      <img src="https://cdn.labellerr.com/1%20%20Documentation/f75ef8d4-9812-4dba-9cee-0352046aacaa.webp" alt="GCS test connection error" />
+    </Frame>
+
+    If successfully tested the connection and your files are recognized, you will need to fill the **Connection name** and **Description(Optional)**.
+
+    <Frame>
+      <img src="https://cdn.labellerr.com/1%20%20Documentation/428e5684-f7f9-4c3a-8e73-29f6e7b1c4dd.webp" alt="GCS connection details" />
+    </Frame>
+  </Step>
+</Steps>
+
+And you're done, this is how you can connect your GCS bucket with Labellerr.

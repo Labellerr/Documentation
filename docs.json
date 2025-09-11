@@ -1,0 +1,164 @@
+{
+  "$schema": "https://mintlify.com/docs.json",
+  "name": "Labellerr Documentation",
+  "theme": "mint",
+  "logo": {
+    "light": "https://cdn.labellerr.com/1%20%20Documentation/labellerr-logo.png",
+    "dark": "https://cdn.labellerr.com/1%20%20Documentation/labellerr-white-logo.png",
+    "href": "https://labellerr.com"
+  },
+  "favicon": "https://cdn.labellerr.com/1%20%20Documentation/labellerr-favicon.png",
+  "colors": {
+    "primary": "#5603fc",
+    "light": "#5603fc",
+    "dark": "#5603fc"
+  },
+  "background": {
+    "color": {
+      "light": "#F6F3EF"
+    }
+  },
+  "styling": {
+    "codeblocks": "dark"
+  },
+  "navbar": {
+    "links": [
+      {
+        "label": "Labellerr Home",
+        "href": "https://labellerr.com"
+      },
+      {
+        "label": "GitHub",
+        "href": "https://github.com/labellerr"
+      }
+    ],
+    "primary": {
+      "type": "button",
+      "label": "Get Started",
+      "href": "https://labellerr.com/signup"
+    }
+  },
+  "navigation": {
+    "tabs": [
+      {
+        "tab": "Documentation",
+        "groups": [
+          {
+            "group": "Get Started",
+            "pages": [
+              {
+                "group": "Getting Started with Labellerr",
+                "pages": [
+                  "getting-started/introduction",
+                  "getting-started/getting-started",
+                  "getting-started/create-project",
+                  "getting-started/create-text-project",
+                  "getting-started/create-video-project",
+                  "getting-started/create-audio-project",
+                  "getting-started/navigate-dashboard",
+                  "getting-started/status-bar-elements",
+                  "getting-started/connect-aws-s3",
+                  "getting-started/connect-gcs"
+                ]
+              }
+            ]
+          },
+          {
+            "group": "Tutorials",
+            "pages": [
+              {
+                "group": "Frequently Accessed Tutorials",
+                "pages": [
+                  "tutorials/workspace",
+                  "tutorials/datasets",
+                  "tutorials/key-definitions",
+                  "tutorials/shortcut-keys",
+                  "tutorials/image-editing-icons",
+                  "tutorials/user-permissions",
+                  "tutorials/importing-users"
+                ]
+              }
+            ]
+          },
+          {
+            "group": "Actions & Labeling",
+            "pages": [
+              {
+                "group": "Actions",
+                "pages": [
+                  "actions/start-labelling",
+                  "actions/annotations-guide",
+                  "actions/image-editing-icons",
+                  "actions/labelling-screen-elements",
+                  "actions/review",
+                  "actions/client-review",
+                  "actions/client-review-grid",
+                  "actions/delete-hide-unhide",
+                  "actions/create-export",
+                  "actions/view-files-page"
+                ]
+              }
+            ]
+          },
+          {
+            "group": "Feature Demos",
+            "pages": [
+              {
+                "group": "Feature Demos",
+                "pages": [
+                  "features/audio-segmentation",
+                  "features/audio-transcription",
+                  "features/auto-bordering",
+                  "features/auto-label-jobs",
+                  "features/classification-agent",
+                  "features/clip-mode-gap-filler",
+                  "features/copy-similar-images",
+                  "features/event-tagging",
+                  "features/image-captioning",
+                  "features/image-similarity",
+                  "features/interpolation",
+                  "features/grouping-tool",
+                  "features/magic-editor",
+                  "features/natural-language-search",
+                  "features/notification-bar",
+                  "features/polygon-eraser",
+                  "features/quality-metrics",
+                  "features/sam-2-object-tracking",
+                  "features/segment-anything",
+                  "features/smart-file-filtering",
+                  "features/text-captioning",
+                  "features/user-settings"
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "SDK",
+        "groups": [
+          {
+            "group": "SDK Documentation",
+            "pages": [
+              "sdk/getting-started",
+              "sdk/add-annotation-questions",
+              "sdk/create-export-sdk",
+              "sdk/create-project-sdk",
+              "sdk/upload-preannotation-sdk",
+              "sdk/retrieve-projects-datasets-sdk"
+            ]
+          }
+        ]
+      }
+    ],
+    "global": {
+      "anchors": [
+        {
+          "anchor": "Website",
+          "href": "https://labellerr.com",
+          "icon": "globe"
+        }
+      ]
+    }
+  }
+}

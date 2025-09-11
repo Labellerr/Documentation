@@ -1,0 +1,403 @@
+---
+title: "How to Add Annotation Questions"
+description: "This guide explains how to write annotation questions in JSON format for Labellerr, covering object-based and classification questions with examples and best practices."
+icon: circle-question
+---
+
+<Card title="Introduction" icon="circle-info">
+  This guide will help you understand how to write your own annotation questions in JSON format, whether they are for drawing things on images (like bounding boxes or dots) or for selecting/entering answers (like dropdowns or booleans).
+
+  We will explain:
+
+  * Types of annotation questions
+  * Required and optional fields
+  * Examples for both types
+</Card>
+
+## Glossary (JSON Key Explanations)
+
+| Title | Description |
+|---|---|
+| class | Label or name of the object (e.g., "Car", "Tree"). |
+| objectType | Shape used for annotation ("BoundingBox", "polygon", "dot", "polyline"). |
+| dataset | Type of dataset: "image", "video", "audio", etc. |
+| color | Display color in hex code (e.g., "#FF0000" for red). |
+| uniqueKey | Unique identifier (UUID) for the object or question. |
+| attributes | Optional nested questions or features related to the object. |
+| allowAnnotationToBeMarkedIncorrect | Whether the object can be marked as incorrectly drawn (true/false). |
+| customer_question_id | ID from an external system (leave null if not used). |
+| mode | Usually "edit" – defines how the annotation appears in the UI. |
+| key | Unique identifier for classification questions. |
+| componentClass | The actual text or label of the question shown to users. |
+| annotation | Input type: "dropdown", "select", "radio", or "boolean". |
+| required | Whether answering this question is mandatory (true/false). |
+| options | List of selectable answers (each with key, value, and optional color). |
+| sort | Whether to display the options in alphabetical order. |
+| searchBar | Adds a search box to the dropdown/select if there are many options. |
+| defaultValue | The answer selected by default if the user doesn’t pick one. |
+| notSureRemark | Adds a “Not Sure” or similar fallback option. |
+| questionGuidelines | Extra instructions shown with the question to help users. |
+| question_metadata | System metadata, usually left null. |
+| autolabel | Configuration for ML model-based label suggestions. |
+
+---
+
+## 1. Types of Annotation Questions
+
+<Card title="Supported Annotation Types by Dataset" icon="database">
+Different datasets support different types of annotations:
+
+### Image
+
+* Object-Based: BoundingBox, polygon, dot, polyline  
+* Classification: All types (dropdown, boolean, radio, select)
+
+### Document (Docs)
+
+* Only supports Classification annotations
+
+### Video
+
+* Object-Based: generic, BoundingBox, dot, polygon  
+* Classification: All types
+
+### Audio
+
+* Object-Based only using objectType: audio
+
+```json Audio Object-Based Annotation Example lines icon="volume-high"
+{
+  "color": "#5F9EA0",
+  "class": "ab",
+  "uniqueKey": "b30a2708-227b-43d9-a358-6b1450bc796b",
+  "objectType": "audio",
+  "attributes": [],
+  "allowAnnotationToBeMarkedIncorrect": false,
+  "dataset": "audio"
+}
+```
+
+* Classification: Same format as other datasets
+
+### Audio Text / PDF
+
+* Only supports Classification annotations
+</Card>
+
+---
+
+<Card title="Main Annotation Question Types" icon="layout-template">
+There are <strong>two main types of annotation question</strong> that you can create:
+
+**A. Object-Based** (e.g., draw bounding boxes, polygons, dots, polylines)  
+Used when you want users to draw or mark things directly on an image.
+
+**B. Classification** (e.g., dropdowns, booleans, radio buttons)  
+Used when users answer a question based on the image without drawing.
+</Card>
+
+## 2. Object-Based Questions
+
+<Card title="Required Fields for Object-Based Questions" icon="asterisk">
+  
+| Field | Description |
+|---|---|
+| class | The label or name of the object (e.g., “Car”) |
+| objectType | Shape of the object: BoundingBox, polygon, dot, polyline |
+| dataset | Always set to image / video / audio |
+
+</Card>
+
+<Card title="Optional Fields for Object-Based Questions" icon="option">
+  
+| Field | Description |
+|---|---|
+| color | Color code to display the object (e.g., "#FF0000") |
+| uniqueKey | Unique ID for the object (auto-generated if not given) |
+| attributes | Extra details for the object. See example below for full JSON structure. |
+| allowAnnotationToBeMarkedIncorrect | Allow marking if drawn incorrectly (default: false) |
+| customer_question_id | If you’re linking to another system, otherwise leave null |
+| mode | Display mode, usually “edit” |
+
+</Card>
+
+```json Attributes Field Example lines icon="list-tree" highlight={5,8-9,11-12}
+{
+  "color": "#00CED1",
+  "class": "obj3",
+  "uniqueKey": "1f1452b4-0151-4bdd-ac40-845d0608c5a9",
+  "objectType": "polyline",
+  "attributes": [
+    {
+      "key": "e9030296-a594-4d44-bb1d-8bbea81e35ee",
+      "componentClass": "obj_3_class",
+      "annotation": "select",
+      "required": false,
+      "options": [
+        {
+          "key": "4bf51ec5-46f5-4a99-9648-8d0609186c90",
+          "value": "ab",
+          "color": "#343df3"
+        },
+        {
+          "key": "61b7089e-b188-4d47-bf67-3c33856d5af1",
+          "value": "cd",
+          "color": "#a09060"
+        }
+      ],
+      "type": "attribute",
+      "sort": false,
+      "searchBar": false,
+      "defaultValue": false,
+      "notSureRemark": null,
+      "questionGuidelines": ""
+    }
+  ]
+}
+```
+
+<Card title="Object-Based Question Example" icon="code">
+```json Bounding Box Example lines icon="square" highlight={1-3}
+{
+  "class": "Car",
+  "objectType": "BoundingBox",
+  "dataset": "image",
+  "color": "#5F9EA0",
+  "uniqueKey": "003cbeab-e199-4be5-865c-1a8d86c2769b",
+  "attributes": [],
+  "allowAnnotationToBeMarkedIncorrect": false
+}
+```
+</Card>
+
+---
+
+## 3. Classification Questions
+
+<Card title="Classification Annotation Types" icon="list-check">
+Used for selecting or entering answers. Valid annotation types:
+
+* <code>boolean</code> (Yes/No , True/False , Yes/No/Not Sure)  
+* <code>radio</code> (Multiple options, one selection)  
+* <code>dropdown</code> (Multiple options in a dropdown)  
+* <code>select</code> (Alternate dropdown)
+
+<Note>
+  <code>annotation</code> (for classification questions) must be one of: <code>dropdown</code>, <code>select</code>, <code>radio</code>, or <code>boolean</code>.
+</Note>
+</Card>
+
+<Card title="Required Fields for Classification Questions" icon="asterisk">
+  
+| Field | Description |
+|---|---|
+| key | A unique identifier (string) |
+| componentClass | A short description or title of the question |
+| annotation | Input type: must be dropdown, select, radio, or boolean |
+
+</Card>
+
+<Card title="Optional Fields for Classification Questions" icon="option">
+  
+| Field | Description |
+|---|---|
+| required | Whether the question must be answered (true or false) |
+| options | List of selectable answers |
+| sort | If true, options will appear sorted alphabetically |
+| searchBar | Adds a search bar to options if there are many choices |
+| defaultValue | The default selected answer (if any) |
+| notSureRemark | Add an option like “Not sure” |
+| questionGuidelines | Helpful instructions or tips shown to the user |
+| question_metadata | Extra system data, usually left null |
+| autolabel | Auto-suggestion model config (used for ML-based predictions) |
+
+</Card>
+
+<Card title="Boolean Example" icon="toggle-on">
+  ```json Boolean Classification Example lines icon="toggle-on" highlight={3,5-8}
+  {
+    "key": "4b4cc006-018c-419a-bab6-b25c1e217267",
+    "componentClass": "Lighting Type",
+    "annotation": "boolean",
+    "required": false,
+    "options": [
+      { "key": "09f01dbc-1461-423c-a34b-9f7a908b2d0b", "value": "Yes" },
+      { "key": "721fa281-024d-445c-9a84-91a2d978efb2", "value": "No" }
+    ],
+    "type": "classification",
+    "autolabel": {
+      "model_id": "gemini-1.5-flash",
+      "enabled": true
+    }
+  }
+  ```
+</Card>
+
+<Card title="Radio Buttons Example" icon="circle-dot">
+  ```json Radio Classification Example lines icon="circle-dot" highlight={3,5-9}
+  {
+    "key": "5d10d247-bda6-446f-b973-72b17964609a",
+    "componentClass": "Construction Presence",
+    "annotation": "radio",
+    "required": false,
+    "options": [
+      { "key": "yes-key", "value": "Yes", "color": "#ed4a47" },
+      { "key": "no-key", "value": "No", "color": "#d9bedb" },
+      { "key": "none-key", "value": "None of the above", "color": "#ca7754" }
+    ],
+    "type": "classification",
+    "autolabel": {
+      "model_id": "gemini-2.0-flash",
+      "enabled": true
+    }
+  }
+  ```
+</Card>
+
+<Card title="Dropdown Example" icon="list-dropdown">
+  ```json Dropdown Classification Example lines icon="list-dropdown" highlight={3,5-9}
+  {
+    "key": "2a453b52-0109-408a-be61-3878c96d0a08",
+    "componentClass": "Drop",
+    "annotation": "dropdown",
+    "required": false,
+    "options": [
+      { "key": "a1", "value": "a", "color": "#f15d44" },
+      { "key": "b1", "value": "b", "color": "#ad5fc7" },
+      { "key": "c1", "value": "c", "color": "#48587e" }
+    ],
+    "type": "classification"
+  }
+  ```
+</Card>
+
+---
+
+## 4. How to Structure the JSON File
+
+<Card title="Example File with Multiple Questions" icon="file-code">
+Put all your questions in a list `[]`. You can mix object and classification questions.
+
+```json Multiple Questions Example lines icon="list-check" highlight={1,4,12,20,28,36,44,52}
+questions = [
+  {
+    "question_number": 1,
+    "question": "Test",
+    "question_id": "533bb0c8-fb2b-4394-a8e1-5042a944802f",
+    "option_type": "polygon",
+    "required": true,
+    "options": [
+      { "option_name": "#fe1236" }
+    ],
+    "question_metadata": []
+  },
+  {
+    "question_number": 2,
+    "question": "Test2",
+    "question_id": "533bb0c8-fb2b-4394-a8e1-5042a944808d",
+    "option_type": "BoundingBox",
+    "required": true,
+    "options": [
+      { "option_name": "#afe126" }
+    ],
+    "question_metadata": []
+  },
+  {
+    "question_number": 3,
+    "question": "Test-Input",
+    "option_type": "input",
+    "question_id": "81bc5c1a-5b95-4df2-8085-aca8d66a93ad",
+    "required": true,
+    "options": []
+  },
+  {
+    "question_number": 4,
+    "question": "Multi-Test",
+    "option_type": "select",
+    "question_id": "971c5c1a-5b95-4df2-8085-aca8d66a0351",
+    "required": true,
+    "options": [
+      { "option_id": "22b7942f-06ef-4293-9d73-d117eda8ec0d", "option_name": "A" },
+      { "option_id": "15e0e903-ed8f-43ff-a841-a0638ff08153", "option_name": "B" },
+      { "option_id": "c2e37dad-5034-4bed-920b-5fc14c4032e0", "option_name": "C" }
+    ]
+  },
+  {
+    "question_number": 5,
+    "question": "Test-Dropdown",
+    "option_type": "dropdown",
+    "question_id": "456c5c1a-5b95-4df2-8085-aca8d66a03049",
+    "required": true,
+    "options": [
+      { "option_id": "58k142f-06ef-4293-9d73-d117eda87254", "option_name": "Sample A" },
+      { "option_id": "43t56903-ed8f-43ff-a841-a0638ff08856", "option_name": "Sample B" }
+    ]
+  },
+  {
+    "question_number": 6,
+    "question": "Radio test",
+    "option_type": "radio",
+    "question_id": "712v5c1a-5b95-4df2-8085-aca8d66a01048",
+    "required": true,
+    "options": [
+      { "option_id": "916v24h-06ef-4293-9d73-d117eda81112", "option_name": "1" },
+      { "option_id": "12ak879-ed8f-43ff-a841-a0638ff23115", "option_name": "2" }
+    ]
+  }
+]
+
+client.create_annotation_guideline('10983', questions, template_name='Testing-123', data_type='image')
+```
+
+<Note>
+  `question_metadata` denotes the attributes for object type questions (Bounding Box and Polygons). The structure of `question_metadata` is:
+
+  ```json question_metadata Structure lines icon="sitemap" highlight={2-11}
+  {
+    "question_metadata": [
+      {
+        "key": "<unique id>",
+        "componentClass": "<name of the attribute>",
+        "annotation": "<type of the attribute>",
+        "required": "<boolean value>",
+        "searchBar": "<boolean value>",
+        "type": "attribute",
+        "options": [
+          { "key": "<unique id>", "value": "<option name>" }
+        ]
+      }
+    ]
+  }
+  ```
+
+  For example:
+
+  ```json question_metadata Example lines icon="sitemap" highlight={2-18}
+  {
+    "question_metadata": [
+      {
+        "key": "2d93819a-ec40-4ee5-b015-33032cae1b70",
+        "componentClass": "Select the region of interest: ROI",
+        "annotation": "select",
+        "required": true,
+        "options": [
+          {
+            "key": "b828606e-dcdc-44a6-bafb-8021479ef21a",
+            "value": "maize - Spotted stem borer",
+            "color": "#be410c"
+          },
+          {
+            "key": "1ea1e6fb-12bb-437f-8d74-14c60e53b46f",
+            "value": "maize - Spotted stem borer",
+            "color": "#9203a0"
+          }
+        ],
+        "type": "attribute",
+        "searchBar": true
+      }
+    ]
+  }
+  ```
+</Note>
+</Card>
+

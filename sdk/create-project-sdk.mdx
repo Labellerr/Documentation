@@ -1,0 +1,140 @@
+---
+title: "How to Create Project Using SDK"
+description: "Learn how to create new projects in Labellerr using the SDK, organizing datasets and annotations, understanding limitations, and supported data types."
+icon: folder-plus
+---
+
+## Creating a New Project
+
+<Card title="Project Overview" icon="circle-info">
+A **project** in Labellerr organizes your datasets and their annotations. Use the following method to create a project:
+
+### Limitations:
+
+*   Maximum of **2,500 files** per folder.
+*   Total folder size should not exceed **2.5 GB**.
+
+### Acceptable value:
+
+*   **option_type**
+    *   `'input'`, `'radio'`, `'boolean'`, `'select'`, `'dropdown'`, `'stt'`, `'imc'`, `'BoundingBox'`, `'polygon'`, `'dot'`, `'audio'`
+</Card>
+
+<Card title="Data Types and Supported Formats" icon="database">
+The Labellerr SDK supports various data types and file formats for your annotation projects:
+
+### **Supported Data Types and Extensions**
+
+| Data Type | Description | Supported Extensions |
+|---|---|---|
+| image | Image files for visual annotation | .jpg, .jpeg, .png, .bmp, .tiff |
+| video | Video content for temporal annotation | .mp4 |
+| audio | Audio files for sound annotation | .mp3, .wav |
+| document | Document files for text analysis | .pdf |
+| text | Plain text files for text annotation | .txt |
+
+When using the SDK methods, specify the data type as one of: `'image'`, `'video'`, `'audio'`, `'document'`, or `'text'`.
+
+When using the `initiate_create_project()` function, you **must provide either**:
+
+*   `annotation_guide` (as a dictionary), **or**
+*   `annotation_template_id` (as a string)
+
+**Important:** At least one of these two fields is required. If both are missing, the project creation will fail.
+</Card>
+
+<Card title="Example: Creating a Project with an Existing Template" icon="code">
+```python Project Creation with Template lines icon="template-icon" highlight={5-17,19-21}
+from labellerr.client import LabellerrClient
+from labellerr.exceptions import LabellerrError
+
+# Initialize the client with your API credentials
+client = LabellerrClient(api_key, api_secret)
+project_payload = {
+    'client_id': client_id,
+    'dataset_name': 'New_dataset',
+    'dataset_description': 'A sample dataset for image classification',
+    'data_type': 'image',
+    'created_by': email,
+    'project_name': 'Image Classification Project',
+    'annotation_template_id':"existing annotaion_template_id",
+    'rotation_config': {
+        'annotation_rotation_count': 1,
+        'review_rotation_count': 1,
+        'client_review_rotation_count': 1
+    },
+    'autolabel': False,
+    'folder_to_upload': 'path/to/your/dataset'
+}
+try:
+    result = client.initiate_create_project(project_payload)
+    print(f"Project created successfully. Project ID: {result['project_id']['response']['project_id']}")
+except LabellerrError as e:
+    print(f"Project creation failed: {str(e)}")
+```
+</Card>
+
+<Card title="Example: Creating a Project with Inline Annotation Questions" icon="code">
+You can also add **classification questions and** [**annotation questions**](/sdk/add-annotation-questions) while creating the project.
+
+```python Project Creation with Inline Annotation Guide lines icon="question" highlight={6-22,24-27}
+from labellerr.client import LabellerrClient
+from labellerr.exceptions import LabellerrError
+
+# Initialize the client with your API credentials
+client = LabellerrClient(api_key, api_secret)
+project_payload = {
+    'client_id': client_id,
+    'dataset_name': 'New_dataset',
+    'dataset_description': 'A sample dataset for image classification',
+    'data_type': 'image',
+    'created_by': email,
+    'project_name': 'Image Classification Project',
+    'annotation_guide': [
+        {
+            "question_number": 1,
+            "question": "What is the main object in the image?",
+            "question_id": "533bb0c8-fb2b-4394-a8e1-5042a944802f",
+            "option_type": "dropdown",
+            "required": True,
+            "options": [
+                {"option_name": "Car"},
+                {"option_name": "Building"},
+                {"option_name": "Person"}
+            ]
+        }
+    ],
+    'rotation_config': {
+        'annotation_rotation_count': 1,
+        'review_rotation_count': 1,
+        'client_review_rotation_count': 1
+    },
+    'autolabel': False,
+    'folder_to_upload': 'path/to/your/dataset'
+}
+try:
+    result = client.initiate_create_project(project_payload)
+    print(f"Project created successfully. Project ID: {result['project_id']['response']['project_id']}")
+except LabellerrError as e:
+    print(f"Project creation failed: {str(e)}")
+```
+</Card>
+
+## Glossary
+
+<Card title="Project Payload Fields" icon="list">
+| Variable/Key | Type | Description | Example Value |
+|---|---|---|---|
+| client_id | String | Unique identifier for the client or organization creating the project | client_123 |
+| dataset_name | String | Name of the dataset being created | New_dataset |
+| dataset_description | String | Description explaining the dataset's purpose and contents | A sample dataset for image classification |
+| data_type | String | Type of data in the dataset | image |
+| created_by | String | Email address of the project creator | user@example.com |
+| project_name | String | Display name for the annotation project | Image Classification Project |
+| annotation_template_id | String | ID of existing annotation template defining label structure | template_456 |
+| autolabel | Boolean | Enable/disable automatic AI pre-labeling | false |
+| folder_to_upload | String | Local file path to dataset folder | path/to/your/dataset |
+| annotation_rotation_count | Integer | Number of times data item need to be annotated | 1 |
+| review_rotation_count | Integer | Number of times annotated item need to be reviewed | 1 |
+| client_review_rotation_count | Integer | Number of times client reviewers need to be done. | 1 |
+</Card>

@@ -1,0 +1,53 @@
+---
+title: "Getting Started with SDK"
+description: "Learn how to install and initialize the Labellerr SDK, a Python library for seamless interaction with the Labellerr platform to manage data annotations, projects, and exports."
+icon: code
+---
+
+## Introduction
+
+The **Labellerr SDK** is a Python library designed to make interaction with the Labellerr platform simple and efficient. With this SDK, you can manage data annotations, projects, and exports seamlessly in your applications.
+
+This documentation will guide you through installing the SDK, understanding its core functionalities, and handling common errors.
+
+Prefer a runnable notebook with sample data and ready-made cells? [Open the end-to-end SDK cookbook in Google Colab](https://colab.research.google.com/github/Labellerr/Hands-On-Learning-in-Computer-Vision/blob/main/SDK%20Tutorials/Labellerr_SDK_End_to_End_Annotation_Pipeline.ipynb)
+
+---
+
+## Installation
+
+To install the Labellerr SDK, use the following command:
+
+<CodeBlock lang="bash" title="Install Labellerr SDK">
+pip install https://github.com/tensormatics/SDKPython/releases/download/prod/labellerr_sdk-1.0.0.tar.gz
+</CodeBlock>
+
+---
+
+## Getting Started
+
+#### Obtaining `api_keys` and `client_id`:
+
+**To obtain your api_keys and client_id, Pro and Enterprise plan users can contact Labellerr support. If you are on a free plan, you can request them by emailing** `**support@tensormatics.com**`**.**
+
+Once installed, you can start by importing and initializing the `LabellerrClient` and `LabellerrError`. This client will handle all communication with the Labellerr platform.
+
+### Example Client initiation:
+
+<CodeBlock lang="python" title="Client Initialization">
+from labellerr.client import LabellerrClient
+from labellerr.exceptions import LabellerrError
+
+# Initialize the client with your API credentials
+api_key = "your-api-key"
+api_secret = "your-api-secret"
+client_id = "your-client-id"
+project_id = 'your-project-id'
+# choose scope from SCOPE_LIST=['project','client','public']
+scope = 'client'
+email = "your-email-id"
+
+client = LabellerrClient(api_key, api_secret)
+</CodeBlock>
+
+Replace `'your_api_key', 'your-email-id', 'client_id', 'project_id'` and `'your-api-secret'` with your actual credentials provided by Labellerr.

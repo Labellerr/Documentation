@@ -1,0 +1,118 @@
+---
+title: "Retrieving Projects and Datasets Using SDK"
+description: "Learn how to retrieve all projects and datasets associated with a client in Labellerr using the SDK, including linked and unlinked datasets."
+icon: database
+---
+
+### Retrieving All Projects for a Client
+
+---
+
+You can retrieve all projects associated with a specific client ID using the following method:
+
+#### Example Usage:
+
+```python Retrieve All Projects lines icon="folder-open" highlight={6,8-15}
+from labellerr.client import LabellerrClient
+from labellerr.exceptions import LabellerrError
+
+# Initialize the client with your API credentials
+client = LabellerrClient(api_key, api_secret)
+client_id = client_id
+
+try:
+    result = client.get_all_project_per_client_id(client_id)
+
+    # Check if projects were retrieved successfully
+    if result and 'response' in result:
+        projects = result['response']
+        print(f"Found {len(projects)} projects:")
+        for project in projects:
+            print(f"- Project ID: {project.get('project_id')}")
+            print(f"  Name: {project.get('project_name')}")
+            print(f"  Type: {project.get('data_type')}")
+except LabellerrError as e:
+    print(f"Failed to retrieve projects: {str(e)}")
+```
+
+This method is useful when you need to:
+
+*   List all projects for a client
+*   Find specific project IDs
+*   Check project statuses
+*   Get an overview of client's work
+
+The response includes detailed information about each project, including its ID, name, data type, and other relevant metadata.
+
+---
+
+### Retrieving All Datasets
+
+---
+
+You can retrieve both linked and unlinked datasets associated with a client using the following method:
+
+#### Example Usage:
+
+```python Retrieve All Datasets lines icon="database" highlight={7,9-13}
+from labellerr.client import LabellerrClient
+from labellerr.exceptions import LabellerrError
+
+# Initialize the client with your API credentials
+client = LabellerrClient(api_key, api_secret)
+client_id = client_id
+data_type = 'image'
+
+try:
+    result = client.get_all_dataset(client_id, data_type, project_id, scope)
+    # Process linked datasets
+    linked_datasets = result["response"]["datasets"]
+    # print(linked_datasets["datasets"][0]["dataset_id"])
+    print(f"Found {len(linked_datasets)} linked datasets:")
+    for dataset in linked_datasets:
+        # print(dataset["datasets"])
+        print(f"- Dataset ID: {dataset.get('dataset_id')}")
+        print(f"  Name: {dataset.get('name')}")
+        print(f"  Description: {dataset.get('description')}")
+
+except LabellerrError as e:
+    print(f"Failed to retrieve datasets: {str(e)}")
+```
+
+This method is useful when you need to:
+
+*   Get an overview of all available datasets
+*   Find datasets that are linked to projects
+*   Identify unlinked datasets that can be associated with new projects
+*   Manage dataset organization and project associations
+
+The response includes two lists:
+
+*   `linked`: Datasets that are already associated with projects
+*   `unlinked`: Datasets that are not yet associated with any project
+
+Each dataset object contains detailed information including its ID, name, description, and other metadata.
+
+---
+
+### Error Handling
+
+---
+
+The Labellerr SDK uses a custom exception class, `LabellerrError`, to indicate issues during API interactions. Always wrap your function calls in `try-except` blocks to gracefully handle errors.
+
+#### Example:
+
+```python Error Handling Example lines icon="exclamation-triangle" highlight={3-6}
+from labellerr.exceptions import LabellerrError
+
+try:
+    # Example function call
+    result = client.initiate_create_project(payload)
+except LabellerrError as e:
+    print(f"An error occurred: {str(e)}")
+```
+
+---
+
+The Labellerr SDK is a fast and reliable solution for managing annotation workflows. Want to try it end-to-end? Refer to this [**Google Colab Cookbook**](https://colab.research.google.com/github/Labellerr/Hands-On-Learning-in-Computer-Vision/blob/main/SDK%20Tutorials/Labellerr_SDK_End_to_End_Annotation_Pipeline.ipynb) for a ready-to-run tutorial. For more related cookbooks and examples, please visit our repository: [Labellerr Hands-On Learning](https://github.com/Labellerr/Hands-On-Learning-in-Computer-Vision)
