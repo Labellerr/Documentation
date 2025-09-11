@@ -131,6 +131,18 @@
                 ]
               }
             ]
+          },
+          {
+            "group": "Additional Features",
+            "pages": [
+              {
+                "group": "Essential Features",
+                "pages": [
+                  "few-additional-features/few-additional-features-1/labellerr-workflow-diagram",
+                  "few-additional-features/few-additional-features-1/reviewing-file-level-remarks-by-annotators-reviewers"
+                ]
+              }
+            ]
           }
         ]
       },
