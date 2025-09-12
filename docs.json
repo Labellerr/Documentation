@@ -21,6 +21,10 @@
   "styling": {
     "codeblocks": "dark"
   },
+  "seo": {
+    "indexing": "all"
+  },
+  
   "navbar": {
     "links": [
       {
@@ -143,6 +147,19 @@
                 ]
               }
             ]
+          },
+          {
+            "group": "Legacy URLs",
+            "hidden": true,
+            "pages": [
+              "labellerr/documentation-labellerr/sdk/sdk-documentation",
+              "labellerr/documentation-labellerr/getting-started/get-started-with-labellerr",
+              "labellerr/documentation-labellerr/frequently-accessed-tutorials/frequently-accessed-tutorials-1/importing-users-from-one-project-to-another-in-the-same-workspace",
+              "labellerr/documentation-labellerr/feature-demos/feature-demos/copy-from-similar-images",
+              "labellerr/documentation-labellerr/feature-demos/feature-demos/user-settings-guide",
+              "labellerr/documentation-labellerr/actions/actions/client-review",
+              "labellerr/documentation-labellerr/actions/actions/client-review-using-grid-view"
+            ]
           }
         ]
       },
@@ -172,5 +189,39 @@
         }
       ]
     }
-  }
+  },
+  "redirects": [
+    {
+      "source": "/",
+      "destination": "/getting-started/introduction"
+    },
+    {
+      "source": "/labellerr/documentation-labellerr/sdk/sdk-documentation",
+      "destination": "/sdk/getting-started"
+    },
+    {
+      "source": "/labellerr/documentation-labellerr/getting-started/get-started-with-labellerr",
+      "destination": "/getting-started/getting-started"
+    },
+    {
+      "source": "/labellerr/documentation-labellerr/frequently-accessed-tutorials/frequently-accessed-tutorials-1/importing-users-from-one-project-to-another-in-the-same-workspace",
+      "destination": "/tutorials/importing-users"
+    },
+    {
+      "source": "/labellerr/documentation-labellerr/feature-demos/feature-demos/copy-from-similar-images",
+      "destination": "/features/copy-similar-images"
+    },
+    {
+      "source": "/labellerr/documentation-labellerr/feature-demos/feature-demos/user-settings-guide",
+      "destination": "/features/user-settings"
+    },
+    {
+      "source": "/labellerr/documentation-labellerr/actions/actions/client-review",
+      "destination": "/actions/client-review"
+    },
+    {
+      "source": "/labellerr/documentation-labellerr/actions/actions/client-review-using-grid-view",
+      "destination": "/actions/client-review-grid"
+    }
+  ]
 }
