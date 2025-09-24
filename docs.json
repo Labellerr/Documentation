@@ -178,6 +178,24 @@
             ]
           }
         ]
+      },
+      {
+        "tab": "Cookbooks",
+        "pages": [
+          "cookbooks/automobile",
+          "cookbooks/build-ai-agents",
+          "cookbooks/construction",
+          "cookbooks/fine-tune-yolo",
+          "cookbooks/healthcare",
+          "cookbooks/life-sciences-biotech",
+          "cookbooks/manufacturing",
+          "cookbooks/model-notebooks",
+          "cookbooks/retail",
+          "cookbooks/robotics",
+          "cookbooks/sdk-tutorials",
+          "cookbooks/security",
+          "cookbooks/sports"
+        ]
       }
     ],
     "global": {
