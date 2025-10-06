@@ -116,12 +116,6 @@ Labellerr takes data security seriously:
 - **Feature Requests**: Contact our product team
 - **Enterprise Solutions**: Reach out for custom implementations
 
-## 📄 License
-
-This documentation is licensed under [appropriate license]. Please refer to the LICENSE file for more information.
-
----
-
 **Made with ❤️ by the Labellerr Team**
 
 *Empowering AI development through intelligent data annotation*
