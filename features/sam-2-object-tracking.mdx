@@ -81,57 +81,50 @@ Labellerr's SAM 2 enables **10x faster video object tracking**, making it ideal 
 - Use polygons for more precise objects (e.g., balls), with support for single-dot/polygon labeling.
 - Add attributes (e.g., player activity, jersey color) and video-wide classifications for detailed datasets.
 
-### 5. Ability to Fire Multiple Jobs (New Feature)
+### 5. Ability to Fire Multiple Jobs 
 
 Labellerr now supports firing **multiple annotation jobs simultaneously**, making large-scale video annotation faster and more efficient.
 
 #### How It Works
 
-1. **Prepare your videos and labels**
+- **Prepare your videos and labels:**
    Upload your videos and create labels for the objects you want to track.
-2. **Select objects to annotate**
+- **Select objects to annotate:**
    Click on the objects you want to process in the video.
-3. **Open SAM 2**
+- **Open SAM 2:**
    Click the **SAM 2 button** in the object’s header.
-4. **Choose the object for the job**
+- **Choose the object for the job:**
    Pick the object you want to track in this particular job.
-5. **Run the job**
-   Click the **Run** button. SAM 2 will now automatically track and segment the object across all frames.
+- **Run the job:**
+   Click the Run button. SAM 2 will now automatically track and segment the object across all frames.
 
 <iframe 
   className="w-full aspect-video rounded-xl" 
-  src="https://www.youtube.com/embed/kNz15Xv0XUU?si=mU30v5OiKBrajBcB" 
+  src="https://www.youtube.com/embed/81O5BBMxi20?si=lotP3gKqI8gnWP9J" 
   title="YouTube video player" 
   frameBorder="0" 
   allowFullScreen
 />
 
-### 5. Track Progress (Multi-Job)
-
-Monitor the progress of all jobs in the **Timeline** section. Colored dots indicate whether objects are **present**, **absent**, or if there are **segmentation errors**.
-
----
-
-### 6. Ability to Run on a Single Timeline (New Feature)
+### 6. Ability to Run on a Single Timeline
 
 Labellerr now allows you to **run SAM 2 jobs on a single video timeline**, so you can track objects together in one continuous workflow.
 
 #### How It Works
 
-1. **Prepare your video and labels**
+- **Prepare your video and labels:**
    Upload your video and create labels for all the objects you want to track on that timeline.
-2. **Select objects to annotate**
+- **Select objects to annotate:**
    Click on each object in the video that you want to include in this single timeline job.
-3. **Open SAM 2**
+- **Open SAM 2**
    - Right-click on the timeline where you annotated the objects.
    - Click **SAM 2 Tracking** and select **Run SAM 2**.
    SAM 2 will now track all selected objects continuously on the same video timeline.
-4. **Monitor Progress**
+- **Monitor Progress**
    - The tracking results are displayed on the **Timeline** section.
    - Colored dots indicate whether objects are **present**, **absent**, or if there are **segmentation errors**.
 
 ---
-
 ## Benefits
 
 - **Dramatically faster:** Reduces hours of manual tracking to just a few clicks.
@@ -145,7 +138,3 @@ Labellerr now allows you to **run SAM 2 jobs on a single video timeline**, so yo
 - For complex objects, use polygons instead of bounding boxes.
 - Review each track for gaps or mispredictions—SAM 2 makes correction easy.
 - Enhance annotation quality by adding object attributes and video classifications.
-
-**Example Workflow:** “Upload a video, label the ball and player, use the Magic Brush and SAM 2 to annotate initial frames, then let SAM 2 track each object automatically. Review the tracking, fix any missed frames, and add useful attributes or classifications if needed. Save hours while maintaining accuracy—perfect for demanding AI workflows.”
-
-Labellerr’s SAM 2 video annotation tool is designed to make meticulous video object tracking fast, efficient, and scalable—perfect for modern AI projects that demand quality at speed.
