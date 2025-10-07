@@ -7,7 +7,7 @@
     "dark": "https://cdn.labellerr.com/1%20%20Documentation/labellerr-white-logo.png",
     "href": "https://labellerr.com"
   },
-  "favicon": "https://cdn.labellerr.com/1%20%20Documentation/labellerr-favicon.png",
+  "favicon": "images/labellerr-favicon.png",
   "colors": {
     "primary": "#5603fc",
     "light": "#5603fc",
