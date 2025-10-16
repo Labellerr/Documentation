@@ -1,94 +1,119 @@
 ---
 title: "SAM 2 Object Tracking"
-description: "Learn how Labellerr’s Segment Anything Model 2 (SAM 2) enables 10x faster video object tracking for annotating moving objects across frames with minimal manual effort."
+description: "Learn how Labellerr's Segment Anything Model 2 (SAM 2) enables 10x faster video object tracking for annotating moving objects across frames with minimal manual effort."
 icon: video
 ---
 
-<iframe 
-  className="w-full aspect-video rounded-xl" 
-  src="https://www.youtube.com/embed/gOeu5hjzuew" 
-  title="Speed Up AI Training with SAM 2 for Quick Video Annotation | Sports, Robotics &amp; Security" 
-  frameborder="0" 
-  allowfullscreen>
-</iframe>
+<iframe
+  className="w-full aspect-video rounded-xl"
+  src="https://www.youtube.com/embed/gOeu5hjzuew"
+  title="Speed Up AI Training with SAM 2 for Quick Video Annotation | Sports, Robotics & Security"
+  frameBorder="0"
+  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+  allowFullScreen
+/>
 
 # Labellerr: Segment Anything Model 2 (SAM 2) Video Object Tracking Documentation
 
 ## Introduction
 
-Labellerr's SAM 2 enables **10x faster video object tracking**, making it ideal for annotating moving objects—such as players and balls in sports videos—across frames with minimal manual effort. This AI-powered tool streamlines the process, saving significant time and ensuring high-accuracy results in fields like sports analytics, robotics, retail, and agriculture.
+Labellerr's SAM 2 enables **10x faster video object tracking** compared to manual annotation, making it ideal for annotating moving objects—such as players and balls in sports videos—across frames with minimal effort. This AI-powered tool streamlines the process, saving significant time and ensuring high-accuracy results in sports analytics, robotics, retail, and agriculture.
 
 ## Key Features
 
-*   **AI-driven, frame-by-frame object tracking**
-*   Compatible with various label types (player, ball, etc.)
-*   Combines manual annotation, point prompts, and automated tracking
-*   Handles occlusions and out-of-frame moments efficiently.
+- **AI-driven, frame-by-frame object tracking**
+- Compatible with multiple label types (player, ball, etc.)
+- Combines manual annotation, point prompts, and automated tracking
+- Efficiently handles occlusions and out-of-frame moments
 
 ## Step-by-Step Guide: Using SAM 2 for Video Object Tracking
 
 ### 1. Preparing the Video and Labels
 
-*   **Upload your video** to the Labellerr platform.
-*   Go to the _label_ tab and play the video briefly to familiarize yourself with content.
-*   **Create labels** for each object you want to track (e.g., 'player', 'ball').
+- **Upload your video** to the Labellerr platform.
+- Play the video briefly to familiarize yourself with its content.
+- **Create labels** for each object you want to track (e.g., `player`, `ball`).
 
 ### 2. Annotating Key Frames with SAM 2
 
 #### a. Select Object and Annotation Tool
 
-*   Select the relevant label (e.g., 'ball').
-*   Click the **Magic Brush** and choose _Segment Anything Model 2 (SAM 2)_ from the dropdown menu.
+- Select the relevant label (e.g., `ball`).
+- Click the **Magic Brush** and choose **Segment Anything Model 2 (SAM 2)** from the dropdown menu.
 
 #### b. Add Point Prompts
 
-*   Click the _interact_ icon to begin.
-*   Place point prompts on the object you want to track, helping the model identify/segment it clearly.
-*   When the object is properly segmented, confirm by clicking the tick icon.
+- Click the *interact* icon to begin.
+- Place point prompts on the object to help the model segment it accurately.
+- Confirm the segmentation by clicking the tick icon.
 
 #### c. Track Object Across Video
 
-*   Right-click and choose **SAM 2 track**.
-*   SAM 2 automatically tracks and segments the object across the full video timeline (e.g., tracks the ball as it moves).
-*   **Repeat for additional objects** (e.g., select 'player' and follow the same procedure).
+- Right-click on the object and select **SAM 2 Tracking**.
+- SAM 2 automatically tracks and segments the object across the entire video timeline.
+- **Repeat for additional objects** (e.g., select `player` and follow the same steps).
 
 ### 3. Reviewing and Adjusting Tracks
 
 #### a. Timeline Visualization
 
-*   Tracked objects are shown on a colored timeline (red dots mark presence/absence/segmentation).
-*   Gaps in the timeline indicate occlusion or the object moving out of frame.
+- Tracked objects appear on a colored timeline.
+- Colored dots indicate **present**, **absent**, or **segmentation error**.
+- Gaps in the timeline indicate occlusion or the object moving out of frame.
 
 #### b. Handling Occlusions & Errors
 
-*   If the model misses a frame (e.g., predicts the object as out of view, but it is visible, or vice versa), right-click and select:
-    *   **Mark Out of View** (if object is absent)
-    *   **Mark in View** (if object is present)
+- If SAM 2 misses a frame:
+  - Right-click and select **Mark Out of View** (if object is absent).
+  - Right-click and select **Mark in View** (if object is present).
 
 #### c. Seamless Results
 
-*   Play the labeled video to preview how objects are accurately tracked throughout.
+- Play the labeled video to preview accurate object tracking across all frames.
 
 ### 4. Customizing Annotations (Optional)
 
-*   Use bounding boxes for simple shapes (e.g., players).
-*   Use polygons for more precise objects (e.g., balls), with support for single-dot/polygon labeling.
-*   Add attributes (e.g., player activity, jersey color) and video-wide classifications for detailed datasets.
+- Use **bounding boxes** for simple shapes (e.g., players).
+- Use **polygons** for small or irregular objects (e.g., balls).
+- Add **attributes** (e.g., player activity, jersey color) and **video-wide classifications** for detailed datasets.
+
+### 5. Firing Multiple Annotation Jobs
+
+Labellerr supports running **multiple annotation jobs simultaneously**, speeding up large-scale video annotation.
+
+#### How It Works
+
+1. Upload your videos and create object labels.
+2. Select objects to annotate.
+3. Click the **SAM 2 button** in the object header.
+4. Choose the object for this job.
+5. Click **Run** to automatically track and segment the object across all frames.
+
+<iframe
+  className="w-full aspect-video rounded-xl"
+  src="https://www.youtube.com/embed/81O5BBMxi20?si=lotP3gKqI8gnWP9J"
+  title="SAM 2 Multi-Object Tracking Demo"
+  frameBorder="0"
+  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+  allowFullScreen
+/>
+
+### 6. Running SAM 2 on a Single Timeline
+
+You can track multiple objects continuously in a single workflow.
+
+#### How It Works
+
+- Upload your video and create labels for all objects.
+- Select each object to include in the timeline job.
+- Right-click on the timeline, choose **SAM 2 Tracking**, and select **Run SAM 2**.
+- Monitor progress in the **Timeline** section, where colored dots indicate object presence, absence, or segmentation errors.
+
+---
 
 ## Benefits
 
-*   **Dramatically faster:** Reduces hours of manual tracking to just a few clicks.
-*   **High accuracy:** AI leverages previous frame information, minimizing drift and error.
-*   **Flexible:** Suitable for any moving object in a video—sports, robotics, animals, retail, and more.
-*   **Easy error correction:** Quick manual fixes with just a right-click if the prediction is off.
-
-## Best Practices
-
-*   Place prompts precisely for clean initial segmentation.
-*   For complex objects, use polygons instead of bounding boxes.
-*   Review each track for gaps or mispredictions—SAM 2 makes correction easy.
-*   Enhance annotation quality by adding object attributes and video classifications.
-
-**Example Workflow:** “Upload a video, label the ball and player, use the Magic Brush and SAM 2 to annotate initial frames, then let SAM 2 track each object automatically. Review the tracking, fix any missed frames, and add useful attributes or classifications if needed. Save hours while maintaining accuracy—perfect for demanding AI workflows.”
-
-Labellerr’s SAM 2 video annotation tool is designed to make meticulous video object tracking fast, efficient, and scalable—perfect for modern AI projects that demand quality at speed.
+- **Dramatically faster:** Reduces hours of manual tracking to just a few clicks.
+- **High accuracy:** AI leverages previous frame information to minimize drift and errors.
+- **Flexible:** Suitable for any moving object in videos—sports, robotics, animals, retail, etc.
+- **Easy error correction:** Quick manual fixes via right-click if predictions are off.
