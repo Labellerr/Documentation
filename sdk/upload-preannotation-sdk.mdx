@@ -1,92 +1,368 @@
 ---
-title: "How to Upload Preannotation Using SDK"
-description: "Learn how to upload pre-annotations to Labellerr projects using the SDK, with synchronous and asynchronous methods, to speed up manual annotation."
+title: "Upload Pre-annotations Using SDK"
+description: "Accelerate annotation workflows by importing existing labels into Labellerr projects through the Python SDK."
 icon: upload
 ---
 
-## Uploading Pre-annotations
+## Overview
 
----
+Pre-annotations enable you to import existing labels into your Labellerr projects, significantly reducing manual annotation effort. This feature allows your team to focus on reviewing and refining pre-loaded annotations rather than creating them from scratch.
 
-**Pre-annotations** are labels which can be pre-loaded to a project which can speed up manual annotation. Size limit for uploading pre-annotations is **25 MB.**
+<CardGroup cols={3}>
+  <Card title="Workflow Efficiency" icon="bolt">
+    Reduce annotation time by up to 70% through pre-loaded label imports
+  </Card>
+  <Card title="File Size Limit" icon="database">
+    Support for annotation files up to 25 MB
+  </Card>
+  <Card title="Format Support" icon="file-code">
+    Industry-standard COCO JSON format compatibility
+  </Card>
+</CardGroup>
 
-#### Example Usage (Synchronous):
 
-```python Synchronous Pre-annotation Upload lines icon="upload" highlight={5-10,12-14}
-from labellerr.client import LabellerrClient
-from labellerr.exceptions import LabellerrError
+## Critical Requirements
 
-# Initialize the client with your API credentials
-client = LabellerrClient('your_api_key', 'your_api_secret')
-project_id = 'project_123'
-client_id = '12345'
-annotation_format = 'coco'
-annotation_file = '/path/to/annotations.json'
+<Warning>
+**File Name Matching is Mandatory**
 
-try:
-    # Upload and wait for processing to complete
-    result = client.upload_preannotation_by_project_id(project_id, client_id, annotation_format, annotation_file)
-    # Check the final status
-    if result['response']['status'] == 'completed':
-        print("Pre-annotations processed successfully")
-        # Access additional metadata if needed
-        metadata = result['response'].get('metadata', {})
-        print("metadata",metadata)
-except LabellerrError as e:
-    print(f"Pre-annotation upload failed: {str(e)}")
+For pre-annotations to function correctly, file names in your annotation JSON must exactly match the image file names in your Labellerr project.
+
+**Validation Checklist:**
+- Image file names in JSON (e.g., `"file_name"` field in COCO format) match uploaded image names
+- File extensions match precisely (`.jpg`, `.png`, `.jpeg`)
+- File names are case-sensitive (`image.jpg` is not equal to `Image.jpg`)
+
+**Examples:**
+
+```json
+// Correct - exact match
+{"file_name": "burger.jpeg"}  → Uploaded as: burger.jpeg
+
+// Incorrect - extension mismatch
+{"file_name": "burger.jpeg"}  → Uploaded as: burger.jpg
+
+// Incorrect - case mismatch
+{"file_name": "burger.jpeg"}  → Uploaded as: Burger.jpeg
 ```
 
-#### Example Usage (Asynchronous):
+Mismatched file names will prevent annotations from being applied to the corresponding images.
+</Warning>
 
-```python Asynchronous Pre-annotation Upload lines icon="clock" highlight={6-10,12-14,16-18}
+
+## Implementation Methods
+
+<Tabs>
+  <Tab title="Synchronous Method">
+    <Info>
+      **Recommended for:** Batch processing scripts and sequential workflows where blocking behavior is acceptable
+    </Info>
+
+```python
 from labellerr.client import LabellerrClient
 from labellerr.exceptions import LabellerrError
 
-# Initialize the client with your API credentials
+# Initialize client with credentials
 client = LabellerrClient('your_api_key', 'your_api_secret')
+
+# Configure upload parameters
 project_id = 'project_123'
 client_id = '12345'
 annotation_format = 'coco'
 annotation_file = '/path/to/annotations.json'
 
 try:
-    # Start the async upload - returns immediately
-    future = client.upload_preannotation_by_project_id_async(project_id, client_id, annotation_format, annotation_file)
-    print("Upload started, you can do other work here...")
-    # When you need the result, wait for completion
+    # Execute synchronous upload
+    result = client.upload_preannotation_by_project_id(
+        project_id, 
+        client_id, 
+        annotation_format, 
+        annotation_file
+    )
+    
+    # Validate completion status
+    if result['response']['status'] == 'completed':
+        print("Pre-annotations processed successfully")
+        
+        # Extract metadata
+        metadata = result['response'].get('metadata', {})
+        print(f"Processing metadata: {metadata}")
+        
+except LabellerrError as e:
+    print(f"Upload failed: {str(e)}")
+```
+
+<Note>
+**Execution Behavior**: This method blocks execution until processing completes. Processing duration varies based on file size and annotation count.
+</Note>
+
+  </Tab>
+
+  <Tab title="Asynchronous Method">
+    <Info>
+      **Recommended for:** Production applications, web services, and scenarios requiring non-blocking operations
+    </Info>
+
+```python
+from labellerr.client import LabellerrClient
+from labellerr.exceptions import LabellerrError
+
+# Initialize client with credentials
+client = LabellerrClient('your_api_key', 'your_api_secret')
+
+# Configure upload parameters
+project_id = 'project_123'
+client_id = '12345'
+annotation_format = 'coco'
+annotation_file = '/path/to/annotations.json'
+
+try:
+    # Initiate asynchronous upload
+    future = client.upload_preannotation_by_project_id_async(
+        project_id, 
+        client_id, 
+        annotation_format, 
+        annotation_file
+    )
+    
+    print("Upload initiated - processing asynchronously")
+    
+    # Execute concurrent operations
+    # perform_other_tasks()
+    
+    # Retrieve result when ready
     try:
-        result = future.result(timeout=300)  # 5 minutes timeout
+        result = future.result(timeout=300)  # 5 minute timeout
+        
         if result['response']['status'] == 'completed':
             print("Pre-annotations processed successfully")
             metadata = result['response'].get('metadata', {})
-            print("metadata",metadata)
+            print(f"Processing metadata: {metadata}")
+            
     except TimeoutError:
-        print("Processing took too long")
+        print("Processing exceeded timeout threshold")
     except Exception as e:
-        print(f"Error in processing: {str(e)}")
+        print(f"Processing error: {str(e)}")
+        
 except LabellerrError as e:
-    print(f"Failed to start upload: {str(e)}")
+    print(f"Upload initialization failed: {str(e)}")
 ```
 
-#### Choosing Between Sync and Async
+<Note>
+**Execution Behavior**: Returns immediately with a Future object, enabling concurrent task execution during background processing.
+</Note>
 
-1.  **Synchronous Method**:
-    1.  Simpler to use - just call and wait for result
-    2.  Blocks until processing is complete
-    3.  Good for scripts and sequential processing
-
-2.  **Asynchronous Method**:
-    1.  Returns immediately with a Future object
-    2.  Allows you to do other work while processing
-    3.  Can set timeouts and handle long-running uploads
-    4.  Better for applications that need to stay responsive
-
-Both methods will:
-
-1.  Upload your annotation file
-2.  Monitor the processing status
-3.  Return the final result with complete status information
-
-**Note**: The processing time depends on the size of your annotation file and the number of annotations. For the sync method, this means waiting time. For the async method, you can do other work during this time.
+  </Tab>
+</Tabs>
 
 ---
+
+## Method Comparison
+
+Select the appropriate method based on your application requirements:
+
+<CardGroup cols={2}>
+  <Card title="Synchronous Method" icon="hourglass">
+    **Use Cases:**
+    - Batch processing scripts
+    - Sequential workflow automation
+    - Single-threaded operations
+    
+    **Characteristics:**
+    - Simplified implementation
+    - Direct result return
+    - Blocking execution model
+  </Card>
+  
+  <Card title="Asynchronous Method" icon="rocket">
+    **Use Cases:**
+    - Web applications
+    - Real-time dashboards
+    - Large-scale file processing
+    
+    **Characteristics:**
+    - Non-blocking operation
+    - Immediate return
+    - Configurable timeout handling
+    - Parallel task support
+  </Card>
+</CardGroup>
+
+---
+
+## Processing Workflow
+
+Both implementation methods follow an identical server-side processing pipeline:
+
+<Steps>
+  <Step title="File Upload">
+    Annotation JSON file is transmitted to Labellerr infrastructure
+  </Step>
+  
+  <Step title="Format Validation">
+    File structure and format are validated against COCO specification and project schema
+  </Step>
+  
+  <Step title="File Name Resolution">
+    Image file names referenced in annotations are matched against project assets
+  </Step>
+  
+  <Step title="Annotation Application">
+    Validated annotations are applied to matched images within the project
+  </Step>
+  
+  <Step title="Status Return">
+    Processing status and metadata are returned to the client application
+  </Step>
+</Steps>
+
+<Tip>
+**Performance Guidelines**: Processing duration correlates with file size and annotation count. Files under 1 MB with fewer than 100 annotations typically process within 30 seconds. Larger datasets may require several minutes.
+</Tip>
+
+---
+
+## Common Use Cases
+
+<CardGroup cols={2}>
+  <Card title="Model Prediction Integration" icon="brain">
+    Import machine learning model predictions as pre-annotations for human validation and correction workflows
+  </Card>
+  
+  <Card title="Platform Migration" icon="download">
+    Transfer annotations from external annotation platforms to Labellerr infrastructure
+  </Card>
+  
+  <Card title="Project Replication" icon="recycle">
+    Reuse annotations from completed projects as foundation for similar initiatives
+  </Card>
+  
+  <Card title="Automated Pipeline Integration" icon="wand-magic-sparkles">
+    Upload annotations generated by automated systems or custom scripts for review workflows
+  </Card>
+</CardGroup>
+
+---
+
+## Troubleshooting Guide
+
+<AccordionGroup>
+  <Accordion title="Annotations Not Applied to Images" icon="circle-exclamation">
+    **Symptom**: Upload completes successfully but annotations are not visible on project images.
+    
+    **Resolution Steps**:
+    - Verify exact file name matching between JSON and uploaded images (case-sensitive)
+    - Confirm file extension consistency (`.jpg` vs `.jpeg` vs `.png`)
+    - Validate annotation format parameter is set to `'coco'`
+    - Ensure images were uploaded to project prior to pre-annotation upload
+  </Accordion>
+  
+  <Accordion title="Upload Timeout or Connection Failure" icon="clock">
+    **Symptom**: Upload operation fails with timeout or network connection errors.
+    
+    **Resolution Steps**:
+    - Verify file size is within 25 MB limit
+    - Utilize asynchronous method with extended timeout configuration
+    - Confirm network stability and connectivity
+    - Validate JSON file conforms to COCO format specification
+    - Consider splitting large files into smaller batches
+  </Accordion>
+  
+  <Accordion title="Format Validation Error" icon="file-circle-xmark">
+    **Symptom**: API returns format or structure validation errors.
+    
+    **Resolution Steps**:
+    - Validate JSON structure against COCO format specification
+    - Ensure all required COCO fields are present (`images`, `annotations`, `categories`)
+    - Verify annotation coordinates are within valid image bounds
+    - Confirm category IDs in annotations match category definitions
+  </Accordion>
+  
+  <Accordion title="Authentication or Permission Errors" icon="lock">
+    **Symptom**: Upload fails with authentication or authorization errors.
+    
+    **Resolution Steps**:
+    - Verify API key and secret credentials are correct
+    - Confirm client ID matches your organization
+    - Validate write access permissions for the target project
+    - Ensure project exists and project ID is accurate
+  </Accordion>
+</AccordionGroup>
+
+---
+
+## Response Schema
+
+Successful upload operations return a structured response:
+
+```json
+{
+  "response": {
+    "status": "completed",
+    "activity_id": "9c696f10-7e76-40e0-9852-34b99be2db52",
+    "metadata": {
+      "total_annotations": 42,
+      "matched_files": 10,
+      "unmatched_files": 0,
+      "processing_time_seconds": 15.3
+    }
+  }
+}
+```
+
+<Note>
+**Status Values**:
+- `completed` - Annotations successfully applied to project
+- `processing` - Upload in progress (asynchronous method)
+- `failed` - Processing encountered errors (review error details)
+</Note>
+
+---
+
+## Best Practices
+
+<CardGroup cols={2}>
+  <Card title="Pre-Upload Validation" icon="check-double">
+    - Validate JSON format locally before upload
+    - Test with small sample datasets initially
+    - Verify file name matching requirements
+  </Card>
+  
+  <Card title="Asynchronous for Scale" icon="gauge-high">
+    - Files exceeding 5 MB
+    - Datasets with over 1000 annotations
+    - Production application integrations
+  </Card>
+  
+  <Card title="Activity Monitoring" icon="chart-line">
+    - Track activity IDs for audit trails
+    - Review metadata for processing insights
+    - Monitor unmatched file counts
+  </Card>
+  
+  <Card title="Batch Processing Strategy" icon="layer-group">
+    - Partition large datasets into batches
+    - Implement parallel processing where applicable
+    - Design robust error handling mechanisms
+  </Card>
+</CardGroup>
+
+## Related Documentation
+
+<CardGroup cols={3}>
+  <Card title="Project Creation" icon="folder-plus" href="/sdk/create-project-sdk">
+    Create and configure projects programmatically via SDK
+  </Card>
+  
+  <Card title="Export Annotations" icon="file-export" href="/sdk/create-export-sdk">
+    Export annotated datasets in multiple formats
+  </Card>
+  
+  <Card title="SDK Getting Started" icon="rocket" href="/sdk/getting-started">
+    Complete SDK initialization and configuration guide
+  </Card>
+</CardGroup>
+
+<Note>
+For technical support, contact [support@tensormatics.com](mailto:support@tensormatics.com)
+</Note>

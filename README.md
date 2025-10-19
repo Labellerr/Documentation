@@ -30,12 +30,12 @@ We welcome contributions to our documentation. Please follow these guidelines to
 
 To preview your changes locally, run the following command:
 
-<<<<<<< HEAD
 ```bash
 mint dev
 ```
-# Updated_Documentation
-=======
+
+## 👥 Who Is This For?
+
 This documentation is designed for:
 - **Machine Learning Researchers** - Academic and industry researchers working on AI projects
 - **AI Software Developers** - Engineers building AI-powered applications
@@ -118,4 +118,3 @@ Labellerr takes data security seriously:
 **Made with ❤️ by the Labellerr Team**
 
 *Empowering AI development through intelligent data annotation*
->>>>>>> 493c482 (Update README.md)
