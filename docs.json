@@ -174,6 +174,7 @@
               "sdk/create-export-sdk",
               "sdk/create-project-sdk",
               "sdk/upload-preannotation-sdk",
+              "sdk/magic-wand-confidence-filtering",
               "sdk/retrieve-projects-datasets-sdk"
             ]
           }

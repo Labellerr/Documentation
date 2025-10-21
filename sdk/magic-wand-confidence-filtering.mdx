@@ -1,0 +1,399 @@
+---
+title: "Magic Wand Confidence Filtering"
+description: "Filter and review pre-annotations by confidence levels using the intuitive slider control for efficient quality assurance workflows."
+icon: wand-magic-sparkles
+---
+
+## Overview
+
+The Magic Wand Confidence Filtering feature enables you to upload pre-annotations with confidence scores and dynamically filter them during review. This powerful tool helps your annotation team focus on reviewing predictions that need the most attention while maintaining efficient workflows.
+
+<CardGroup cols={3}>
+  <Card title="Smart Filtering" icon="filter">
+    Filter annotations by confidence levels in real-time with an interactive slider
+  </Card>
+  <Card title="Quality Control" icon="chart-line">
+    Focus review efforts on low-confidence predictions that need human validation
+  </Card>
+  <Card title="Workflow Efficiency" icon="gauge-high">
+    Accept high-confidence predictions quickly while carefully reviewing uncertain ones
+  </Card>
+</CardGroup>
+
+---
+
+## How It Works
+
+When you upload pre-annotations with confidence buckets, the Magic Wand feature automatically appears in the annotation interface, allowing annotators to filter annotations based on their confidence levels.
+
+<Steps>
+  <Step title="Upload with Confidence Bucket">
+    Upload your pre-annotations using the SDK with a specified confidence bucket parameter
+  </Step>
+  
+  <Step title="Magic Wand Appears">
+    The slider control automatically appears in the annotation interface for files with confidence-tagged annotations
+  </Step>
+  
+  <Step title="Filter by Confidence">
+    Annotators use the slider to show/hide annotations based on confidence thresholds
+  </Step>
+  
+  <Step title="Review & Refine">
+    Focus on reviewing lower-confidence predictions while quickly accepting high-confidence ones
+  </Step>
+</Steps>
+
+---
+
+## Visual Workflow
+
+![Magic Wand confidence slider in action - filtering polygon annotations dynamically](../images/Wand.png)
+
+<Note>
+The slider control appears automatically when annotations are uploaded with confidence buckets. Drag the slider to show/hide annotations based on your selected confidence threshold.
+</Note>
+
+---
+
+## SDK Implementation
+
+### Upload Pre-annotations with Confidence Bucket
+
+<Tabs>
+  <Tab title="Low Confidence">
+    <Info>
+      **Use Case**: Model predictions with low certainty (< 50% confidence) that require careful human review
+    </Info>
+
+```python
+from labellerr.client import LabellerrClient
+
+# Initialize client
+client = LabellerrClient(
+    api_key='your_api_key',
+    api_secret='your_api_secret', 
+    client_id='your_client_id'
+)
+
+# Upload with low confidence bucket
+result = client.upload_preannotation_by_project_id(
+    project_id='your_project_id',
+    client_id='your_client_id',
+    annotation_format='coco_json',
+    annotation_file='annotations.json',
+    conf_bucket='low'  # Low confidence annotations
+)
+
+print(f"Status: {result['response']['status']}")
+```
+
+<Note>
+**Best For**: Uncertain predictions, edge cases, or challenging images that need thorough human validation
+</Note>
+
+  </Tab>
+
+  <Tab title="Medium Confidence">
+    <Info>
+      **Use Case**: Model predictions with moderate certainty (50-80% confidence) that benefit from quick review
+    </Info>
+
+```python
+from labellerr.client import LabellerrClient
+
+# Initialize client
+client = LabellerrClient(
+    api_key='your_api_key',
+    api_secret='your_api_secret',
+    client_id='your_client_id'
+)
+
+# Upload with medium confidence bucket
+result = client.upload_preannotation_by_project_id(
+    project_id='your_project_id',
+    client_id='your_client_id',
+    annotation_format='coco_json',
+    annotation_file='annotations.json',
+    conf_bucket='medium'  # Medium confidence annotations
+)
+
+print(f"Status: {result['response']['status']}")
+```
+
+<Note>
+**Best For**: Standard predictions that warrant verification but are likely accurate
+</Note>
+
+  </Tab>
+
+  <Tab title="High Confidence">
+    <Info>
+      **Use Case**: Model predictions with high certainty (> 80% confidence) that may only need spot-checking
+    </Info>
+
+```python
+from labellerr.client import LabellerrClient
+
+# Initialize client
+client = LabellerrClient(
+    api_key='your_api_key',
+    api_secret='your_api_secret',
+    client_id='your_client_id'
+)
+
+# Upload with high confidence bucket
+result = client.upload_preannotation_by_project_id(
+    project_id='your_project_id',
+    client_id='your_client_id',
+    annotation_format='coco_json',
+    annotation_file='annotations.json',
+    conf_bucket='high'  # High confidence annotations
+)
+
+print(f"Status: {result['response']['status']}")
+```
+
+<Note>
+**Best For**: Highly confident predictions on clear, unambiguous objects that rarely need correction
+</Note>
+
+  </Tab>
+</Tabs>
+
+---
+
+## Complete Workflow Example
+
+Here's a comprehensive example showing how to segment your model's predictions by confidence and upload them accordingly:
+
+```python
+import json
+from labellerr.client import LabellerrClient
+from labellerr.exceptions import LabellerrError
+
+# Initialize client
+client = LabellerrClient(
+    api_key='your_api_key',
+    api_secret='your_api_secret',
+    client_id='your_client_id'
+)
+
+# Project configuration
+project_id = 'your_project_id'
+client_id = 'your_client_id'
+
+# Separate your predictions by confidence
+prediction_files = {
+    'low': 'predictions_low_confidence.json',     # < 0.5 confidence
+    'medium': 'predictions_medium_confidence.json', # 0.5 - 0.8 confidence
+    'high': 'predictions_high_confidence.json'     # > 0.8 confidence
+}
+
+# Upload each confidence bucket
+results = {}
+
+for confidence_level, file_path in prediction_files.items():
+    try:
+        print(f"Uploading {confidence_level} confidence annotations...")
+        
+        result = client.upload_preannotation_by_project_id(
+            project_id=project_id,
+            client_id=client_id,
+            annotation_format='coco_json',
+            annotation_file=file_path,
+            conf_bucket=confidence_level
+        )
+        
+        results[confidence_level] = result
+        print(f"✓ {confidence_level.capitalize()} confidence upload complete")
+        
+        # Extract metadata
+        metadata = result['response'].get('metadata', {})
+        if 'files_not_updated' in metadata:
+            print(f"  Files processed: {metadata.get('files_not_updated', [])}")
+            
+    except LabellerrError as e:
+        print(f"✗ Failed to upload {confidence_level} confidence: {str(e)}")
+        results[confidence_level] = {'error': str(e)}
+
+# Summary
+print("\n" + "="*50)
+print("Upload Summary:")
+print("="*50)
+for level, result in results.items():
+    status = "Success" if 'error' not in result else "Failed"
+    print(f"{level.capitalize()}: {status}")
+```
+
+---
+
+## Confidence Bucket Guidelines
+
+Choose the appropriate confidence bucket based on your model's prediction confidence scores:
+
+<CardGroup cols={3}>
+  <Card title="Low Confidence" icon="circle-exclamation" color="#ef4444">
+    **Confidence Range**: 0% - 50%
+    
+    **Characteristics**:
+    - Uncertain predictions
+    - Multiple possible labels
+    - Challenging image conditions
+    - Edge cases
+    
+    **Review Strategy**:
+    - Thorough manual review required
+    - Expect corrections needed
+    - Focus annotator attention here
+  </Card>
+  
+  <Card title="Medium Confidence" icon="circle-half-stroke" color="#f59e0b">
+    **Confidence Range**: 50% - 80%
+    
+    **Characteristics**:
+    - Likely accurate predictions
+    - Some ambiguity present
+    - Standard image conditions
+    - Common object types
+    
+    **Review Strategy**:
+    - Quick verification recommended
+    - Minor adjustments expected
+    - Balanced review effort
+  </Card>
+  
+  <Card title="High Confidence" icon="circle-check" color="#10b981">
+    **Confidence Range**: 80% - 100%
+    
+    **Characteristics**:
+    - Very confident predictions
+    - Clear, unambiguous objects
+    - Ideal image conditions
+    - Well-trained categories
+    
+    **Review Strategy**:
+    - Spot-check validation
+    - Minimal corrections needed
+    - Fast-track approval
+  </Card>
+</CardGroup>
+
+---
+
+## Magic Wand Usage in Annotation Interface
+
+Once annotations are uploaded with confidence buckets, annotators can leverage the Magic Wand slider:
+
+<AccordionGroup>
+  <Accordion title="Accessing the Magic Wand" icon="wand-magic-sparkles">
+    1. Open a file with uploaded pre-annotations
+    2. Look for the Magic Wand icon/slider in the left sidebar
+    3. The tool appears automatically when confidence-tagged annotations exist
+  </Accordion>
+  
+  <Accordion title="Using the Confidence Slider" icon="sliders">
+    1. Drag the slider to adjust the confidence threshold
+    2. Annotations below the threshold are hidden
+    3. Annotations above the threshold remain visible
+    4. Use this to focus on reviewing specific confidence ranges
+  </Accordion>
+  
+  <Accordion title="Review Workflow Optimization" icon="bolt">
+    **Efficient Review Strategy**:
+    1. Start with low confidence threshold (show all annotations)
+    2. Review and correct low-confidence predictions first
+    3. Gradually increase threshold to review medium confidence
+    4. Quickly verify high-confidence predictions
+    5. Submit when all confidence levels are validated
+  </Accordion>
+</AccordionGroup>
+
+---
+
+## Parameter Reference
+
+### `conf_bucket` Parameter
+
+<ParamField path="conf_bucket" type="string" required>
+  Specifies the confidence level for uploaded pre-annotations
+
+  **Valid Values**:
+  - `'low'` - For predictions with low confidence (typically < 50%)
+  - `'medium'` - For predictions with medium confidence (typically 50-80%)
+  - `'high'` - For predictions with high confidence (typically > 80%)
+
+  **Default**: `None` (no confidence filtering applied)
+
+  <Warning>
+    The confidence bucket parameter is **case-sensitive**. Use lowercase values: `'low'`, `'medium'`, `'high'`
+  </Warning>
+</ParamField>
+
+---
+
+## Troubleshooting
+
+<AccordionGroup>
+  <Accordion title="Magic Wand Not Appearing" icon="eye-slash">
+    **Symptom**: The slider control doesn't appear in the annotation interface.
+    
+    **Resolution Steps**:
+    - Verify annotations were uploaded with `conf_bucket` parameter specified
+    - Confirm the confidence bucket value was set to 'low', 'medium', or 'high'
+    - Check that pre-annotations were successfully applied (no file name mismatches)
+    - Refresh the annotation interface
+    - Ensure you're using the latest version of Labellerr
+  </Accordion>
+  
+  <Accordion title="All Annotations Same Confidence" icon="equals">
+    **Symptom**: Slider doesn't filter anything; all annotations appear at same level.
+    
+    **Resolution Steps**:
+    - Verify you uploaded different confidence buckets in separate uploads
+    - Check that you didn't upload all predictions with the same conf_bucket value
+    - Ensure your prediction pipeline correctly segments by confidence
+    - Re-upload with properly categorized confidence levels
+  </Accordion>
+  
+  <Accordion title="Incorrect Confidence Categories" icon="triangle-exclamation">
+    **Symptom**: Annotations appear in wrong confidence categories.
+    
+    **Resolution Steps**:
+    - Review your confidence score thresholds in preprocessing
+    - Verify the mapping between confidence scores and bucket labels
+    - Check for any errors in your prediction segmentation logic
+    - Consider recalibrating your model if systematic misalignment exists
+  </Accordion>
+</AccordionGroup>
+
+---
+
+## Related Documentation
+
+<CardGroup cols={3}>
+  <Card title="Upload Pre-annotations" icon="upload" href="/sdk/upload-preannotation-sdk">
+    Complete guide to uploading pre-annotations via SDK
+  </Card>
+  
+  <Card title="Create Project" icon="folder-plus" href="/sdk/create-project-sdk">
+    Set up projects programmatically for annotation workflows
+  </Card>
+  
+  <Card title="Segment Anything" icon="scissors" href="/features/segment-anything">
+    Learn about Meta's SAM integration for one-click segmentation
+  </Card>
+</CardGroup>
+
+---
+
+## Support
+
+<Note>
+For technical assistance with the Magic Wand Confidence Filtering feature, contact [support@tensormatics.com](mailto:support@tensormatics.com)
+</Note>
+
+<Tip>
+**Pro Tip**: Combine Magic Wand filtering with keyboard shortcuts for maximum annotation efficiency. Low-confidence annotations get thorough review, while high-confidence ones can be quickly validated and accepted.
+</Tip>
+
