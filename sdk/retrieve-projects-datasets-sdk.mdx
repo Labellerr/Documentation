@@ -228,6 +228,56 @@ except LabellerrError as e:
 
 ---
 
+### Bulk Assign Files
+
+---
+
+You can bulk assign multiple files to a new status in a project, optionally assigning them to a specific user.
+
+#### Example Usage:
+
+```python Bulk Assign Files lines icon="layer-group" highlight={9-13}
+from labellerr.client import LabellerrClient
+from labellerr.core.projects import LabellerrProject
+from labellerr.core.exceptions import LabellerrError
+
+client = LabellerrClient(api_key, api_secret, client_id)
+
+try:
+    project = LabellerrProject(client=client, project_id="your_project_id")
+    
+    # Bulk assign files to review status
+    result = project.bulk_assign_files(
+        file_ids=["file_id_1", "file_id_2", "file_id_3"],
+        new_status="review",
+        assign_to="reviewer@example.com"  # optional
+    )
+    
+    print(f"Files assigned successfully: {result}")
+    
+except LabellerrError as e:
+    print(f"Failed to bulk assign files: {str(e)}")
+```
+
+<Card title="Acceptable Status Values" icon="list">
+| Status | Description |
+|--------|-------------|
+| `annotation` | Assign files for annotation |
+| `review` | Assign files for review after annotation |
+| `client_review` | Assign files for client review |
+| `accepted` | Mark files as accepted |
+| `rejected` | Mark files as rejected |
+</Card>
+
+This method is useful when you need to:
+
+*   Move multiple files through your annotation workflow
+*   Assign batches of files to specific team members
+*   Automate file status transitions
+*   Implement custom workflow automation
+
+---
+
 ### Error Handling
 
 ---
