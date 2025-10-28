@@ -1,0 +1,460 @@
+---
+title: "How to Create and Manage Datasets Using SDK"
+description: "Learn how to create datasets, upload files, connect cloud storage, enable multimodal indexing, and manage dataset operations in Labellerr using the Python SDK."
+icon: database
+---
+
+## Introduction
+
+<Card title="What are Datasets?" icon="circle-info">
+A **dataset** in Labellerr is a standalone collection of files (images, videos, audio, documents, or text) that can be created independently and attached to one or multiple projects. This modular approach allows you to:
+
+*   Reuse the same dataset across multiple annotation projects
+*   Manage your data separately from project configurations
+*   Connect cloud storage (AWS S3, Google Cloud Storage) for seamless data access
+*   Enable advanced features like multimodal indexing
+
+### Supported Data Types
+
+| Data Type | Description | Supported Extensions |
+|---|---|---|
+| image | Image files for visual annotation | .jpg, .jpeg, .png, .bmp, .tiff |
+| video | Video content for temporal annotation | .mp4 |
+| audio | Audio files for sound annotation | .mp3, .wav |
+| document | Document files for text analysis | .pdf |
+| text | Plain text files for text annotation | .txt |
+</Card>
+
+---
+
+## Creating Datasets
+
+### Import Required Modules
+
+```python Required Imports lines icon="code" highlight={1-3}
+from labellerr.client import LabellerrClient
+from labellerr.core.schemas import DatasetConfig
+from labellerr.core.datasets import create_dataset, LabellerrDataset
+```
+
+---
+
+### Method 1: Create Dataset with Local Files
+
+<Tabs>
+  <Tab title="Upload from Folder">
+    <Card title="Create Dataset from Folder" icon="folder">
+```python Create Dataset with Folder lines icon="folder-open" highlight={7-13}
+from labellerr.client import LabellerrClient
+from labellerr.core.schemas import DatasetConfig
+from labellerr.core.datasets import create_dataset
+
+client = LabellerrClient(api_key='your_api_key', api_secret='your_api_secret', client_id='your_client_id')
+
+dataset = create_dataset(
+    client=client,
+    dataset_config=DatasetConfig(
+        dataset_name="My Image Dataset",
+        dataset_description="A collection of images for object detection",
+        data_type="image"
+    ),
+    folder_to_upload="path/to/your/image/folder"
+)
+
+print(f"Dataset created with ID: {dataset.dataset_id}")
+print(f"Total files: {dataset.files_count}")
+```
+
+<Info>
+**Limitations:**
+- Maximum of **2,500 files** per folder
+- Total folder size should not exceed **2.5 GB**
+</Info>
+    </Card>
+  </Tab>
+
+  <Tab title="Upload Specific Files">
+    <Card title="Create Dataset with File List" icon="list">
+```python Create Dataset with File List lines icon="file" highlight={7-13}
+from labellerr.client import LabellerrClient
+from labellerr.core.schemas import DatasetConfig
+from labellerr.core.datasets import create_dataset
+
+client = LabellerrClient(api_key='your_api_key', api_secret='your_api_secret', client_id='your_client_id')
+
+dataset = create_dataset(
+    client=client,
+    dataset_config=DatasetConfig(
+        dataset_name="Curated Image Dataset",
+        dataset_description="Specific images selected for annotation",
+        data_type="image"
+    ),
+    files_to_upload=["path/to/image1.jpg", "path/to/image2.jpg", "path/to/image3.png"]
+)
+
+print(f"Dataset created with ID: {dataset.dataset_id}")
+```
+    </Card>
+  </Tab>
+</Tabs>
+
+---
+
+### Method 2: Create Dataset with AWS S3 Connection
+
+<Card title="Connect AWS S3 Bucket" icon="aws">
+```python Create Dataset with AWS S3 lines icon="aws" highlight={4-5,14-21}
+from labellerr.client import LabellerrClient
+from labellerr.core.schemas import DatasetConfig
+from labellerr.core.datasets import create_dataset
+from labellerr import schemas
+
+client = LabellerrClient(api_key='your_api_key', api_secret='your_api_secret', client_id='your_client_id')
+
+# Configure AWS connector
+aws_config = schemas.AWSConnectorConfig(
+    bucket_name="my-s3-bucket",
+    access_key_id="your_aws_access_key",
+    secret_access_key="your_aws_secret_key",
+    region="us-east-1",
+    path="path/to/data/in/bucket"
+)
+
+dataset = create_dataset(
+    client=client,
+    dataset_config=DatasetConfig(
+        dataset_name="S3 Image Dataset",
+        dataset_description="Images stored in AWS S3",
+        data_type="image",
+        connector_type="aws"
+    ),
+    connector_config=aws_config
+)
+
+print(f"Dataset created with S3 connection: {dataset.dataset_id}")
+```
+
+<Note>
+The SDK will create a connection to your S3 bucket and link it to the dataset. Files are accessed directly from S3 without local downloads.
+</Note>
+</Card>
+
+---
+
+### Method 3: Create Dataset with Google Cloud Storage
+
+<Card title="Connect GCS Bucket" icon="google">
+```python Create Dataset with GCS lines icon="google" highlight={4-5,14-20}
+from labellerr.client import LabellerrClient
+from labellerr.core.schemas import DatasetConfig
+from labellerr.core.datasets import create_dataset
+from labellerr import schemas
+
+client = LabellerrClient(api_key='your_api_key', api_secret='your_api_secret', client_id='your_client_id')
+
+# Configure GCS connector
+gcs_config = schemas.GCPConnectorConfig(
+    bucket_name="my-gcs-bucket",
+    service_account_json="path/to/service-account-key.json",
+    project_id="your-gcp-project-id",
+    path="path/to/data/in/bucket"
+)
+
+dataset = create_dataset(
+    client=client,
+    dataset_config=DatasetConfig(
+        dataset_name="GCS Video Dataset",
+        dataset_description="Videos stored in Google Cloud Storage",
+        data_type="video",
+        connector_type="gcp"
+    ),
+    connector_config=gcs_config
+)
+
+print(f"Dataset created with GCS connection: {dataset.dataset_id}")
+```
+</Card>
+
+---
+
+### Method 4: Use Existing Cloud Connection
+
+<Card title="Reuse Connection ID" icon="link">
+If you've already created a cloud connection, you can reuse it for new datasets:
+
+```python Create Dataset with Existing Connection lines icon="link" highlight={7-13}
+from labellerr.client import LabellerrClient
+from labellerr.core.schemas import DatasetConfig
+from labellerr.core.datasets import create_dataset
+
+client = LabellerrClient(api_key='your_api_key', api_secret='your_api_secret', client_id='your_client_id')
+
+dataset = create_dataset(
+    client=client,
+    dataset_config=DatasetConfig(
+        dataset_name="Reusing S3 Connection",
+        data_type="image",
+        connector_type="aws"
+    ),
+    connection_id="existing_connection_id_here"
+)
+
+print(f"Dataset created using existing connection: {dataset.dataset_id}")
+```
+
+<Warning>
+**Important:** You cannot provide both `connection_id` and `connector_config`. Use one or the other.
+</Warning>
+</Card>
+
+---
+
+## Working with Datasets
+
+### Retrieve an Existing Dataset
+
+<Card title="Get Dataset by ID" icon="download">
+```python Retrieve Dataset lines icon="download" highlight={4-5}
+from labellerr.client import LabellerrClient
+from labellerr.core.datasets import LabellerrDataset
+
+client = LabellerrClient(api_key='your_api_key', api_secret='your_api_secret', client_id='your_client_id')
+
+dataset = LabellerrDataset(client=client, dataset_id="your_dataset_id")
+
+# Access dataset properties
+print(f"Dataset ID: {dataset.dataset_id}")
+print(f"Data Type: {dataset.data_type}")
+print(f"Files Count: {dataset.files_count}")
+print(f"Status Code: {dataset.status_code}")
+```
+
+<Info>
+**Status Codes:**
+- `300`: Dataset is ready and contains files
+- `501`: Dataset not found or invalid
+</Info>
+</Card>
+
+---
+
+### Fetch Files from Dataset
+
+<Card title="List Dataset Files" icon="list">
+```python Fetch Files lines icon="list" highlight={5-6}
+from labellerr.client import LabellerrClient
+from labellerr.core.datasets import LabellerrDataset
+
+client = LabellerrClient(api_key='your_api_key', api_secret='your_api_secret', client_id='your_client_id')
+
+dataset = LabellerrDataset(client=client, dataset_id="your_dataset_id")
+files = dataset.fetch_files()
+
+print(f"Retrieved {len(files)} files from dataset")
+for file in files:
+    print(f"File ID: {file['file_id']}, Name: {file['file_name']}")
+```
+</Card>
+
+---
+
+### Enable Multimodal Indexing
+
+<Card title="Multimodal Indexing Feature" icon="brain">
+Enable advanced AI-powered multimodal indexing for your dataset to enable semantic search and intelligent file organization.
+
+```python Enable Multimodal Indexing lines icon="sparkles" highlight={5-6}
+from labellerr.client import LabellerrClient
+from labellerr.core.datasets import LabellerrDataset
+
+client = LabellerrClient(api_key='your_api_key', api_secret='your_api_secret', client_id='your_client_id')
+
+dataset = LabellerrDataset(client=client, dataset_id="your_dataset_id")
+result = dataset.enable_multimodal_indexing(is_multimodal=True)
+
+print(f"Multimodal indexing enabled: {result}")
+```
+
+<Note>
+**What is Multimodal Indexing?**
+
+Multimodal indexing uses AI to analyze and understand the content of your files (images, videos, audio, text) enabling:
+- Natural language search across your dataset
+- Semantic similarity detection
+- Intelligent file grouping and recommendations
+- Enhanced AI-assisted annotation workflows
+</Note>
+</Card>
+
+---
+
+### Delete a Dataset
+
+<Card title="Delete Dataset" icon="trash">
+```python Delete Dataset lines icon="trash" highlight={6}
+from labellerr.client import LabellerrClient
+from labellerr.core.datasets import LabellerrDataset
+
+client = LabellerrClient(api_key='your_api_key', api_secret='your_api_secret', client_id='your_client_id')
+
+dataset = LabellerrDataset(client=client, dataset_id="dataset_to_delete")
+result = dataset.delete_dataset(client_id=client.client_id, dataset_id=dataset.dataset_id)
+
+print(f"Dataset deleted: {result}")
+```
+
+<Warning>
+**Caution:** Deleting a dataset will remove it permanently. Ensure it's not attached to any active projects.
+</Warning>
+</Card>
+
+---
+
+### Sync Cloud Datasets
+
+<Card title="Synchronize Cloud Storage" icon="arrows-rotate">
+For datasets connected to cloud storage (AWS S3 or GCS), you can sync to fetch newly added files:
+
+```python Sync Dataset lines icon="sync" highlight={6-13}
+from labellerr.client import LabellerrClient
+from labellerr.core.datasets import LabellerrDataset
+
+client = LabellerrClient(api_key='your_api_key', api_secret='your_api_secret', client_id='your_client_id')
+
+dataset = LabellerrDataset(client=client, dataset_id="your_dataset_id")
+result = dataset.sync_datasets(
+    client_id=client.client_id,
+    project_id="associated_project_id",
+    dataset_id=dataset.dataset_id,
+    path="path/in/bucket",
+    data_type="image",
+    email_id="user@example.com",
+    connection_id="your_connection_id"
+)
+
+print(f"Dataset synchronized: {result}")
+```
+
+<Tip>
+Use this feature when new files are added to your cloud storage bucket and you want to make them available in your Labellerr dataset without creating a new dataset.
+</Tip>
+</Card>
+
+---
+
+## Complete Workflow Example
+
+<Card title="End-to-End Dataset Creation" icon="rocket">
+```python Complete Dataset Workflow lines icon="rocket" highlight={7-13,16-17,20-21,24-25}
+from labellerr.client import LabellerrClient
+from labellerr.core.schemas import DatasetConfig
+from labellerr.core.datasets import create_dataset, LabellerrDataset
+
+client = LabellerrClient(api_key='your_api_key', api_secret='your_api_secret', client_id='your_client_id')
+
+# Step 1: Create dataset with local files
+dataset = create_dataset(
+    client=client,
+    dataset_config=DatasetConfig(
+        dataset_name="Production Image Dataset",
+        dataset_description="High-quality images for production annotation",
+        data_type="image"
+    ),
+    folder_to_upload="path/to/images"
+)
+
+# Step 2: Wait for dataset to be ready and check files
+print(f"Dataset ID: {dataset.dataset_id}")
+print(f"Files uploaded: {dataset.files_count}")
+
+# Step 3: Enable multimodal indexing
+indexing_result = dataset.enable_multimodal_indexing(is_multimodal=True)
+print(f"Multimodal indexing enabled: {indexing_result}")
+
+# Step 4: Fetch files for verification
+files = dataset.fetch_files()
+print(f"Total files in dataset: {len(files)}")
+
+# Now this dataset can be attached to one or more projects
+print(f"Dataset {dataset.dataset_id} is ready to be used in projects!")
+```
+</Card>
+
+---
+
+## Error Handling
+
+<Card title="Best Practices for Error Handling" icon="shield">
+```python Error Handling Example lines icon="exclamation-triangle" highlight={3-9}
+from labellerr.core.datasets import create_dataset, LabellerrDataset
+from labellerr.core.exceptions import LabellerrError
+
+try:
+    dataset = create_dataset(
+        client=client,
+        dataset_config=DatasetConfig(dataset_name="Test Dataset", data_type="image"),
+        folder_to_upload="path/to/folder"
+    )
+    print(f"Dataset created successfully: {dataset.dataset_id}")
+except LabellerrError as e:
+    print(f"Dataset creation failed: {str(e)}")
+```
+</Card>
+
+---
+
+## Common Use Cases
+
+<CardGroup cols={2}>
+  <Card title="Reusable Training Data" icon="recycle">
+    Create a master dataset of training images that can be used across multiple annotation projects with different labeling requirements.
+  </Card>
+  
+  <Card title="Cloud Storage Integration" icon="cloud">
+    Connect your existing AWS S3 or GCS buckets to avoid data duplication and manage files directly from cloud storage.
+  </Card>
+  
+  <Card title="Multi-Project Workflows" icon="sitemap">
+    Use the same dataset for different annotation tasks - object detection in one project, segmentation in another.
+  </Card>
+  
+  <Card title="Incremental Data Addition" icon="plus">
+    Sync cloud datasets to continuously add new data to ongoing projects without manual uploads.
+  </Card>
+</CardGroup>
+
+---
+
+## Dataset Configuration Reference
+
+<Card title="DatasetConfig Parameters" icon="list">
+| Parameter | Type | Required | Description | Example Value |
+|---|---|---|---|---|
+| dataset_name | String | Yes | Name of the dataset | "Training Images 2024" |
+| data_type | String | Yes | Type of data in dataset | "image", "video", "audio", "document", "text" |
+| dataset_description | String | No | Description of dataset contents | "Customer-provided training data" |
+| connector_type | String | No | Type of connector (default: "local") | "local", "aws", "gcp" |
+</Card>
+
+---
+
+## Related Documentation
+
+<CardGroup cols={3}>
+  <Card title="Create Projects" icon="folder-plus" href="/sdk/create-project-sdk">
+    Learn how to create projects using standalone datasets
+  </Card>
+  
+  <Card title="Retrieve Datasets" icon="download" href="/sdk/retrieve-projects-datasets-sdk">
+    View and manage existing datasets and projects
+  </Card>
+  
+  <Card title="Getting Started" icon="rocket" href="/sdk/getting-started">
+    SDK installation and initialization guide
+  </Card>
+</CardGroup>
+
+<Note>
+For technical support, contact [support@tensormatics.com](mailto:support@tensormatics.com)
+</Note>
+

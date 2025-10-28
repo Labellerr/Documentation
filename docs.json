@@ -172,6 +172,7 @@
               "sdk/getting-started",
               "sdk/add-annotation-questions",
               "sdk/create-export-sdk",
+              "sdk/create-dataset-sdk",
               "sdk/create-project-sdk",
               "sdk/upload-preannotation-sdk",
               "sdk/magic-wand-confidence-filtering",
