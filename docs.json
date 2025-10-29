@@ -170,12 +170,14 @@
             "group": "SDK Documentation",
             "pages": [
               "sdk/getting-started",
-              "sdk/add-annotation-questions",
-              "sdk/create-export-sdk",
+              "sdk/create-dataset-sdk",
               "sdk/create-project-sdk",
+              "sdk/add-annotation-questions",
+              "sdk/retrieve-projects-datasets-sdk",
+              "sdk/video-project-operations-sdk",
               "sdk/upload-preannotation-sdk",
-              "sdk/magic-wand-confidence-filtering",
-              "sdk/retrieve-projects-datasets-sdk"
+              "sdk/create-export-sdk",
+              "sdk/magic-wand-confidence-filtering"
             ]
           }
         ]

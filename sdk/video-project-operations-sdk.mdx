@@ -1,0 +1,366 @@
+---
+title: "Video Project Operations Using SDK"
+description: "Learn how to manage keyframes in video projects using the Labellerr Python SDK, including adding, updating, and deleting keyframes for video annotation workflows."
+icon: video
+---
+
+## Introduction
+
+<Card title="What are Keyframes?" icon="circle-info">
+**Keyframes** in video annotation are specific frames selected for annotation within a video file. Instead of annotating every frame, you can select key moments that represent important changes or events in the video.
+
+This approach:
+*   Reduces annotation time and cost
+*   Focuses on critical frames
+*   Maintains annotation quality
+*   Enables efficient video annotation workflows
+</Card>
+
+---
+
+## Video Project Setup
+
+### Import Required Modules
+
+```python Required Imports lines icon="code"
+from labellerr.client import LabellerrClient
+from labellerr.core.projects import LabellerrProject
+from labellerr.core.schemas import KeyFrame
+from labellerr.core.exceptions import LabellerrError
+```
+
+<Note>
+**Important:** Keyframe operations are only available for video projects. The `LabellerrProject` class automatically detects video projects and provides these methods.
+</Note>
+
+---
+
+## Adding or Updating Keyframes
+
+### KeyFrame Schema
+
+Before adding keyframes, you need to understand the KeyFrame structure:
+
+```python KeyFrame Structure lines icon="code"
+from labellerr.core.schemas import KeyFrame
+
+keyframe = KeyFrame(
+    frame_number=100,      # Frame number (must be >= 0)
+    is_manual=True,        # Whether it's manually selected
+    method="manual",       # Selection method
+    source="manual"        # Source of the keyframe
+)
+```
+
+<Card title="KeyFrame Parameters" icon="list">
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `frame_number` | int | Yes | Frame number in the video (must be ≥ 0) |
+| `is_manual` | bool | No | Whether keyframe was manually selected (default: True) |
+| `method` | str | No | Selection method (default: "manual") |
+| `source` | str | No | Source of the keyframe (default: "manual") |
+</Card>
+
+---
+
+### Add or Update Keyframes
+
+You can add new keyframes or update existing ones using the same method:
+
+```python Add/Update Keyframes lines icon="plus"
+from labellerr.client import LabellerrClient
+from labellerr.core.projects import LabellerrProject
+from labellerr.core.schemas import KeyFrame
+
+client = LabellerrClient(api_key='your_api_key', api_secret='your_api_secret', client_id='your_client_id')
+
+try:
+    # Get video project instance
+    project = LabellerrProject(client=client, project_id="video_project_id")
+    
+    # Define keyframes to add/update
+    keyframes = [
+        KeyFrame(frame_number=0, is_manual=True, method="manual", source="manual"),
+        KeyFrame(frame_number=100, is_manual=True, method="manual", source="manual"),
+        KeyFrame(frame_number=200, is_manual=True, method="manual", source="manual")
+    ]
+    
+    # Add or update keyframes for a specific video file
+    result = project.add_or_update_keyframes(
+        file_id="video_file_id",
+        keyframes=keyframes
+    )
+    
+    print(f"Keyframes added/updated successfully: {result}")
+    
+except LabellerrError as e:
+    print(f"Failed to add/update keyframes: {str(e)}")
+```
+
+<Info>
+**Behavior:**
+- If a keyframe with the same frame_number already exists, it will be updated
+- If the frame_number is new, a new keyframe will be added
+</Info>
+
+---
+
+### Batch Keyframe Creation
+
+You can efficiently add multiple keyframes at once:
+
+```python Batch Keyframe Creation lines icon="layer-group"
+from labellerr.core.schemas import KeyFrame
+
+# Create keyframes at regular intervals (every 30 frames)
+keyframes = []
+for frame_num in range(0, 300, 30):  # 0, 30, 60, 90, ..., 270
+    keyframes.append(
+        KeyFrame(frame_number=frame_num, is_manual=True, method="manual", source="manual")
+    )
+
+project = LabellerrProject(client=client, project_id="video_project_id")
+
+result = project.add_or_update_keyframes(
+    file_id="video_file_id",
+    keyframes=keyframes
+)
+
+print(f"Added {len(keyframes)} keyframes")
+```
+
+---
+
+## Deleting Keyframes
+
+### Delete Specific Keyframes
+
+Remove keyframes by specifying their frame numbers:
+
+```python Delete Keyframes lines icon="trash"
+from labellerr.client import LabellerrClient
+from labellerr.core.projects import LabellerrProject
+
+client = LabellerrClient(api_key='your_api_key', api_secret='your_api_secret', client_id='your_client_id')
+
+try:
+    project = LabellerrProject(client=client, project_id="video_project_id")
+    
+    # Delete specific keyframes by frame number
+    result = project.delete_keyframes(
+        file_id="video_file_id",
+        keyframes=[0, 100, 200]  # List of frame numbers to delete
+    )
+    
+    print(f"Keyframes deleted successfully: {result}")
+    
+except LabellerrError as e:
+    print(f"Failed to delete keyframes: {str(e)}")
+```
+
+<Warning>
+**Caution:** Deleting keyframes also removes any annotations associated with those frames. This action cannot be undone.
+</Warning>
+
+---
+
+## Complete Workflow Example
+
+<Card title="End-to-End Keyframe Management" icon="rocket">
+```python Complete Keyframe Workflow lines icon="rocket"
+from labellerr.client import LabellerrClient
+from labellerr.core.projects import LabellerrProject
+from labellerr.core.schemas import KeyFrame
+from labellerr.core.exceptions import LabellerrError
+
+# Initialize client
+client = LabellerrClient(
+    api_key='your_api_key',
+    api_secret='your_api_secret',
+    client_id='your_client_id'
+)
+
+try:
+    # Step 1: Get video project
+    project = LabellerrProject(client=client, project_id="video_project_id")
+    print(f"Working with project: {project.project_id}")
+    
+    # Step 2: Add initial keyframes (every 60 frames for first 5 minutes at 30fps)
+    initial_keyframes = [
+        KeyFrame(frame_number=i, is_manual=True, method="manual", source="manual")
+        for i in range(0, 9000, 60)  # 9000 frames = 5 min at 30fps
+    ]
+    
+    result = project.add_or_update_keyframes(
+        file_id="video_file_id",
+        keyframes=initial_keyframes
+    )
+    print(f"Added {len(initial_keyframes)} keyframes")
+    
+    # Step 3: Update specific keyframes (e.g., adjust frame 1800)
+    updated_keyframes = [
+        KeyFrame(frame_number=1800, is_manual=True, method="manual", source="manual")
+    ]
+    
+    result = project.add_or_update_keyframes(
+        file_id="video_file_id",
+        keyframes=updated_keyframes
+    )
+    print(f"Updated keyframe at frame 1800")
+    
+    # Step 4: Delete unwanted keyframes
+    frames_to_delete = [3600, 7200]  # Remove keyframes at 2min and 4min marks
+    result = project.delete_keyframes(
+        file_id="video_file_id",
+        keyframes=frames_to_delete
+    )
+    print(f"Deleted {len(frames_to_delete)} keyframes")
+    
+except LabellerrError as e:
+    print(f"Error in keyframe workflow: {str(e)}")
+```
+</Card>
+
+---
+
+## Common Use Cases
+
+<CardGroup cols={2}>
+  <Card title="Regular Interval Sampling" icon="clock">
+    Select keyframes at regular intervals (e.g., every 30 frames) for consistent annotation coverage
+  </Card>
+  
+  <Card title="Scene Change Detection" icon="film">
+    Use automated scene detection to identify keyframes at scene transitions
+  </Card>
+  
+  <Card title="Event-Based Selection" icon="star">
+    Manually select keyframes at important events or actions in the video
+  </Card>
+  
+  <Card title="Adaptive Sampling" icon="wand-magic-sparkles">
+    Adjust keyframe density based on video content complexity
+  </Card>
+</CardGroup>
+
+---
+
+## Best Practices
+
+<Card title="Keyframe Selection Guidelines" icon="lightbulb">
+### Optimal Keyframe Density
+
+*   **Low motion videos:** 1 keyframe every 2-3 seconds
+*   **Medium motion videos:** 1 keyframe every 1-2 seconds
+*   **High motion videos:** 1 keyframe every 0.5-1 second
+*   **Critical events:** Always include keyframes at important moments
+
+### Performance Considerations
+
+*   Add keyframes in batches rather than one-by-one
+*   Validate frame numbers before submission
+*   Handle errors gracefully with try-except blocks
+*   Consider video length and framerate when selecting intervals
+
+### Annotation Quality
+
+*   Include keyframes that capture state changes
+*   Ensure sufficient coverage for temporal tracking
+*   Balance between annotation workload and quality
+*   Review keyframe selection before starting annotation
+</Card>
+
+---
+
+## Error Handling
+
+<Card title="Common Errors and Solutions" icon="triangle-exclamation">
+```python Error Handling Example lines icon="shield"
+from labellerr.core.exceptions import LabellerrError
+
+try:
+    project = LabellerrProject(client=client, project_id="video_project_id")
+    
+    keyframes = [
+        KeyFrame(frame_number=100, is_manual=True, method="manual", source="manual")
+    ]
+    
+    result = project.add_or_update_keyframes(
+        file_id="video_file_id",
+        keyframes=keyframes
+    )
+    
+except LabellerrError as e:
+    if "not found" in str(e).lower():
+        print("Error: Video file or project not found")
+    elif "invalid frame" in str(e).lower():
+        print("Error: Frame number is invalid")
+    else:
+        print(f"Error: {str(e)}")
+```
+
+### Common Issues
+
+| Error | Cause | Solution |
+|-------|-------|----------|
+| Invalid frame number | Negative frame number | Ensure frame_number ≥ 0 |
+| File not found | Invalid file_id | Verify the video file exists in the project |
+| Project not video type | Non-video project | Keyframes only work with video projects |
+| Validation error | Invalid KeyFrame structure | Check all required fields are provided |
+</Card>
+
+---
+
+## Advanced Usage
+
+### Custom Keyframe Selection Logic
+
+```python Custom Keyframe Logic lines icon="code"
+def select_keyframes_with_threshold(video_length_frames, min_interval=30, max_interval=90):
+    """
+    Intelligently select keyframes based on video length.
+    """
+    keyframes = []
+    
+    if video_length_frames < 3000:  # Short video
+        interval = min_interval
+    elif video_length_frames < 10000:  # Medium video
+        interval = 60
+    else:  # Long video
+        interval = max_interval
+    
+    for frame_num in range(0, video_length_frames, interval):
+        keyframes.append(
+            KeyFrame(frame_number=frame_num, is_manual=True, method="manual", source="manual")
+        )
+    
+    return keyframes
+
+# Use the custom logic
+keyframes = select_keyframes_with_threshold(video_length_frames=18000)
+project.add_or_update_keyframes(file_id="video_file_id", keyframes=keyframes)
+```
+
+---
+
+## Related Documentation
+
+<CardGroup cols={3}>
+  <Card title="Create Projects" icon="folder-plus" href="/sdk/create-project-sdk">
+    Learn how to create video annotation projects
+  </Card>
+  
+  <Card title="Retrieve Projects" icon="download" href="/sdk/retrieve-projects-datasets-sdk">
+    Retrieve project information and file lists
+  </Card>
+  
+  <Card title="Getting Started" icon="rocket" href="/sdk/getting-started">
+    SDK installation and initialization guide
+  </Card>
+</CardGroup>
+
+<Note>
+For technical support, contact [support@tensormatics.com](mailto:support@tensormatics.com)
+</Note>
+
+

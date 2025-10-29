@@ -21,14 +21,15 @@ The SDK provides functionality to export project data locally. This feature allo
 
 #### Example Usage:
 
-```python Local Export Example lines icon="download" highlight={10-14,16-17}
+```python Local Export Example lines icon="download"
 from labellerr.client import LabellerrClient
-from labellerr.exceptions import LabellerrError
+from labellerr.core.projects import LabellerrProject
+from labellerr.core.exceptions import LabellerrError
 
 # Initialize the client with your API credentials
-client = LabellerrClient(api_key, api_secret)
-project_id = project_id
-client_id = client_id
+client = LabellerrClient(api_key, api_secret, client_id)
+
+project_id = 'your_project_id'
 
 export_config = {
     "export_name": "Weekly Export",
@@ -38,7 +39,11 @@ export_config = {
 }
 
 try:
-    result = client.create_local_export(project_id, client_id, export_config)
+    # Get project instance
+    project = LabellerrProject(client=client, project_id=project_id)
+    
+    # Create export
+    result = project.create_local_export(export_config)
     export_id = result["response"]['report_id']
     print(f"Local export created successfully. Export ID: {export_id}")
 except LabellerrError as e:
@@ -57,27 +62,30 @@ This method allows users to check the export status of a previously triggered ex
 
 #### Example Usage :
 
-```python Check Export Status Example lines icon="magnifying-glass" highlight={8,10-15}
+```python Check Export Status Example lines icon="magnifying-glass"
 from labellerr.client import LabellerrClient
-from labellerr.exceptions import LabellerrError
+from labellerr.core.projects import LabellerrProject
+from labellerr.core.exceptions import LabellerrError
 
 # Initialize the client with your API credentials
-client = LabellerrClient(api_key, api_secret)
+client = LabellerrClient(api_key, api_secret, client_id)
 
 # Example input
-project_id = project_id
-client_id = client_id
-report_ids = [result['response']['report_id']]
+project_id = 'your_project_id'
+report_ids = ['export_report_id_1', 'export_report_id_2']
 
-status = client.check_export_status(
-    api_key="your_api_key",
-    api_secret="your_api-secret",
-    project_id=project_id,
-    report_ids=report_ids,
-    client_id=client_id
-)
-
-print(status)
+try:
+    # Get project instance
+    project = LabellerrProject(client=client, project_id=project_id)
+    
+    # Check export status
+    status = project.check_export_status(
+        report_ids=report_ids
+    )
+    
+    print(status)
+except LabellerrError as e:
+    print(f"Failed to check export status: {str(e)}")
 ```
 
 ---
@@ -90,27 +98,27 @@ This endpoint is used to fetch the **downloadable link** for a previously create
 
 #### Example Usage :
 
-```python Fetch Download URL Example lines icon="link" highlight={6,14-20}
+```python Fetch Download URL Example lines icon="link"
 from labellerr.client import LabellerrClient
-from labellerr.exceptions import LabellerrError
+from labellerr.core.exceptions import LabellerrError
 import uuid
 
 # Initialize the client with your API credentials
-client = LabellerrClient(api_key, api_secret)
-project_id = project_id
-client_id = client_id
-report_ids = report_ids # make sure it is a list
-uuid = str(uuid.uuid4())
+client = LabellerrClient(api_key, api_secret, client_id)
 
-status = client.fetch_download_url(
-    api_key="your_api_key",
-    api_secret="your_api_secret",
-    project_id = project_id,
-    uuid = uuid,
-    export_id = report_ids[0],
-    client_id = client_id
-)
-print(status)
+project_id = 'your_project_id'
+report_ids = ['export_report_id']  # make sure it is a list
+request_uuid = str(uuid.uuid4())
+
+try:
+    download_url = client.fetch_download_url(
+        project_id=project_id,
+        uuid=request_uuid,
+        export_id=report_ids[0]
+    )
+    print(f"Download URL: {download_url}")
+except LabellerrError as e:
+    print(f"Failed to fetch download URL: {str(e)}")
 ```
 
 ---

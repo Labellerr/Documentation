@@ -12,16 +12,17 @@ You can retrieve all projects associated with a specific client ID using the fol
 
 #### Example Usage:
 
-```python Retrieve All Projects lines icon="folder-open" highlight={6,8-15}
+```python Retrieve All Projects lines icon="folder-open"
 from labellerr.client import LabellerrClient
-from labellerr.exceptions import LabellerrError
+from labellerr.core.projects import LabellerrProject
+from labellerr.core.exceptions import LabellerrError
 
 # Initialize the client with your API credentials
-client = LabellerrClient(api_key, api_secret)
-client_id = client_id
+client = LabellerrClient(api_key, api_secret, client_id)
 
 try:
-    result = client.get_all_project_per_client_id(client_id)
+    # Use static method to list all projects
+    result = LabellerrProject.list_all_projects(client)
 
     # Check if projects were retrieved successfully
     if result and 'response' in result:
@@ -54,23 +55,29 @@ You can retrieve both linked and unlinked datasets associated with a client usin
 
 #### Example Usage:
 
-```python Retrieve All Datasets lines icon="database" highlight={7,9-13}
+```python Retrieve All Datasets lines icon="database"
 from labellerr.client import LabellerrClient
-from labellerr.exceptions import LabellerrError
+from labellerr.core.datasets import LabellerrDataset
+from labellerr.core.exceptions import LabellerrError
 
 # Initialize the client with your API credentials
-client = LabellerrClient(api_key, api_secret)
-client_id = client_id
+client = LabellerrClient(api_key, api_secret, client_id)
 data_type = 'image'
+project_id = 'your_project_id'
+scope = 'client'
 
 try:
-    result = client.get_all_dataset(client_id, data_type, project_id, scope)
-    # Process linked datasets
-    linked_datasets = result["response"]["datasets"]
-    # print(linked_datasets["datasets"][0]["dataset_id"])
-    print(f"Found {len(linked_datasets)} linked datasets:")
-    for dataset in linked_datasets:
-        # print(dataset["datasets"])
+    # Get all datasets using the static method with auto-pagination
+    datasets = LabellerrDataset.get_all_datasets(
+        client=client,
+        datatype=data_type,
+        scope=scope,
+        page_size=-1  # Auto-paginate through all datasets
+    )
+    
+    # Iterate through the generator
+    print("Datasets:")
+    for dataset in datasets:
         print(f"- Dataset ID: {dataset.get('dataset_id')}")
         print(f"  Name: {dataset.get('name')}")
         print(f"  Description: {dataset.get('description')}")
@@ -79,19 +86,213 @@ except LabellerrError as e:
     print(f"Failed to retrieve datasets: {str(e)}")
 ```
 
+<Note>
+**Pagination Support:**
+- The method returns a **generator** that yields individual datasets
+- Use `page_size=-1` to automatically paginate through all datasets (recommended)
+- Use specific `page_size` to limit results (e.g., `page_size=20`)
+- Use `last_dataset_id` for manual pagination across multiple requests
+</Note>
+
 This method is useful when you need to:
 
-*   Get an overview of all available datasets
-*   Find datasets that are linked to projects
-*   Identify unlinked datasets that can be associated with new projects
-*   Manage dataset organization and project associations
+*   Get a comprehensive list of all datasets in your workspace
+*   Filter datasets by specific data types (image, video, audio, etc.)
+*   Organize datasets by scope (client-level or project-level permissions)
+*   Efficiently iterate through large numbers of datasets with pagination
 
-The response includes two lists:
+---
 
-*   `linked`: Datasets that are already associated with projects
-*   `unlinked`: Datasets that are not yet associated with any project
+### Retrieving Files from a Dataset
 
-Each dataset object contains detailed information including its ID, name, description, and other metadata.
+---
+
+You can fetch all files from a specific dataset using the `fetch_files()` method:
+
+#### Example Usage:
+
+```python Fetch Files from Dataset lines icon="file"
+from labellerr.client import LabellerrClient
+from labellerr.core.datasets import LabellerrDataset
+from labellerr.core.exceptions import LabellerrError
+
+# Initialize the client with your API credentials
+client = LabellerrClient(api_key, api_secret, client_id)
+
+try:
+    # Get dataset instance
+    dataset = LabellerrDataset(client=client, dataset_id="your_dataset_id")
+    
+    # Fetch all files
+    files = dataset.fetch_files()
+    
+    print(f"Dataset contains {len(files)} files:")
+    for file in files:
+        print(f"- File ID: {file.get('file_id')}")
+        print(f"  File Name: {file.get('file_name')}")
+        print(f"  Status: {file.get('status')}")
+        
+except LabellerrError as e:
+    print(f"Failed to fetch files: {str(e)}")
+```
+
+This method is useful when you need to:
+
+*   Get a list of all files in a dataset
+*   Check file statuses before creating a project
+*   Verify dataset contents
+*   Build custom file processing workflows
+
+---
+
+### Working with Projects and Datasets
+
+---
+
+#### Get Project Information
+
+```python Get Project Details lines icon="folder"
+from labellerr.client import LabellerrClient
+from labellerr.core.projects import LabellerrProject
+from labellerr.core.exceptions import LabellerrError
+
+# Initialize the client with your API credentials
+client = LabellerrClient(api_key, api_secret, client_id)
+
+try:
+    # Get project instance
+    project = LabellerrProject(client=client, project_id="your_project_id")
+    
+    # Access project properties
+    print(f"Project ID: {project.project_id}")
+    print(f"Data Type: {project.data_type}")
+    print(f"Attached Datasets: {project.attached_datasets}")
+    
+except LabellerrError as e:
+    print(f"Failed to retrieve project: {str(e)}")
+```
+
+#### Attach Datasets to a Project
+
+```python Attach Datasets lines icon="link"
+from labellerr.client import LabellerrClient
+from labellerr.core.projects import LabellerrProject
+from labellerr.core.exceptions import LabellerrError
+
+client = LabellerrClient(api_key, api_secret, client_id)
+
+try:
+    project = LabellerrProject(client=client, project_id="your_project_id")
+    
+    # Attach a single dataset
+    result = project.attach_dataset_to_project(dataset_id="dataset_id_to_attach")
+    
+    # Or attach multiple datasets at once
+    # result = project.attach_dataset_to_project(dataset_ids=["dataset_1", "dataset_2"])
+    
+    print(f"Dataset(s) attached successfully: {result}")
+    
+except LabellerrError as e:
+    print(f"Failed to attach dataset: {str(e)}")
+```
+
+#### Detach Datasets from a Project
+
+```python Detach Datasets lines icon="unlink"
+from labellerr.client import LabellerrClient
+from labellerr.core.projects import LabellerrProject
+from labellerr.core.exceptions import LabellerrError
+
+client = LabellerrClient(api_key, api_secret, client_id)
+
+try:
+    project = LabellerrProject(client=client, project_id="your_project_id")
+    
+    # Detach a single dataset
+    result = project.detach_dataset_from_project(dataset_id="dataset_id_to_detach")
+    
+    # Or detach multiple datasets at once
+    # result = project.detach_dataset_from_project(dataset_ids=["dataset_1", "dataset_2"])
+    
+    print(f"Dataset(s) detached successfully: {result}")
+    
+except LabellerrError as e:
+    print(f"Failed to detach dataset: {str(e)}")
+```
+
+<Note>
+**Important:** When detaching datasets from a project, the method no longer requires `client_id` and `project_id` parameters as these are automatically derived from the project instance.
+</Note>
+
+---
+
+### Bulk Assign Files
+
+---
+
+You can bulk assign multiple files to a new status in a project, optionally assigning them to a specific user.
+
+#### Example Usage:
+
+```python Bulk Assign Files lines icon="layer-group"
+from labellerr.client import LabellerrClient
+from labellerr.core.projects import LabellerrProject
+from labellerr.core.exceptions import LabellerrError
+
+client = LabellerrClient(api_key, api_secret, client_id)
+
+try:
+    project = LabellerrProject(client=client, project_id="your_project_id")
+    
+    # Bulk assign files to review status
+    result = project.bulk_assign_files(
+        file_ids=["file_id_1", "file_id_2", "file_id_3"],
+        new_status="review",
+        assign_to="reviewer@example.com"  # optional
+    )
+    
+    print(f"Files assigned successfully: {result}")
+    
+except LabellerrError as e:
+    print(f"Failed to bulk assign files: {str(e)}")
+```
+
+<Card title="Acceptable Status Values" icon="list">
+| Status | Description |
+|--------|-------------|
+| `annotation` | Assign files for annotation |
+| `review` | Assign files for review after annotation |
+| `client_review` | Assign files for client review |
+| `accepted` | Mark files as accepted |
+| `rejected` | Mark files as rejected |
+</Card>
+
+### When to Use Bulk Assign
+
+**Bulk assign is essential for automating annotation workflows:**
+
+<Card title="Common Use Cases" icon="list">
+| Use Case | Example |
+|----------|---------|
+| **Batch Assignment** | Assign 100 images to annotator at once instead of clicking 100 times |
+| **Status Progression** | Move all "annotation" files to "review" status after completion |
+| **Team Management** | Distribute files across multiple team members efficiently |
+| **Workflow Automation** | Automate the flow: annotation → review → client_review → accepted |
+| **Onboarding** | Assign initial set of files to new annotators |
+| **Quality Control** | Send all files to a senior reviewer before client submission |
+</Card>
+
+**Example Scenario:**
+Imagine you have 500 images that need annotation. After annotators finish, you want to send them all to review status. Without bulk assign, you'd click 500 times. With `bulk_assign_files()`, it's one API call:
+
+```python
+# After annotation is complete
+result = project.bulk_assign_files(
+    file_ids=all_500_file_ids,
+    new_status="review",
+    assign_to="senior_reviewer@example.com"
+)
+```
 
 ---
 
@@ -103,12 +304,14 @@ The Labellerr SDK uses a custom exception class, `LabellerrError`, to indicate i
 
 #### Example:
 
-```python Error Handling Example lines icon="exclamation-triangle" highlight={3-6}
-from labellerr.exceptions import LabellerrError
+```python Error Handling Example lines icon="exclamation-triangle"
+from labellerr.core.exceptions import LabellerrError
+from labellerr.core.projects import LabellerrProject
 
 try:
     # Example function call
-    result = client.initiate_create_project(payload)
+    project = LabellerrProject(client=client, project_id="project_id")
+    datasets = project.attached_datasets
 except LabellerrError as e:
     print(f"An error occurred: {str(e)}")
 ```

@@ -60,24 +60,25 @@ Mismatched file names will prevent annotations from being applied to the corresp
 
 ```python
 from labellerr.client import LabellerrClient
-from labellerr.exceptions import LabellerrError
+from labellerr.core.projects import LabellerrProject
+from labellerr.core.exceptions import LabellerrError
 
 # Initialize client with credentials
-client = LabellerrClient('your_api_key', 'your_api_secret')
+client = LabellerrClient('your_api_key', 'your_api_secret', 'your_client_id')
 
 # Configure upload parameters
 project_id = 'project_123'
-client_id = '12345'
 annotation_format = 'coco'
 annotation_file = '/path/to/annotations.json'
 
 try:
+    # Get project instance
+    project = LabellerrProject(client=client, project_id=project_id)
+    
     # Execute synchronous upload
-    result = client.upload_preannotation_by_project_id(
-        project_id, 
-        client_id, 
-        annotation_format, 
-        annotation_file
+    result = project.upload_preannotations(
+        annotation_format=annotation_format,
+        annotation_file=annotation_file
     )
     
     # Validate completion status
@@ -105,29 +106,31 @@ except LabellerrError as e:
 
 ```python
 from labellerr.client import LabellerrClient
-from labellerr.exceptions import LabellerrError
+from labellerr.core.projects import LabellerrProject
+from labellerr.core.exceptions import LabellerrError
 
 # Initialize client with credentials
-client = LabellerrClient('your_api_key', 'your_api_secret')
+client = LabellerrClient('your_api_key', 'your_api_secret', 'your_client_id')
 
 # Configure upload parameters
 project_id = 'project_123'
-client_id = '12345'
 annotation_format = 'coco'
 annotation_file = '/path/to/annotations.json'
 
 try:
-    # Initiate asynchronous upload
-    future = client.upload_preannotation_by_project_id_async(
-        project_id, 
-        client_id, 
-        annotation_format, 
-        annotation_file
+    # Get project instance
+    project = LabellerrProject(client=client, project_id=project_id)
+    
+    # Initiate asynchronous upload (returns a Future that automatically monitors status)
+    future = project.upload_preannotation_async(
+        annotation_format=annotation_format,
+        annotation_file=annotation_file
     )
     
     print("Upload initiated - processing asynchronously")
     
-    # Execute concurrent operations
+    # The future automatically polls for completion status
+    # You can execute other operations while waiting
     # perform_other_tasks()
     
     # Retrieve result when ready

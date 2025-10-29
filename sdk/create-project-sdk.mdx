@@ -44,20 +44,17 @@ When using the `initiate_create_project()` function, you **must provide either**
 </Card>
 
 <Card title="Example: Creating a Project with an Existing Template" icon="code">
-```python Project Creation with Template lines icon="template-icon" highlight={5-17,19-21}
+```python Project Creation with Template lines icon="template-icon"
 from labellerr.client import LabellerrClient
 from labellerr.exceptions import LabellerrError
 
 # Initialize the client with your API credentials
-client = LabellerrClient(api_key, api_secret)
+client = LabellerrClient(api_key, api_secret, client_id)
 project_payload = {
-    'client_id': client_id,
-    'dataset_name': 'New_dataset',
-    'dataset_description': 'A sample dataset for image classification',
     'data_type': 'image',
-    'created_by': email,
+    'created_by': 'user@example.com',
     'project_name': 'Image Classification Project',
-    'annotation_template_id':"existing annotaion_template_id",
+    'annotation_template_id': 'existing_annotation_template_id',
     'rotation_config': {
         'annotation_rotation_count': 1,
         'review_rotation_count': 1,
@@ -67,7 +64,7 @@ project_payload = {
     'folder_to_upload': 'path/to/your/dataset'
 }
 try:
-    result = client.initiate_create_project(project_payload)
+    result = create_project(client, project_payload)
     print(f"Project created successfully. Project ID: {result['project_id']['response']['project_id']}")
 except LabellerrError as e:
     print(f"Project creation failed: {str(e)}")
@@ -77,24 +74,21 @@ except LabellerrError as e:
 <Card title="Example: Creating a Project with Inline Annotation Questions" icon="code">
 You can also add **classification questions and** [**annotation questions**](/sdk/add-annotation-questions) while creating the project.
 
-```python Project Creation with Inline Annotation Guide lines icon="question" highlight={6-22,24-27}
+```python Project Creation with Inline Annotation Guide lines icon="question"
 from labellerr.client import LabellerrClient
-from labellerr.exceptions import LabellerrError
+from labellerr.core.projects import create_project
+from labellerr.core.exceptions import LabellerrError
 
 # Initialize the client with your API credentials
-client = LabellerrClient(api_key, api_secret)
+client = LabellerrClient(api_key, api_secret, client_id)
+
 project_payload = {
-    'client_id': client_id,
-    'dataset_name': 'New_dataset',
-    'dataset_description': 'A sample dataset for image classification',
     'data_type': 'image',
-    'created_by': email,
+    'created_by': 'user@example.com',
     'project_name': 'Image Classification Project',
     'annotation_guide': [
         {
-            "question_number": 1,
             "question": "What is the main object in the image?",
-            "question_id": "533bb0c8-fb2b-4394-a8e1-5042a944802f",
             "option_type": "dropdown",
             "required": True,
             "options": [
@@ -112,29 +106,80 @@ project_payload = {
     'autolabel': False,
     'folder_to_upload': 'path/to/your/dataset'
 }
+
 try:
-    result = client.initiate_create_project(project_payload)
-    print(f"Project created successfully. Project ID: {result['project_id']['response']['project_id']}")
+    project = create_project(client=client, payload=project_payload)
+    print(f"Project created successfully. Project ID: {project.project_id}")
 except LabellerrError as e:
     print(f"Project creation failed: {str(e)}")
 ```
 </Card>
 
+<Card title="Example: Creating a Project with Existing Datasets" icon="code">
+You can create a project using datasets that have already been created separately. This is useful for reusing the same data across multiple projects.
+
+```python Project Creation with Existing Datasets lines icon="database"
+from labellerr.client import LabellerrClient
+from labellerr.core.projects import create_project
+from labellerr.core.exceptions import LabellerrError
+
+# Initialize the client with your API credentials
+client = LabellerrClient(api_key, api_secret, client_id)
+
+project_payload = {
+    'data_type': 'image',
+    'created_by': 'user@example.com',
+    'project_name': 'Multi-Dataset Project',
+    'annotation_template_id': "existing_annotation_template_id",
+    'datasets': ["dataset_id_1", "dataset_id_2"],  # Attach existing datasets
+    'rotation_config': {
+        'annotation_rotation_count': 1,
+        'review_rotation_count': 1,
+        'client_review_rotation_count': 1
+    },
+    'autolabel': False
+}
+
+try:
+    project = create_project(client=client, payload=project_payload)
+    print(f"Project created successfully. Project ID: {project.project_id}")
+    print(f"Attached datasets: {project.attached_datasets}")
+except LabellerrError as e:
+    print(f"Project creation failed: {str(e)}")
+```
+
+<Note>
+When using the `datasets` parameter, you should **not** include `folder_to_upload`, `files_to_upload`, `dataset_name`, or `dataset_description` in the payload. The datasets must already exist and contain files.
+</Note>
+</Card>
+
 ## Glossary
 
 <Card title="Project Payload Fields" icon="list">
-| Variable/Key | Type | Description | Example Value |
-|---|---|---|---|
-| client_id | String | Unique identifier for the client or organization creating the project | client_123 |
-| dataset_name | String | Name of the dataset being created | New_dataset |
-| dataset_description | String | Description explaining the dataset's purpose and contents | A sample dataset for image classification |
-| data_type | String | Type of data in the dataset | image |
-| created_by | String | Email address of the project creator | user@example.com |
-| project_name | String | Display name for the annotation project | Image Classification Project |
-| annotation_template_id | String | ID of existing annotation template defining label structure | template_456 |
-| autolabel | Boolean | Enable/disable automatic AI pre-labeling | false |
-| folder_to_upload | String | Local file path to dataset folder | path/to/your/dataset |
-| annotation_rotation_count | Integer | Number of times data item need to be annotated | 1 |
-| review_rotation_count | Integer | Number of times annotated item need to be reviewed | 1 |
-| client_review_rotation_count | Integer | Number of times client reviewers need to be done. | 1 |
+| Variable/Key | Type | Required | Description | Example Value |
+|---|---|---|---|---|
+| data_type | String | Yes | Type of data in the project | image, video, audio, document, text |
+| created_by | String | Yes | Email address of the project creator | user@example.com |
+| project_name | String | Yes | Display name for the annotation project | Image Classification Project |
+| annotation_template_id | String | Conditional* | ID of existing annotation template | template_456 |
+| annotation_guide | List | Conditional* | List of annotation questions (simplified structure) | See examples above |
+| autolabel | Boolean | Yes | Enable/disable automatic AI pre-labeling | false |
+| rotation_config | Object | No | Configuration for annotation and review rotations | See below |
+| datasets | List | Conditional** | List of existing dataset IDs to attach | ["dataset_id_1", "dataset_id_2"] |
+| folder_to_upload | String | Conditional** | Local file path to dataset folder | path/to/your/dataset |
+| files_to_upload | List | Conditional** | List of specific file paths to upload | ["file1.jpg", "file2.jpg"] |
+
+**Conditional Requirements:**
+
+\* Either `annotation_template_id` OR `annotation_guide` must be provided (not both)
+
+\*\* Either `datasets` (for existing datasets) OR `folder_to_upload`/`files_to_upload` (for new dataset creation) must be provided
+
+**Rotation Config Structure:**
+
+| Field | Type | Required | Default | Description |
+|---|---|---|---|---|
+| annotation_rotation_count | Integer | No | 1 | Number of times each item needs to be annotated |
+| review_rotation_count | Integer | No | 1 | Number of times annotated items need to be reviewed |
+| client_review_rotation_count | Integer | No | 1 | Number of times client review needs to be performed |
 </Card>
