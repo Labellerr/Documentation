@@ -31,7 +31,7 @@ A **dataset** in Labellerr is a standalone collection of files (images, videos, 
 
 ### Import Required Modules
 
-```python Required Imports lines icon="code" highlight={1-3}
+```python Required Imports lines icon="code"
 from labellerr.client import LabellerrClient
 from labellerr.core.schemas import DatasetConfig
 from labellerr.core.datasets import create_dataset, LabellerrDataset
@@ -44,7 +44,7 @@ from labellerr.core.datasets import create_dataset, LabellerrDataset
 <Tabs>
   <Tab title="Upload from Folder">
     <Card title="Create Dataset from Folder" icon="folder">
-```python Create Dataset with Folder lines icon="folder-open" highlight={7-13}
+```python Create Dataset with Folder lines icon="folder-open"
 from labellerr.client import LabellerrClient
 from labellerr.core.schemas import DatasetConfig
 from labellerr.core.datasets import create_dataset
@@ -75,7 +75,7 @@ print(f"Total files: {dataset.files_count}")
 
   <Tab title="Upload Specific Files">
     <Card title="Create Dataset with File List" icon="list">
-```python Create Dataset with File List lines icon="file" highlight={7-13}
+```python Create Dataset with File List lines icon="file"
 from labellerr.client import LabellerrClient
 from labellerr.core.schemas import DatasetConfig
 from labellerr.core.datasets import create_dataset
@@ -103,7 +103,7 @@ print(f"Dataset created with ID: {dataset.dataset_id}")
 ### Method 2: Create Dataset with AWS S3 Connection
 
 <Card title="Connect AWS S3 Bucket" icon="aws">
-```python Create Dataset with AWS S3 lines icon="aws" highlight={4-5,14-21}
+```python Create Dataset with AWS S3 lines icon="aws"
 from labellerr.client import LabellerrClient
 from labellerr.core.schemas import DatasetConfig
 from labellerr.core.datasets import create_dataset
@@ -144,7 +144,7 @@ The SDK will create a connection to your S3 bucket and link it to the dataset. F
 ### Method 3: Create Dataset with Google Cloud Storage
 
 <Card title="Connect GCS Bucket" icon="google">
-```python Create Dataset with GCS lines icon="google" highlight={4-5,14-20}
+```python Create Dataset with GCS lines icon="google"
 from labellerr.client import LabellerrClient
 from labellerr.core.schemas import DatasetConfig
 from labellerr.core.datasets import create_dataset
@@ -182,7 +182,7 @@ print(f"Dataset created with GCS connection: {dataset.dataset_id}")
 <Card title="Reuse Connection ID" icon="link">
 If you've already created a cloud connection, you can reuse it for new datasets:
 
-```python Create Dataset with Existing Connection lines icon="link" highlight={7-13}
+```python Create Dataset with Existing Connection lines icon="link"
 from labellerr.client import LabellerrClient
 from labellerr.core.schemas import DatasetConfig
 from labellerr.core.datasets import create_dataset
@@ -214,7 +214,7 @@ print(f"Dataset created using existing connection: {dataset.dataset_id}")
 ### Retrieve an Existing Dataset
 
 <Card title="Get Dataset by ID" icon="download">
-```python Retrieve Dataset lines icon="download" highlight={4-5}
+```python Retrieve Dataset lines icon="download"
 from labellerr.client import LabellerrClient
 from labellerr.core.datasets import LabellerrDataset
 
@@ -241,7 +241,7 @@ print(f"Status Code: {dataset.status_code}")
 ### Fetch Files from Dataset
 
 <Card title="List Dataset Files" icon="list">
-```python Fetch Files lines icon="list" highlight={5-6}
+```python Fetch Files lines icon="list"
 from labellerr.client import LabellerrClient
 from labellerr.core.datasets import LabellerrDataset
 
@@ -263,7 +263,7 @@ for file in files:
 <Card title="Multimodal Indexing Feature" icon="brain">
 Enable advanced AI-powered multimodal indexing for your dataset to enable semantic search and intelligent file organization.
 
-```python Enable Multimodal Indexing lines icon="sparkles" highlight={5-6}
+```python Enable Multimodal Indexing lines icon="sparkles"
 from labellerr.client import LabellerrClient
 from labellerr.core.datasets import LabellerrDataset
 
@@ -291,14 +291,14 @@ Multimodal indexing uses AI to analyze and understand the content of your files 
 ### Delete a Dataset
 
 <Card title="Delete Dataset" icon="trash">
-```python Delete Dataset lines icon="trash" highlight={6}
+```python Delete Dataset lines icon="trash"
 from labellerr.client import LabellerrClient
 from labellerr.core.datasets import LabellerrDataset
 
 client = LabellerrClient(api_key='your_api_key', api_secret='your_api_secret', client_id='your_client_id')
 
 dataset = LabellerrDataset(client=client, dataset_id="dataset_to_delete")
-result = dataset.delete_dataset(client_id=client.client_id, dataset_id=dataset.dataset_id)
+result = dataset.delete_dataset(dataset_id=dataset.dataset_id)
 
 print(f"Dataset deleted: {result}")
 ```
@@ -315,7 +315,7 @@ print(f"Dataset deleted: {result}")
 <Card title="Synchronize Cloud Storage" icon="arrows-rotate">
 For datasets connected to cloud storage (AWS S3 or GCS), you can sync to fetch newly added files:
 
-```python Sync Dataset lines icon="sync" highlight={6-13}
+```python Sync Dataset lines icon="sync"
 from labellerr.client import LabellerrClient
 from labellerr.core.datasets import LabellerrDataset
 
@@ -323,9 +323,7 @@ client = LabellerrClient(api_key='your_api_key', api_secret='your_api_secret', c
 
 dataset = LabellerrDataset(client=client, dataset_id="your_dataset_id")
 result = dataset.sync_datasets(
-    client_id=client.client_id,
     project_id="associated_project_id",
-    dataset_id=dataset.dataset_id,
     path="path/in/bucket",
     data_type="image",
     email_id="user@example.com",
@@ -345,7 +343,7 @@ Use this feature when new files are added to your cloud storage bucket and you w
 ## Complete Workflow Example
 
 <Card title="End-to-End Dataset Creation" icon="rocket">
-```python Complete Dataset Workflow lines icon="rocket" highlight={7-13,16-17,20-21,24-25}
+```python Complete Dataset Workflow lines icon="rocket"
 from labellerr.client import LabellerrClient
 from labellerr.core.schemas import DatasetConfig
 from labellerr.core.datasets import create_dataset, LabellerrDataset
@@ -385,7 +383,7 @@ print(f"Dataset {dataset.dataset_id} is ready to be used in projects!")
 ## Error Handling
 
 <Card title="Best Practices for Error Handling" icon="shield">
-```python Error Handling Example lines icon="exclamation-triangle" highlight={3-9}
+```python Error Handling Example lines icon="exclamation-triangle"
 from labellerr.core.datasets import create_dataset, LabellerrDataset
 from labellerr.core.exceptions import LabellerrError
 

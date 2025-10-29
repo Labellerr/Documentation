@@ -44,20 +44,17 @@ When using the `initiate_create_project()` function, you **must provide either**
 </Card>
 
 <Card title="Example: Creating a Project with an Existing Template" icon="code">
-```python Project Creation with Template lines icon="template-icon" highlight={5-17,19-21}
+```python Project Creation with Template lines icon="template-icon"
 from labellerr.client import LabellerrClient
 from labellerr.exceptions import LabellerrError
 
 # Initialize the client with your API credentials
-client = LabellerrClient(api_key, api_secret)
+client = LabellerrClient(api_key, api_secret, client_id)
 project_payload = {
-    'client_id': client_id,
-    'dataset_name': 'New_dataset',
-    'dataset_description': 'A sample dataset for image classification',
     'data_type': 'image',
-    'created_by': email,
+    'created_by': 'user@example.com',
     'project_name': 'Image Classification Project',
-    'annotation_template_id':"existing annotaion_template_id",
+    'annotation_template_id': 'existing_annotation_template_id',
     'rotation_config': {
         'annotation_rotation_count': 1,
         'review_rotation_count': 1,
@@ -67,7 +64,7 @@ project_payload = {
     'folder_to_upload': 'path/to/your/dataset'
 }
 try:
-    result = client.initiate_create_project(project_payload)
+    result = create_project(client, project_payload)
     print(f"Project created successfully. Project ID: {result['project_id']['response']['project_id']}")
 except LabellerrError as e:
     print(f"Project creation failed: {str(e)}")
@@ -77,7 +74,7 @@ except LabellerrError as e:
 <Card title="Example: Creating a Project with Inline Annotation Questions" icon="code">
 You can also add **classification questions and** [**annotation questions**](/sdk/add-annotation-questions) while creating the project.
 
-```python Project Creation with Inline Annotation Guide lines icon="question" highlight={2,6-19,21-24}
+```python Project Creation with Inline Annotation Guide lines icon="question"
 from labellerr.client import LabellerrClient
 from labellerr.core.projects import create_project
 from labellerr.core.exceptions import LabellerrError
@@ -121,7 +118,7 @@ except LabellerrError as e:
 <Card title="Example: Creating a Project with Existing Datasets" icon="code">
 You can create a project using datasets that have already been created separately. This is useful for reusing the same data across multiple projects.
 
-```python Project Creation with Existing Datasets lines icon="database" highlight={2,6-18,20-23}
+```python Project Creation with Existing Datasets lines icon="database"
 from labellerr.client import LabellerrClient
 from labellerr.core.projects import create_project
 from labellerr.core.exceptions import LabellerrError

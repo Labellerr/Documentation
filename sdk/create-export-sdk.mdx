@@ -21,7 +21,7 @@ The SDK provides functionality to export project data locally. This feature allo
 
 #### Example Usage:
 
-```python Local Export Example lines icon="download" highlight={2,6,8-17,19-22}
+```python Local Export Example lines icon="download"
 from labellerr.client import LabellerrClient
 from labellerr.core.projects import LabellerrProject
 from labellerr.core.exceptions import LabellerrError
@@ -30,7 +30,6 @@ from labellerr.core.exceptions import LabellerrError
 client = LabellerrClient(api_key, api_secret, client_id)
 
 project_id = 'your_project_id'
-client_id = 'your_client_id'
 
 export_config = {
     "export_name": "Weekly Export",
@@ -44,7 +43,7 @@ try:
     project = LabellerrProject(client=client, project_id=project_id)
     
     # Create export
-    result = project.create_local_export(project_id, client_id, export_config)
+    result = project.create_local_export(export_config)
     export_id = result["response"]['report_id']
     print(f"Local export created successfully. Export ID: {export_id}")
 except LabellerrError as e:
@@ -63,7 +62,7 @@ This method allows users to check the export status of a previously triggered ex
 
 #### Example Usage :
 
-```python Check Export Status Example lines icon="magnifying-glass" highlight={2,6,8-13,15-16}
+```python Check Export Status Example lines icon="magnifying-glass"
 from labellerr.client import LabellerrClient
 from labellerr.core.projects import LabellerrProject
 from labellerr.core.exceptions import LabellerrError
@@ -73,7 +72,6 @@ client = LabellerrClient(api_key, api_secret, client_id)
 
 # Example input
 project_id = 'your_project_id'
-client_id = 'your_client_id'
 report_ids = ['export_report_id_1', 'export_report_id_2']
 
 try:
@@ -82,9 +80,7 @@ try:
     
     # Check export status
     status = project.check_export_status(
-        project_id=project_id,
-        report_ids=report_ids,
-        client_id=client_id
+        report_ids=report_ids
     )
     
     print(status)
@@ -102,7 +98,7 @@ This endpoint is used to fetch the **downloadable link** for a previously create
 
 #### Example Usage :
 
-```python Fetch Download URL Example lines icon="link" highlight={2-3,7,9-19}
+```python Fetch Download URL Example lines icon="link"
 from labellerr.client import LabellerrClient
 from labellerr.core.exceptions import LabellerrError
 import uuid
@@ -111,7 +107,6 @@ import uuid
 client = LabellerrClient(api_key, api_secret, client_id)
 
 project_id = 'your_project_id'
-client_id = 'your_client_id'
 report_ids = ['export_report_id']  # make sure it is a list
 request_uuid = str(uuid.uuid4())
 
@@ -119,8 +114,7 @@ try:
     download_url = client.fetch_download_url(
         project_id=project_id,
         uuid=request_uuid,
-        export_id=report_ids[0],
-        client_id=client_id
+        export_id=report_ids[0]
     )
     print(f"Download URL: {download_url}")
 except LabellerrError as e:

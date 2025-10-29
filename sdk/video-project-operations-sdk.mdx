@@ -22,7 +22,7 @@ This approach:
 
 ### Import Required Modules
 
-```python Required Imports lines icon="code" highlight={1-3}
+```python Required Imports lines icon="code"
 from labellerr.client import LabellerrClient
 from labellerr.core.projects import LabellerrProject
 from labellerr.core.schemas import KeyFrame
@@ -41,7 +41,7 @@ from labellerr.core.exceptions import LabellerrError
 
 Before adding keyframes, you need to understand the KeyFrame structure:
 
-```python KeyFrame Structure lines icon="code" highlight={1-6}
+```python KeyFrame Structure lines icon="code"
 from labellerr.core.schemas import KeyFrame
 
 keyframe = KeyFrame(
@@ -67,7 +67,7 @@ keyframe = KeyFrame(
 
 You can add new keyframes or update existing ones using the same method:
 
-```python Add/Update Keyframes lines icon="plus" highlight={8-18}
+```python Add/Update Keyframes lines icon="plus"
 from labellerr.client import LabellerrClient
 from labellerr.core.projects import LabellerrProject
 from labellerr.core.schemas import KeyFrame
@@ -109,7 +109,7 @@ except LabellerrError as e:
 
 You can efficiently add multiple keyframes at once:
 
-```python Batch Keyframe Creation lines icon="layer-group" highlight={7-17}
+```python Batch Keyframe Creation lines icon="layer-group"
 from labellerr.core.schemas import KeyFrame
 
 # Create keyframes at regular intervals (every 30 frames)
@@ -137,7 +137,7 @@ print(f"Added {len(keyframes)} keyframes")
 
 Remove keyframes by specifying their frame numbers:
 
-```python Delete Keyframes lines icon="trash" highlight={8-12}
+```python Delete Keyframes lines icon="trash"
 from labellerr.client import LabellerrClient
 from labellerr.core.projects import LabellerrProject
 
@@ -167,7 +167,7 @@ except LabellerrError as e:
 ## Complete Workflow Example
 
 <Card title="End-to-End Keyframe Management" icon="rocket">
-```python Complete Keyframe Workflow lines icon="rocket" highlight={7-12,15-21,24-29,32-35}
+```python Complete Keyframe Workflow lines icon="rocket"
 from labellerr.client import LabellerrClient
 from labellerr.core.projects import LabellerrProject
 from labellerr.core.schemas import KeyFrame
@@ -275,7 +275,7 @@ except LabellerrError as e:
 ## Error Handling
 
 <Card title="Common Errors and Solutions" icon="triangle-exclamation">
-```python Error Handling Example lines icon="shield" highlight={3-12}
+```python Error Handling Example lines icon="shield"
 from labellerr.core.exceptions import LabellerrError
 
 try:
@@ -315,7 +315,7 @@ except LabellerrError as e:
 
 ### Custom Keyframe Selection Logic
 
-```python Custom Keyframe Logic lines icon="code" highlight={5-21}
+```python Custom Keyframe Logic lines icon="code"
 def select_keyframes_with_threshold(video_length_frames, min_interval=30, max_interval=90):
     """
     Intelligently select keyframes based on video length.
@@ -362,4 +362,5 @@ project.add_or_update_keyframes(file_id="video_file_id", keyframes=keyframes)
 <Note>
 For technical support, contact [support@tensormatics.com](mailto:support@tensormatics.com)
 </Note>
+
 

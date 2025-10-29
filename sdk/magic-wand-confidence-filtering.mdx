@@ -76,10 +76,10 @@ client = LabellerrClient(
     client_id='your_client_id'
 )
 
-# Upload with low confidence bucket
-result = client.upload_preannotation_by_project_id(
-    project_id='your_project_id',
-    client_id='your_client_id',
+# Get project instance and upload with low confidence bucket
+project = LabellerrProject(client=client, project_id='your_project_id')
+
+result = project.upload_preannotations(
     annotation_format='coco_json',
     annotation_file='annotations.json',
     conf_bucket='low'  # Low confidence annotations
@@ -109,10 +109,10 @@ client = LabellerrClient(
     client_id='your_client_id'
 )
 
-# Upload with medium confidence bucket
-result = client.upload_preannotation_by_project_id(
-    project_id='your_project_id',
-    client_id='your_client_id',
+# Get project instance and upload with medium confidence bucket
+project = LabellerrProject(client=client, project_id='your_project_id')
+
+result = project.upload_preannotations(
     annotation_format='coco_json',
     annotation_file='annotations.json',
     conf_bucket='medium'  # Medium confidence annotations
@@ -142,10 +142,10 @@ client = LabellerrClient(
     client_id='your_client_id'
 )
 
-# Upload with high confidence bucket
-result = client.upload_preannotation_by_project_id(
-    project_id='your_project_id',
-    client_id='your_client_id',
+# Get project instance and upload with high confidence bucket
+project = LabellerrProject(client=client, project_id='your_project_id')
+
+result = project.upload_preannotations(
     annotation_format='coco_json',
     annotation_file='annotations.json',
     conf_bucket='high'  # High confidence annotations
@@ -170,7 +170,8 @@ Here's a comprehensive example showing how to segment your model's predictions b
 ```python
 import json
 from labellerr.client import LabellerrClient
-from labellerr.exceptions import LabellerrError
+from labellerr.core.projects import LabellerrProject
+from labellerr.core.exceptions import LabellerrError
 
 # Initialize client
 client = LabellerrClient(
@@ -181,7 +182,7 @@ client = LabellerrClient(
 
 # Project configuration
 project_id = 'your_project_id'
-client_id = 'your_client_id'
+project = LabellerrProject(client=client, project_id=project_id)
 
 # Separate your predictions by confidence
 prediction_files = {
@@ -197,9 +198,7 @@ for confidence_level, file_path in prediction_files.items():
     try:
         print(f"Uploading {confidence_level} confidence annotations...")
         
-        result = client.upload_preannotation_by_project_id(
-            project_id=project_id,
-            client_id=client_id,
+        result = project.upload_preannotations(
             annotation_format='coco_json',
             annotation_file=file_path,
             conf_bucket=confidence_level

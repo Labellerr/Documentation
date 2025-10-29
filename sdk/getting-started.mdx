@@ -73,8 +73,14 @@ from labellerr.core.schemas import DatasetConfig
 # For creating and managing projects
 from labellerr.core.projects import create_project, create_annotation_guideline, LabellerrProject
 
+# For video projects (includes keyframe operations)
+from labellerr.core.projects import LabellerrVideoProject
+
 # For working with files
 from labellerr.core.files import LabellerrFile
+
+# For schemas (DatasetConfig, KeyFrame for video projects)
+from labellerr.core.schemas import DatasetConfig, KeyFrame
 
 # For error handling
 from labellerr.core.exceptions import LabellerrError

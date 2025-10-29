@@ -68,7 +68,6 @@ client = LabellerrClient('your_api_key', 'your_api_secret', 'your_client_id')
 
 # Configure upload parameters
 project_id = 'project_123'
-client_id = 'your_client_id'
 annotation_format = 'coco'
 annotation_file = '/path/to/annotations.json'
 
@@ -77,11 +76,9 @@ try:
     project = LabellerrProject(client=client, project_id=project_id)
     
     # Execute synchronous upload
-    result = project.upload_preannotation_by_project_id(
-        project_id, 
-        client_id, 
-        annotation_format, 
-        annotation_file
+    result = project.upload_preannotations(
+        annotation_format=annotation_format,
+        annotation_file=annotation_file
     )
     
     # Validate completion status
@@ -117,7 +114,6 @@ client = LabellerrClient('your_api_key', 'your_api_secret', 'your_client_id')
 
 # Configure upload parameters
 project_id = 'project_123'
-client_id = 'your_client_id'
 annotation_format = 'coco'
 annotation_file = '/path/to/annotations.json'
 
@@ -125,25 +121,21 @@ try:
     # Get project instance
     project = LabellerrProject(client=client, project_id=project_id)
     
-    # Initiate asynchronous upload
-    future = project.upload_preannotation_by_project_id_async(
-        project_id, 
-        client_id, 
-        annotation_format, 
-        annotation_file
+    # Initiate asynchronous upload (returns a Future that automatically monitors status)
+    future = project.upload_preannotation_async(
+        annotation_format=annotation_format,
+        annotation_file=annotation_file
     )
     
     print("Upload initiated - processing asynchronously")
     
-    # Execute concurrent operations
+    # The future automatically polls for completion status
+    # You can execute other operations while waiting
     # perform_other_tasks()
-    
-    # Check status asynchronously (retry_interval in seconds)
-    status_future = project.preannotation_job_status_async(retry_interval=5)
     
     # Retrieve result when ready
     try:
-        result = status_future.result(timeout=300)  # 5 minute timeout
+        result = future.result(timeout=300)  # 5 minute timeout
         
         if result['response']['status'] == 'completed':
             print("Pre-annotations processed successfully")
