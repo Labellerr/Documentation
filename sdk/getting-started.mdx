@@ -65,7 +65,7 @@ client = LabellerrClient(api_key, api_secret, client_id)
 
 Depending on your use case, you'll import different modules:
 
-<CodeBlock lang="python" title="Import Examples for Common Tasks">
+```python Import Examples for Common Tasks
 # For creating and managing datasets
 from labellerr.core.datasets import create_dataset, LabellerrDataset
 from labellerr.core.schemas import DatasetConfig
@@ -84,6 +84,6 @@ from labellerr.core.schemas import DatasetConfig, KeyFrame
 
 # For error handling
 from labellerr.core.exceptions import LabellerrError
-</CodeBlock>
+```
 
 Replace `'your-api-key'`, `'your-api-secret'`, and `'your-client-id'` with your actual credentials provided by Labellerr.
