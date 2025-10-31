@@ -46,6 +46,7 @@ When using the `initiate_create_project()` function, you **must provide either**
 <Card title="Example: Creating a Project with an Existing Template" icon="code">
 ```python Project Creation with Template lines icon="template-icon"
 from labellerr.client import LabellerrClient
+from labellerr.core.projects import create_project
 from labellerr.exceptions import LabellerrError
 
 # Initialize the client with your API credentials
@@ -64,8 +65,8 @@ project_payload = {
     'folder_to_upload': 'path/to/your/dataset'
 }
 try:
-    result = create_project(client, project_payload)
-    print(f"Project created successfully. Project ID: {result['project_id']['response']['project_id']}")
+    project = create_project(client, project_payload)
+    print(f"Project created successfully. Project ID: {project.project_id}")
 except LabellerrError as e:
     print(f"Project creation failed: {str(e)}")
 ```
