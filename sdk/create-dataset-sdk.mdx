@@ -58,7 +58,8 @@ dataset = create_dataset(
         dataset_description="A collection of images for object detection",
         data_type="image"
     ),
-    folder_to_upload="path/to/your/image/folder"
+    folder_to_upload="path/to/your/image/folder",
+    path="local"
 )
 
 print(f"Dataset created with ID: {dataset.dataset_id}")
@@ -358,7 +359,8 @@ dataset = create_dataset(
         dataset_description="High-quality images for production annotation",
         data_type="image"
     ),
-    folder_to_upload="path/to/images"
+    folder_to_upload="path/to/images",
+    path="local"
 )
 
 # Step 2: Wait for dataset to be ready and check files
