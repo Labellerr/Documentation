@@ -26,15 +26,13 @@ pip install git+https://github.com/tensormatics/SDKPython.git
 
 ## Getting Started
 
-#### Obtaining `api_keys` and `client_id`:
+#### Obtaining API Credentials
 
 You can obtain your `api_key` and `api_secret` for your workspace by visiting the following URL in your browser:
 
 `https://<your-workspace-name>.labellerr.com/workspace/api-keys`
 
-**To get the `client_id` for your workspace, **Pro and Enterprise** plan users can contact `Labellerr` support. If you are on a **Free** plan, you can request it by emailing **support@tensormatics.com**.**
-
-Once installed, you can start by importing and initializing the `LabellerrClient` and `LabellerrError`. This client will handle all communication with the Labellerr platform.
+Once installed, you can start by importing and initializing the `LabellerrClient`. This client will handle all communication with the Labellerr platform.
 
 ### Understanding the SDK Structure
 
@@ -67,23 +65,43 @@ Depending on your use case, you'll import different modules:
 
 ```python Import Examples for Common Tasks
 # For creating and managing datasets
-from labellerr.core.datasets import create_dataset, LabellerrDataset
+from labellerr.core.datasets import (
+    create_dataset_from_local,
+    create_dataset_from_connection,
+    LabellerrDataset
+)
 from labellerr.core.schemas import DatasetConfig
 
+# For creating annotation templates
+from labellerr.core.annotation_templates import (
+    create_template,
+    LabellerrAnnotationTemplate
+)
+from labellerr.core.schemas import (
+    CreateTemplateParams,
+    AnnotationQuestion,
+    QuestionType
+)
+
 # For creating and managing projects
-from labellerr.core.projects import create_project, create_annotation_guideline, LabellerrProject
+from labellerr.core.projects import create_project, LabellerrProject
+from labellerr.core.schemas import CreateProjectParams, RotationConfig
 
 # For video projects (includes keyframe operations)
 from labellerr.core.projects import LabellerrVideoProject
+from labellerr.core.schemas import KeyFrame
 
 # For working with files
 from labellerr.core.files import LabellerrFile
 
-# For schemas (DatasetConfig, KeyFrame for video projects)
-from labellerr.core.schemas import DatasetConfig, KeyFrame
+# For cloud connections
+from labellerr.core.connectors import (
+    LabellerrS3Connection,
+    LabellerrGCSConnection
+)
 
 # For error handling
 from labellerr.core.exceptions import LabellerrError
 ```
 
-Replace `'your-api-key'`, `'your-api-secret'`, and `'your-client-id'` with your actual credentials provided by Labellerr.
+Replace `'your-api-key'` and `'your-api-secret'` with your actual credentials provided by Labellerr.

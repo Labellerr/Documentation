@@ -1,305 +1,38 @@
 ---
 title: "How to Add Annotation Questions"
-description: "This guide explains how to write annotation questions in JSON format for Labellerr, covering object-based and classification questions with examples and best practices."
+description: "Define the JSON structure required by the Labellerr SDK to create annotation questions."
 icon: circle-question
 ---
 
-<Card title="Introduction" icon="circle-info">
-  This guide will help you understand how to write your own annotation questions in JSON format, whether they are for drawing things on images (like bounding boxes or dots) or for selecting/entering answers (like dropdowns or booleans).
-
-  We will explain:
-
-  * Types of annotation questions
-  * Required and optional fields
-  * Examples for both types
+<Card title="Overview" icon="circle-info">
+  The Labellerr SDK now expects a single JSON schema for every annotation question. Use the structure below to define questions for object-based and classification workflows.
 </Card>
 
-## Glossary (JSON Key Explanations)
+## Required Question Structure
 
-| Title | Description |
-|---|---|
-| question_number | Sequential number for the question (e.g., 1, 2, 3). |
-| question_id | Unique identifier (UUID) for the question. |
-| question | The text of the question or label name. |
-| option_type | Type of annotation: "polygon", "BoundingBox", "dropdown", "select", "radio", "boolean", etc. |
-| class | Label or name of the object (e.g., "Car", "Tree"). |
-| objectType | Shape used for annotation ("BoundingBox", "polygon", "dot", "polyline"). |
-| dataset | Type of dataset: "image", "video", "audio", etc. |
-| color | Display color in hex code (e.g., "#FF0000" for red). |
-| uniqueKey | Unique identifier (UUID) for the object or question. |
-| attributes | Optional nested questions or features related to the object. |
-| allowAnnotationToBeMarkedIncorrect | Whether the object can be marked as incorrectly drawn (true/false). |
-| customer_question_id | ID from an external system (leave null if not used). |
-| mode | Usually "edit" – defines how the annotation appears in the UI. |
-| key | Unique identifier for classification questions. |
-| componentClass | The actual text or label of the question shown to users. |
-| annotation | Input type: "dropdown", "select", "radio", or "boolean". |
-| required | Whether answering this question is mandatory (true/false). |
-| options | List of selectable answers (each with key, value, and optional color). |
-| sort | Whether to display the options in alphabetical order. |
-| searchBar | Adds a search box to the dropdown/select if there are many options. |
-| defaultValue | The answer selected by default if the user doesn't pick one. |
-| notSureRemark | Adds a "Not Sure" or similar fallback option. |
-| questionGuidelines | Extra instructions shown with the question to help users. |
-| question_metadata | System metadata, usually left null. |
-| autolabel | Configuration for ML model-based label suggestions. |
-
----
-
-## 1. Types of Annotation Questions
-
-<Card title="Supported Annotation Types by Dataset" icon="database">
-Different datasets support different types of annotations:
-
-### Image
-
-* Object-Based: BoundingBox, polygon, dot, polyline  
-* Classification: All types (dropdown, boolean, radio, select)
-
-### Document (Docs)
-
-* Only supports Classification annotations
-
-### Video
-
-* Object-Based: generic, BoundingBox, dot, polygon  
-* Classification: All types
-
-### Audio
-
-* Object-Based only using objectType: audio
-
-```json Audio Object-Based Annotation Example lines icon="volume-high"
-{
-  "color": "#5F9EA0",
-  "class": "ab",
-  "uniqueKey": "<object_unique_key>",
-  "objectType": "audio",
-  "attributes": [],
-  "allowAnnotationToBeMarkedIncorrect": false,
-  "dataset": "audio"
-}
-```
-
-* Classification: Same format as other datasets
-
-### Audio Text / PDF
-
-* Only supports Classification annotations
-</Card>
-
----
-
-<Card title="Main Annotation Question Types" icon="layout-template">
-There are <strong>two main types of annotation question</strong> that you can create:
-
-**A. Object-Based** (e.g., draw bounding boxes, polygons, dots, polylines)  
-Used when you want users to draw or mark things directly on an image.
-
-**B. Classification** (e.g., dropdowns, booleans, radio buttons)  
-Used when users answer a question based on the image without drawing.
-</Card>
-
-## 2. Object-Based Questions
-
-<Card title="Required Fields for Object-Based Questions" icon="asterisk">
-  
-| Field | Description |
-|---|---|
-| class | The label or name of the object (e.g., “Car”) |
-| objectType | Shape of the object: BoundingBox, polygon, dot, polyline |
-| dataset | Always set to image / video / audio |
-
-</Card>
-
-<Card title="Optional Fields for Object-Based Questions" icon="option">
-  
-| Field | Description |
-|---|---|
-| color | Color code to display the object (e.g., "#FF0000") |
-| uniqueKey | Unique ID for the object (auto-generated if not given) |
-| attributes | Extra details for the object. See example below for full JSON structure. |
-| allowAnnotationToBeMarkedIncorrect | Allow marking if drawn incorrectly (default: false) |
-| customer_question_id | If you’re linking to another system, otherwise leave null |
-| mode | Display mode, usually “edit” |
-
-</Card>
-
-```json Attributes Field Example lines icon="list-tree"
-{
-  "color": "#00CED1",
-  "class": "obj3",
-  "uniqueKey": "<object_unique_key>",
-  "objectType": "polyline",
-  "attributes": [
-    {
-      "key": "<unique_id>",
-      "componentClass": "obj_3_class",
-      "annotation": "select",
-      "required": false,
-      "options": [
-        {
-          "key": "<option_1_id>",
-          "value": "ab",
-          "color": "#343df3"
-        },
-        {
-          "key": "<option_2_id>",
-          "value": "cd",
-          "color": "#a09060"
-        }
-      ],
-      "type": "attribute",
-      "sort": false,
-      "searchBar": false,
-      "defaultValue": false,
-      "notSureRemark": null,
-      "questionGuidelines": ""
-    }
-  ]
-}
-```
-
-<Card title="Object-Based Question Example" icon="code">
-```json Bounding Box Example lines icon="square"
-{
-  "class": "Car",
-  "objectType": "BoundingBox",
-  "dataset": "image",
-  "color": "#5F9EA0",
-  "uniqueKey": "<question_unique_key>",
-  "attributes": [],
-  "allowAnnotationToBeMarkedIncorrect": false
-}
-```
-</Card>
-
----
-
-## 3. Classification Questions
-
-<Card title="Classification Annotation Types" icon="list-check">
-Used for selecting or entering answers. Valid annotation types:
-
-* <code>boolean</code> (Yes/No , True/False , Yes/No/Not Sure)  
-* <code>radio</code> (Multiple options, one selection)  
-* <code>dropdown</code> (Multiple options in a dropdown)  
-* <code>select</code> (Alternate dropdown)
-
-<Note>
-  <code>annotation</code> (for classification questions) must be one of: <code>dropdown</code>, <code>select</code>, <code>radio</code>, or <code>boolean</code>.
-</Note>
-</Card>
-
-<Card title="Required Fields for Classification Questions" icon="asterisk">
-  
-| Field | Description |
-|---|---|
-| key | A unique identifier (string) |
-| componentClass | A short description or title of the question |
-| annotation | Input type: must be dropdown, select, radio, or boolean |
-
-</Card>
-
-<Card title="Optional Fields for Classification Questions" icon="option">
-  
-| Field | Description |
-|---|---|
-| required | Whether the question must be answered (true or false) |
-| options | List of selectable answers |
-| sort | If true, options will appear sorted alphabetically |
-| searchBar | Adds a search bar to options if there are many choices |
-| defaultValue | The default selected answer (if any) |
-| notSureRemark | Add an option like “Not sure” |
-| questionGuidelines | Helpful instructions or tips shown to the user |
-| question_metadata | Extra system data, usually left null |
-| autolabel | Auto-suggestion model config (used for ML-based predictions) |
-
-</Card>
-
-<Card title="Boolean Example" icon="toggle-on">
-  ```json Boolean Classification Example lines icon="toggle-on"
-  {
-    "key": "<unique_id>",
-    "componentClass": "Lighting Type",
-    "annotation": "boolean",
-    "required": false,
-    "options": [
-      { "key": "<yes_option_id>", "value": "Yes" },
-      { "key": "<no_option_id>", "value": "No" }
-    ],
-    "type": "classification",
-    "autolabel": {
-      "model_id": "gemini-1.5-flash",
-      "enabled": true
-    }
-  }
-  ```
-</Card>
-
-<Card title="Radio Buttons Example" icon="circle-dot">
-  ```json Radio Classification Example lines icon="circle-dot"
-  {
-    "key": "<unique_id>",
-    "componentClass": "Construction Presence",
-    "annotation": "radio",
-    "required": false,
-    "options": [
-      { "key": "<option_1_id>", "value": "Yes", "color": "#ed4a47" },
-      { "key": "<option_2_id>", "value": "No", "color": "#d9bedb" },
-      { "key": "<option_3_id>", "value": "None of the above", "color": "#ca7754" }
-    ],
-    "type": "classification",
-    "autolabel": {
-      "model_id": "gemini-2.0-flash",
-      "enabled": true
-    }
-  }
-  ```
-</Card>
-
-<Card title="Dropdown Example" icon="list-dropdown">
-  ```json Dropdown Classification Example lines icon="list-dropdown"
-  {
-    "key": "<unique_id>",
-    "componentClass": "Drop",
-    "annotation": "dropdown",
-    "required": false,
-    "options": [
-      { "key": "<option_a_id>", "value": "a", "color": "#f15d44" },
-      { "key": "<option_b_id>", "value": "b", "color": "#ad5fc7" },
-      { "key": "<option_c_id>", "value": "c", "color": "#48587e" }
-    ],
-    "type": "classification"
-  }
-  ```
-</Card>
-
----
-
-## 4. How to Structure the JSON File
-
-<Card title="Required Fields for SDK Questions" icon="asterisk">
-When using the SDK to create annotation guidelines, each question must include:
+<Card title="Required Fields" icon="asterisk">
+Every question you send through the SDK must include the fields below.
 
 | Field | Description | Required |
 |---|---|---|
-| question_number | Sequential number for the question (1, 2, 3, etc.) | Yes |
-| question_id | Unique identifier (UUID) for the question | Yes |
-| question | The text of the question or label name | Yes |
-| option_type | Type of annotation (polygon, BoundingBox, dropdown, select, radio, boolean, etc.) | Yes |
-| required | Whether the question must be answered (true/false) | Yes |
-| options | List of options for the question | Yes |
+| question_number | Sequential number for the question (1, 2, 3, …). | Yes |
+| question_id | Unique identifier (UUID) for the question. | Yes |
+| question | The user-facing label or prompt. | Yes |
+| option_type | Annotation type (for example `polygon`, `BoundingBox`, `dropdown`, `select`, `radio`, `boolean`, `input`). | Yes |
+| required | Set to `true` if the annotator must answer. | Yes |
+| options | Array of options. Use an empty array for free-input questions. | Yes |
 
 <Note>
-  Make sure to import `uuid` and use `str(uuid.uuid4())` to generate unique question IDs.
+  Generate `question_id` with `str(uuid.uuid4())` to avoid collisions. Reuse IDs only when you intentionally want to update an existing question.
 </Note>
 </Card>
 
-<Card title="Example File with Multiple Questions" icon="file-code">
-Put all your questions in a list `[]`. You can mix object and classification questions.
+## Examples
 
-```python Multiple Questions Example lines icon="list-check"
+<Card title="Multiple Questions Payload" icon="file-code">
+Group questions in a list when creating or updating a template.
+
+```python
 from labellerr.client import LabellerrClient
 from labellerr.core.projects import create_annotation_guideline
 import uuid
@@ -307,91 +40,68 @@ import uuid
 questions = [
   {
     "question_number": 1,
-    "question": "Test",
+    "question": "Draw crop boundary",
     "option_type": "polygon",
     "required": True,
     "question_id": str(uuid.uuid4()),
     "options": [
-      { "option_name": "#fe1236" }
+      { "option_name": "#5F9EA0" }
     ]
   },
   {
     "question_number": 2,
-    "question": "Test2",
+    "question": "Mark vehicle",
     "option_type": "BoundingBox",
     "required": True,
     "question_id": str(uuid.uuid4()),
     "options": [
-      { "option_name": "#afe126" }
+      { "option_name": "#FFAA00" }
     ]
   },
   {
     "question_number": 3,
-    "question": "Test-Input",
-    "option_type": "input",
-    "required": True,
-    "question_id": str(uuid.uuid4()),
-    "options": []
-  },
-  {
-    "question_number": 4,
-    "question": "Multi-Test",
-    "option_type": "select",
-    "required": True,
-    "question_id": str(uuid.uuid4()),
-    "options": [
-      { "option_name": "A" },
-      { "option_name": "B" },
-      { "option_name": "C" }
-    ]
-  },
-  {
-    "question_number": 5,
-    "question": "Test-Dropdown",
-    "option_type": "dropdown",
-    "required": True,
-    "question_id": str(uuid.uuid4()),
-    "options": [
-      { "option_name": "Sample A" },
-      { "option_name": "Sample B" }
-    ]
-  },
-  {
-    "question_number": 6,
-    "question": "Radio test",
+    "question": "Overall quality",
     "option_type": "radio",
     "required": True,
     "question_id": str(uuid.uuid4()),
     "options": [
-      { "option_name": "1" },
-      { "option_name": "2" }
+      { "option_name": "Good" },
+      { "option_name": "Average" },
+      { "option_name": "Poor" }
     ]
+  },
+  {
+    "question_number": 4,
+    "question": "Additional remarks",
+    "option_type": "input",
+    "required": False,
+    "question_id": str(uuid.uuid4()),
+    "options": []
   }
 ]
 
-# Create annotation guideline as a standalone template
 client = LabellerrClient(api_key, api_secret, client_id)
 template_id = create_annotation_guideline(
-    client=client, 
-    questions=questions, 
-    template_name='Testing-123', 
-    data_type='image'
+    client=client,
+    questions=questions,
+    template_name="Demo Template",
+    data_type="image"
 )
 print(f"Annotation template created with ID: {template_id}")
 ```
+</Card>
 
-### Single Question Example
+<Card title="Single Question Payload" icon="play">
+Use the same structure even if you only have one question.
 
-Here's a simple example with a single polygon question for video data:
-
-```python Single Question Example lines icon="play"
+```python
 from labellerr.core.projects import create_annotation_guideline
 import uuid
 
 questions = [
   {
     "question_number": 1,
-    "question": "Test_12345",
+    "question": "Track object across frames",
     "option_type": "polygon",
     "required": True,
     "question_id": str(uuid.uuid4()),
@@ -404,56 +114,30 @@ questions = [
 template_id = create_annotation_guideline(
     client=client,
     questions=questions,
-    template_name='SDK_template',
-    data_type='video'
+    template_name="SDK_template",
+    data_type="video"
 )
 
 print(f"Annotation template created with ID: {template_id}")
 ```
 </Card>
 
+## Optional Metadata
+
 <Note>
-  `question_metadata` denotes the attributes for object type questions (Bounding Box and Polygons). The structure of `question_metadata` is:
+  `question_metadata` contains nested attributes for object-based annotations when you need additional dropdowns or toggles per object. Include it only when the UI should capture extra properties.
 
-  ```json question_metadata Structure lines icon="sitemap"
-  {
-    "question_metadata": [
-      {
-        "key": "<unique id>",
-        "componentClass": "<name of the attribute>",
-        "annotation": "<type of the attribute>",
-        "required": "<boolean value>",
-        "searchBar": "<boolean value>",
-        "type": "attribute",
-        "options": [
-          { "key": "<unique id>", "value": "<option name>" }
-        ]
-      }
-    ]
-  }
-  ```
-
-  For example:
-
-  ```json question_metadata Example lines icon="sitemap"
+  ```json
   {
     "question_metadata": [
       {
         "key": "<unique_id>",
-        "componentClass": "Select the region of interest: ROI",
+        "componentClass": "Select the region of interest",
         "annotation": "select",
         "required": true,
         "options": [
-          {
-            "key": "<option_1_id>",
-            "value": "maize - Spotted stem borer",
-            "color": "#be410c"
-          },
-          {
-            "key": "<option_2_id>",
-            "value": "maize - Spotted stem borer",
-            "color": "#9203a0"
-          }
+          { "key": "<option_1_id>", "value": "ROI #1" },
+          { "key": "<option_2_id>", "value": "ROI #2" }
         ],
         "type": "attribute",
         "searchBar": true
@@ -462,5 +146,4 @@ print(f"Annotation template created with ID: {template_id}")
   }
   ```
 </Note>
-</Card>
 
