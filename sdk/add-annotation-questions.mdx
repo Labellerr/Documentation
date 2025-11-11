@@ -1,149 +1,294 @@
 ---
 title: "How to Add Annotation Questions"
-description: "Define the JSON structure required by the Labellerr SDK to create annotation questions."
+description: "Define annotation questions using Pydantic schemas in the Labellerr SDK for object detection and classification workflows."
 icon: circle-question
 ---
 
 <Card title="Overview" icon="circle-info">
-  The Labellerr SDK now expects a single JSON schema for every annotation question. Use the structure below to define questions for object-based and classification workflows.
+  The Labellerr SDK uses **Pydantic schemas** to define annotation questions. Use the `AnnotationQuestion` schema to create type-safe questions for object-based annotations (bounding boxes, polygons, etc.) and classification workflows (dropdowns, radio buttons, etc.).
 </Card>
 
 ## Required Question Structure
 
-<Card title="Required Fields" icon="asterisk">
-Every question you send through the SDK must include the fields below.
+<Card title="Using AnnotationQuestion Schema" icon="asterisk">
+Every question must be defined using the `AnnotationQuestion` schema with the following fields:
 
-| Field | Description | Required |
-|---|---|---|
-| question_number | Sequential number for the question (1, 2, 3, …). | Yes |
-| question_id | Unique identifier (UUID) for the question. | Yes |
-| question | The user-facing label or prompt. | Yes |
-| option_type | Annotation type (for example `polygon`, `BoundingBox`, `dropdown`, `select`, `radio`, `boolean`, `input`). | Yes |
-| required | Set to `true` if the annotator must answer. | Yes |
-| options | Array of options. Use an empty array for free-input questions. | Yes |
+| Field | Type | Required | Description |
+|---|---|---|---|
+| `question_number` | `int` | Yes | Sequential number for the question (1, 2, 3, …) |
+| `question_id` | `str` | Yes | Unique identifier (UUID) - generate with `str(uuid.uuid4())` |
+| `question` | `str` | Yes | The user-facing label or prompt |
+| `question_type` | `QuestionType` | Yes | Enum value (e.g., `QuestionType.polygon`, `QuestionType.dropdown`) |
+| `required` | `bool` | Yes | Set to `True` if the annotator must answer |
+| `color` | `str` | Conditional | Required for object types (bounding_box, polygon, polyline, dot) |
+| `options` | `List[Option]` | Conditional | Required for classification types (dropdown, radio, select, boolean) |
 
 <Note>
-  Generate `question_id` with `str(uuid.uuid4())` to avoid collisions. Reuse IDs only when you intentionally want to update an existing question.
+  **Object-based questions** (bounding_box, polygon, polyline, dot) require a `color` parameter (hex code).
+  
+  **Classification questions** (dropdown, radio, select, boolean) require `options` as a list of `Option` objects.
+  
+  **Input questions** don't require either `color` or `options`.
 </Note>
 </Card>
+
+---
+
+## Question Types Reference
+
+<Accordion title="Available Question Types">
+  
+**Object-Based Annotations:**
+- `QuestionType.bounding_box` - Rectangle annotations
+- `QuestionType.polygon` - Multi-point polygon shapes
+- `QuestionType.polyline` - Connected line segments
+- `QuestionType.dot` - Single point markers
+
+**Classification Annotations:**
+- `QuestionType.dropdown` - Single selection dropdown
+- `QuestionType.radio` - Radio button selection
+- `QuestionType.select` - Multi-select options
+- `QuestionType.boolean` - Yes/No toggle
+- `QuestionType.input` - Free text input
+
+**Specialized:**
+- `QuestionType.stt` - Speech-to-text
+- `QuestionType.imc` - Image classification
+
+</Accordion>
+
+---
 
 ## Examples
 
-<Card title="Multiple Questions Payload" icon="file-code">
-Group questions in a list when creating or updating a template.
+<Card title="Multiple Questions Template" icon="file-code">
+Create a template with multiple question types including object detection and classification:
 
 ```python
 from labellerr.client import LabellerrClient
-from labellerr.core.projects import create_annotation_guideline
+from labellerr.core.annotation_templates import create_template
+from labellerr.core.schemas import (
+    CreateTemplateParams,
+    AnnotationQuestion,
+    QuestionType,
+    Option,
+    DatasetDataType
+)
 import uuid
 
+# Initialize client
+client = LabellerrClient(
+    api_key='your_api_key',
+    api_secret='your_api_secret',
+    client_id='your_client_id'
+)
+
+# Define questions using schema
 questions = [
-  {
-    "question_number": 1,
-    "question": "Draw crop boundary",
-    "option_type": "polygon",
-    "required": True,
-    "question_id": str(uuid.uuid4()),
-    "options": [
-      { "option_name": "#5F9EA0" }
-    ]
-  },
-  {
-    "question_number": 2,
-    "question": "Mark vehicle",
-    "option_type": "BoundingBox",
-    "required": True,
-    "question_id": str(uuid.uuid4()),
-    "options": [
-      { "option_name": "#FFAA00" }
-    ]
-  },
-  {
-    "question_number": 3,
-    "question": "Overall quality",
-    "option_type": "radio",
-    "required": True,
-    "question_id": str(uuid.uuid4()),
-    "options": [
-      { "option_name": "Good" },
-      { "option_name": "Average" },
-      { "option_name": "Poor" }
-    ]
-  },
-  {
-    "question_number": 4,
-    "question": "Additional remarks",
-    "option_type": "input",
-    "required": False,
-    "question_id": str(uuid.uuid4()),
-    "options": []
-  }
+    AnnotationQuestion(
+        question_number=1,
+        question="Draw crop boundary",
+        question_type=QuestionType.polygon,
+        required=True,
+        question_id=str(uuid.uuid4()),
+        color="#5F9EA0"  # Hex color for object types
+    ),
+    AnnotationQuestion(
+        question_number=2,
+        question="Mark vehicle",
+        question_type=QuestionType.bounding_box,
+        required=True,
+        question_id=str(uuid.uuid4()),
+        color="#FFAA00"
+    ),
+    AnnotationQuestion(
+        question_number=3,
+        question="Overall quality",
+        question_type=QuestionType.radio,
+        required=True,
+        question_id=str(uuid.uuid4()),
+        options=[
+            Option(option_name="Good"),
+            Option(option_name="Average"),
+            Option(option_name="Poor")
+        ]
+    ),
+    AnnotationQuestion(
+        question_number=4,
+        question="Additional remarks",
+        question_type=QuestionType.input,
+        required=False,
+        question_id=str(uuid.uuid4())
+    )
 ]
 
-client = LabellerrClient(api_key, api_secret, client_id)
-template_id = create_annotation_guideline(
+# Create template
+template = create_template(
     client=client,
-    questions=questions,
-    template_name="Demo Template",
-    data_type="image"
+    params=CreateTemplateParams(
+        template_name="Demo Template",
+        data_type=DatasetDataType.image,
+        questions=questions
+    )
 )
-print(f"Annotation template created with ID: {template_id}")
+
+print(f"Template created: {template.annotation_template_id}")
 ```
 </Card>
 
-<Card title="Single Question Payload" icon="play">
-Use the same structure even if you only have one question.
+---
+
+<Card title="Single Question Template" icon="play">
+Create a simple template with a single annotation question:
 
 ```python
-from labellerr.core.projects import create_annotation_guideline
+from labellerr.client import LabellerrClient
+from labellerr.core.annotation_templates import create_template
+from labellerr.core.schemas import (
+    CreateTemplateParams,
+    AnnotationQuestion,
+    QuestionType,
+    DatasetDataType
+)
 import uuid
 
-questions = [
-  {
-    "question_number": 1,
-    "question": "Track object across frames",
-    "option_type": "polygon",
-    "required": True,
-    "question_id": str(uuid.uuid4()),
-    "options": [
-      { "option_name": "#FE1236" }
-    ]
-  }
-]
-
-template_id = create_annotation_guideline(
-    client=client,
-    questions=questions,
-    template_name="SDK_template",
-    data_type="video"
+client = LabellerrClient(
+    api_key='your_api_key',
+    api_secret='your_api_secret',
+    client_id='your_client_id'
 )
 
-print(f"Annotation template created with ID: {template_id}")
+questions = [
+    AnnotationQuestion(
+        question_number=1,
+        question="Track object across frames",
+        question_type=QuestionType.polygon,
+        required=True,
+        question_id=str(uuid.uuid4()),
+        color="#FE1236"
+    )
+]
+
+template = create_template(
+    client=client,
+    params=CreateTemplateParams(
+        template_name="Video Tracking Template",
+        data_type=DatasetDataType.video,
+        questions=questions
+    )
+)
+
+print(f"Template created: {template.annotation_template_id}")
 ```
 </Card>
 
-## Optional Metadata
+---
 
-<Note>
-  `question_metadata` contains nested attributes for object-based annotations when you need additional dropdowns or toggles per object. Include it only when the UI should capture extra properties.
+<Card title="Classification Only Template" icon="list-check">
+Create a template with only classification questions (no object detection):
 
-  ```json
-  {
-    "question_metadata": [
-      {
-        "key": "<unique_id>",
-        "componentClass": "Select the region of interest",
-        "annotation": "select",
-        "required": true,
-        "options": [
-          { "key": "<option_1_id>", "value": "ROI #1" },
-          { "key": "<option_2_id>", "value": "ROI #2" }
-        ],
-        "type": "attribute",
-        "searchBar": true
-      }
-    ]
-  }
-  ```
-</Note>
+```python
+from labellerr.client import LabellerrClient
+from labellerr.core.annotation_templates import create_template
+from labellerr.core.schemas import (
+    CreateTemplateParams,
+    AnnotationQuestion,
+    QuestionType,
+    Option,
+    DatasetDataType
+)
+import uuid
 
+client = LabellerrClient(
+    api_key='your_api_key',
+    api_secret='your_api_secret',
+    client_id='your_client_id'
+)
+
+questions = [
+    AnnotationQuestion(
+        question_number=1,
+        question="Image category",
+        question_type=QuestionType.dropdown,
+        required=True,
+        question_id=str(uuid.uuid4()),
+        options=[
+            Option(option_name="Nature"),
+            Option(option_name="Urban"),
+            Option(option_name="Portrait")
+        ]
+    ),
+    AnnotationQuestion(
+        question_number=2,
+        question="Contains people?",
+        question_type=QuestionType.boolean,
+        required=True,
+        question_id=str(uuid.uuid4()),
+        options=[
+            Option(option_name="Yes"),
+            Option(option_name="No")
+        ]
+    ),
+    AnnotationQuestion(
+        question_number=3,
+        question="Tags",
+        question_type=QuestionType.select,
+        required=False,
+        question_id=str(uuid.uuid4()),
+        options=[
+            Option(option_name="Outdoor"),
+            Option(option_name="Indoor"),
+            Option(option_name="Daytime"),
+            Option(option_name="Nighttime")
+        ]
+    )
+]
+
+template = create_template(
+    client=client,
+    params=CreateTemplateParams(
+        template_name="Image Classification Template",
+        data_type=DatasetDataType.image,
+        questions=questions
+    )
+)
+
+print(f"Template created: {template.annotation_template_id}")
+```
+</Card>
+
+---
+
+## Best Practices
+
+<CardGroup cols={2}>
+  <Card title="Unique Question IDs" icon="fingerprint">
+    Always generate unique question IDs using `str(uuid.uuid4())` to avoid conflicts. Reuse IDs only when intentionally updating an existing question.
+  </Card>
+  
+  <Card title="Sequential Numbering" icon="list-ol">
+    Ensure `question_number` values are sequential (1, 2, 3, ...) to maintain proper ordering in the annotation interface.
+  </Card>
+  
+  <Card title="Color Selection" icon="palette">
+    Use distinct hex colors for different object types to make them easily distinguishable in the annotation interface.
+  </Card>
+  
+  <Card title="Clear Labels" icon="tag">
+    Write concise, descriptive question text that clearly communicates what annotators should label.
+  </Card>
+</CardGroup>
+
+---
+
+## Related Documentation
+
+<CardGroup cols={2}>
+  <Card title="Create Annotation Templates" icon="template" href="/sdk/create-annotation-template-sdk">
+    Full guide on creating and managing annotation templates
+  </Card>
+  
+  <Card title="Create Projects" icon="folder-tree" href="/sdk/create-project-sdk">
+    Learn how to create projects using annotation templates
+  </Card>
+</CardGroup>
