@@ -97,7 +97,10 @@ from labellerr.core.files import LabellerrFile
 # For cloud connections
 from labellerr.core.connectors import (
     LabellerrS3Connection,
-    LabellerrGCSConnection
+    LabellerrGCSConnection,
+    create_connection,
+    list_connections,
+    delete_connection
 )
 
 # For error handling
@@ -105,3 +108,203 @@ from labellerr.core.exceptions import LabellerrError
 ```
 
 Replace `'your-api-key'` and `'your-api-secret'` with your actual credentials provided by Labellerr.
+
+---
+
+## Working with Cloud Connections
+
+The Labellerr SDK supports seamless integration with cloud storage providers like AWS S3 and Google Cloud Storage (GCS). You can create, test, list, and manage connections programmatically.
+
+### Creating and Testing Connections
+
+<Tabs>
+  <Tab title="AWS S3 Connection">
+    <Info>
+      **S3 Connection with Explicit Path Testing**
+      
+      For AWS S3 connections, you must provide a specific path to test the connection. The SDK will validate access to that exact path in your S3 bucket.
+    </Info>
+
+```python Create and Test S3 Connection
+from labellerr.client import LabellerrClient
+from labellerr.core.connectors import LabellerrS3Connection
+from labellerr.core.schemas import AWSConnectionParams, AWSConnectionTestParams
+from labellerr.core.exceptions import LabellerrError
+
+# Initialize client
+client = LabellerrClient(api_key, api_secret, client_id)
+
+try:
+    # Test S3 connection first (recommended)
+    test_params = AWSConnectionTestParams(
+        aws_access_key="your_aws_access_key",
+        aws_secrets_key="your_aws_secret_key",
+        path="s3://your-bucket-name/path/to/data",  # Explicit path required
+        data_type="image",
+        connection_type="import"
+    )
+    
+    test_result = LabellerrS3Connection.test_connection(client, test_params)
+    print(f"Connection test result: {test_result}")
+    
+    # If test succeeds, create the connection
+    connection_params = AWSConnectionParams(
+        client_id=client_id,
+        aws_access_key="your_aws_access_key",
+        aws_secrets_key="your_aws_secret_key",
+        s3_path="s3://your-bucket-name/path/to/data",
+        data_type="image",
+        name="My S3 Connection",
+        description="Production data bucket",
+        connection_type="import"
+    )
+    
+    # create_connection automatically tests before creating
+    s3_connection = LabellerrS3Connection.create_connection(client, connection_params)
+    print(f"✓ S3 Connection created: {s3_connection.connection_id}")
+    
+except LabellerrError as e:
+    print(f"Connection failed: {str(e)}")
+```
+
+<Note>
+**Path Validation:**
+- The path must be accessible with the provided credentials
+- Path format: `s3://bucket-name/folder/subfolder`
+- Test fails if permissions are insufficient or path doesn't exist
+</Note>
+
+  </Tab>
+  
+  <Tab title="GCS Connection">
+    <Info>
+      **GCS Connection with Service Account**
+      
+      For Google Cloud Storage, you need to provide a service account JSON file. The connection test validates both credentials and path access.
+    </Info>
+
+```python Create and Test GCS Connection
+from labellerr.client import LabellerrClient
+from labellerr.core.connectors import LabellerrGCSConnection
+from labellerr.core.schemas import GCSConnectionParams, GCSConnectionTestParams
+from labellerr.core.exceptions import LabellerrError
+
+# Initialize client
+client = LabellerrClient(api_key, api_secret, client_id)
+
+try:
+    # Test GCS connection first (recommended)
+    test_params = GCSConnectionTestParams(
+        svc_account_json="/path/to/service-account.json",
+        path="gs://your-bucket-name/path/to/data",
+        data_type="image",
+        connection_type="import"
+    )
+    
+    test_result = LabellerrGCSConnection.test_connection(client, test_params)
+    print(f"Connection test result: {test_result}")
+    
+    # If test succeeds, create the connection
+    connection_params = GCSConnectionParams(
+        client_id=client_id,
+        svc_account_json="/path/to/service-account.json",
+        gcs_path="gs://your-bucket-name/path/to/data",
+        data_type="image",
+        name="My GCS Connection",
+        description="Production GCS bucket",
+        connection_type="import"
+    )
+    
+    # create_connection automatically tests before creating
+    gcs_connection = LabellerrGCSConnection.create_connection(client, connection_params)
+    print(f"✓ GCS Connection created: {gcs_connection.connection_id}")
+    
+except LabellerrError as e:
+    print(f"Connection failed: {str(e)}")
+```
+
+<Note>
+**Service Account Requirements:**
+- Service account must have `Storage Object Viewer` permission (minimum)
+- JSON key file must be valid and accessible
+- Path must exist in the specified GCS bucket
+</Note>
+
+  </Tab>
+  
+  <Tab title="List & Manage Connections">
+```python List and Manage Connections
+from labellerr.client import LabellerrClient
+from labellerr.core.connectors import list_connections, delete_connection
+from labellerr.core.schemas import ConnectorType, ConnectionType
+from labellerr.core.exceptions import LabellerrError
+
+# Initialize client
+client = LabellerrClient(api_key, api_secret, client_id)
+
+try:
+    # List all S3 connections
+    s3_connections = list_connections(
+        client=client,
+        connector=ConnectorType._S3,
+        connection_type=ConnectionType.IMPORT
+    )
+    
+    print("Available S3 Connections:")
+    for conn in s3_connections:
+        print(f"- ID: {conn.connection_id}")
+    
+    # List all GCS connections
+    gcs_connections = list_connections(
+        client=client,
+        connector=ConnectorType._GCS
+    )
+    
+    print("Available GCS Connections:")
+    for conn in gcs_connections:
+        print(f"- ID: {conn.connection_id}")
+    
+    # Delete a connection if needed
+    # delete_response = delete_connection(client, connection_id="connection_id_here")
+    # print(f"Connection deleted: {delete_response}")
+    
+except LabellerrError as e:
+    print(f"Operation failed: {str(e)}")
+```
+  </Tab>
+</Tabs>
+
+<Warning>
+**Connection Testing Best Practices**
+
+Always test your connection before creating datasets:
+- **Explicit Path Testing (S3)**: Provide the exact S3 path you'll use for data access
+- **Implicit Validation (GCS)**: GCS connections validate both credentials and path accessibility
+- **Error Handling**: Wrap connection operations in try-except blocks
+- **Credential Security**: Never hardcode credentials; use environment variables or secret managers
+</Warning>
+
+---
+
+## Using Connections with Datasets
+
+Once you've created and tested a connection, you can use it to create datasets:
+
+```python Create Dataset from Cloud Connection
+from labellerr.core.datasets import create_dataset_from_connection
+from labellerr.core.schemas import DatasetConfig
+
+# Using the created connection
+dataset = create_dataset_from_connection(
+    client=client,
+    dataset_config=DatasetConfig(
+        dataset_name="Cloud Dataset",
+        data_type="image",
+        dataset_description="Dataset from cloud storage"
+    ),
+    connection=s3_connection,  # or gcs_connection
+    path="s3://your-bucket-name/path/to/data"  # Specific path in the bucket
+)
+
+print(f"✓ Dataset created: {dataset.dataset_id}")
+```

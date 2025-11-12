@@ -6,32 +6,30 @@ icon: database
 
 ### Retrieving All Projects for a Client
 
----
-
-You can retrieve all projects associated with a specific client ID using the following method:
+You can retrieve all projects associated with a specific client ID using the SDK's project listing functionality:
 
 #### Example Usage:
 
 ```python Retrieve All Projects lines icon="folder-open"
 from labellerr.client import LabellerrClient
-from labellerr.core.projects import LabellerrProject
+from labellerr.core.projects import list_projects
 from labellerr.core.exceptions import LabellerrError
 
 # Initialize the client with your API credentials
 client = LabellerrClient(api_key, api_secret, client_id)
 
 try:
-    # Use static method to list all projects
-    result = LabellerrProject.list_all_projects(client)
-
-    # Check if projects were retrieved successfully
-    if result and 'response' in result:
-        projects = result['response']
-        print(f"Found {len(projects)} projects:")
-        for project in projects:
-            print(f"- Project ID: {project.get('project_id')}")
-            print(f"  Name: {project.get('project_name')}")
-            print(f"  Type: {project.get('data_type')}")
+    # List all projects - returns list of LabellerrProject objects
+    projects = list_projects(client)
+    
+    print(f"Found {len(projects)} projects:")
+    for project in projects:
+        print(f"- Project ID: {project.project_id}")
+        print(f"  Data Type: {project.data_type}")
+        print(f"  Attached Datasets: {len(project.attached_datasets)}")
+        print(f"  Created By: {project.created_by}")
+        print(f"  Status Code: {project.status_code}")
+        
 except LabellerrError as e:
     print(f"Failed to retrieve projects: {str(e)}")
 ```
@@ -40,47 +38,44 @@ This method is useful when you need to:
 
 *   List all projects for a client
 *   Find specific project IDs
-*   Check project statuses
+*   Check project statuses and configurations
 *   Get an overview of client's work
+*   Access project properties programmatically
 
-The response includes detailed information about each project, including its ID, name, data type, and other relevant metadata.
-
----
+This returns a list of `LabellerrProject` objects, each with access to properties like `project_id`, `data_type`, `attached_datasets`, `created_by`, and more.
 
 ### Retrieving All Datasets
 
----
-
-You can retrieve both linked and unlinked datasets associated with a client using the following method:
+You can retrieve both linked and unlinked datasets associated with a client using the SDK's dataset listing capabilities:
 
 #### Example Usage:
 
 ```python Retrieve All Datasets lines icon="database"
 from labellerr.client import LabellerrClient
-from labellerr.core.datasets import LabellerrDataset
+from labellerr.core.datasets import list_datasets
+from labellerr.core.schemas import DataSetScope
 from labellerr.core.exceptions import LabellerrError
 
 # Initialize the client with your API credentials
 client = LabellerrClient(api_key, api_secret, client_id)
-data_type = 'image'
-project_id = 'your_project_id'
-scope = 'client'
 
 try:
-    # Get all datasets using the static method with auto-pagination
-    datasets = LabellerrDataset.get_all_datasets(
+    # Get all datasets using list_datasets with auto-pagination
+    datasets_generator = list_datasets(
         client=client,
-        datatype=data_type,
-        scope=scope,
+        datatype='image',
+        scope=DataSetScope.client,  # or DataSetScope.project
         page_size=-1  # Auto-paginate through all datasets
     )
     
     # Iterate through the generator
     print("Datasets:")
-    for dataset in datasets:
+    for dataset in datasets_generator:
         print(f"- Dataset ID: {dataset.get('dataset_id')}")
         print(f"  Name: {dataset.get('name')}")
         print(f"  Description: {dataset.get('description')}")
+        print(f"  Data Type: {dataset.get('data_type')}")
+        print(f"  Files Count: {dataset.get('files_count', 0)}")
 
 except LabellerrError as e:
     print(f"Failed to retrieve datasets: {str(e)}")
@@ -88,24 +83,105 @@ except LabellerrError as e:
 
 <Note>
 **Pagination Support:**
-- The method returns a **generator** that yields individual datasets
+- Returns a **generator** that yields individual datasets
 - Use `page_size=-1` to automatically paginate through all datasets (recommended)
 - Use specific `page_size` to limit results (e.g., `page_size=20`)
 - Use `last_dataset_id` for manual pagination across multiple requests
+- Generator approach is memory-efficient for large numbers of datasets
 </Note>
+
+<Tip>
+**Available Scope Options:**
+- `DataSetScope.client` - Datasets with client-level permissions
+- `DataSetScope.project` - Datasets with project-level permissions
+</Tip>
 
 This method is useful when you need to:
 
 *   Get a comprehensive list of all datasets in your workspace
-*   Filter datasets by specific data types (image, video, audio, etc.)
+*   Filter datasets by specific data types (image, video, audio, document, text)
 *   Organize datasets by scope (client-level or project-level permissions)
 *   Efficiently iterate through large numbers of datasets with pagination
+*   Memory-efficient processing of datasets using generators
 
----
+#### Advanced Pagination Examples
+
+<Tabs>
+<Tab title="Auto-Pagination (Recommended)">
+
+```python Auto-Paginate Through All Datasets
+from labellerr.core.datasets import list_datasets
+from labellerr.core.schemas import DataSetScope
+
+# Auto-paginate through all datasets (memory-efficient)
+all_datasets = list_datasets(
+    client=client,
+    datatype='image',
+    scope=DataSetScope.client,
+    page_size=-1  # Automatically handles all pages
+)
+
+# Process datasets as they're retrieved
+for dataset in all_datasets:
+    print(f"Processing dataset: {dataset.get('name')}")
+    # Do something with each dataset
+```
+
+</Tab>
+
+<Tab title="Fixed Page Size">
+
+```python Get Specific Number of Datasets
+from labellerr.core.datasets import list_datasets
+from labellerr.core.schemas import DataSetScope
+
+# Get only first 20 datasets
+datasets = list_datasets(
+    client=client,
+    datatype='video',
+    scope=DataSetScope.client,
+    page_size=20
+)
+
+# Convert generator to list
+dataset_list = list(datasets)
+print(f"Retrieved {len(dataset_list)} datasets")
+```
+
+</Tab>
+
+<Tab title="Manual Pagination">
+
+```python Manual Pagination Across Requests
+from labellerr.core.datasets import list_datasets
+from labellerr.core.schemas import DataSetScope
+
+# First page
+page_1 = list(list_datasets(
+    client=client,
+    datatype='image',
+    scope=DataSetScope.client,
+    page_size=10
+))
+
+# Get last dataset ID for next page
+last_id = page_1[-1].get('dataset_id') if page_1 else None
+
+# Second page using last_dataset_id
+if last_id:
+    page_2 = list(list_datasets(
+        client=client,
+        datatype='image',
+        scope=DataSetScope.client,
+        page_size=10,
+        last_dataset_id=last_id
+    ))
+```
+
+</Tab>
+</Tabs>
 
 ### Retrieving Files from a Dataset
-
----
 
 You can fetch all files from a specific dataset using the `fetch_files()` method:
 
@@ -143,11 +219,7 @@ This method is useful when you need to:
 *   Verify dataset contents
 *   Build custom file processing workflows
 
----
-
 ### Working with Projects and Datasets
-
----
 
 #### Get Project Information
 
@@ -224,11 +296,7 @@ except LabellerrError as e:
 **Important:** When detaching datasets from a project, the method no longer requires `client_id` and `project_id` parameters as these are automatically derived from the project instance.
 </Note>
 
----
-
 ### Bulk Assign Files
-
----
 
 You can bulk assign multiple files to a new status in a project, optionally assigning them to a specific user.
 
@@ -294,11 +362,7 @@ result = project.bulk_assign_files(
 )
 ```
 
----
-
 ### Error Handling
-
----
 
 The Labellerr SDK uses a custom exception class, `LabellerrError`, to indicate issues during API interactions. Always wrap your function calls in `try-except` blocks to gracefully handle errors.
 
@@ -315,6 +379,164 @@ try:
 except LabellerrError as e:
     print(f"An error occurred: {str(e)}")
 ```
+
+---
+
+## API Reference
+
+### Function Signatures
+
+<AccordionGroup>
+<Accordion title="list_projects(client)" icon="folder">
+
+```python
+from labellerr.core.projects import list_projects
+
+def list_projects(client: LabellerrClient) -> list[LabellerrProject]:
+    """
+    Retrieves a list of projects associated with a client ID.
+    
+    Parameters:
+        client: LabellerrClient instance
+        
+    Returns:
+        List of LabellerrProject objects with properties:
+        - project_id: str
+        - data_type: str
+        - attached_datasets: list
+        - created_by: str
+        - created_at: datetime
+        - annotation_template_id: str
+        - status_code: int
+    """
+```
+
+**Example:**
+
+```python
+projects = list_projects(client)
+for project in projects:
+    print(f"{project.project_id}: {project.data_type}")
+```
+
+</Accordion>
+
+<Accordion title="list_datasets(client, datatype, scope, page_size, last_dataset_id)" icon="database">
+
+```python
+from labellerr.core.datasets import list_datasets
+from labellerr.core.schemas import DataSetScope
+
+def list_datasets(
+    client: LabellerrClient,
+    datatype: str,
+    scope: DataSetScope,
+    page_size: int = 10,
+    last_dataset_id: str = None
+) -> Generator:
+    """
+    Retrieves datasets by parameters with pagination support.
+    
+    Parameters:
+        client: LabellerrClient instance
+        datatype: Type of data ('image', 'video', 'audio', 'document', 'text')
+        scope: DataSetScope.client or DataSetScope.project
+        page_size: Number of datasets per page (default: 10, -1 for auto-pagination)
+        last_dataset_id: ID of last dataset from previous page (for manual pagination)
+        
+    Returns:
+        Generator yielding dataset dictionaries with keys:
+        - dataset_id: str
+        - name: str
+        - description: str
+        - data_type: str
+        - files_count: int
+        - created_at: datetime
+        - created_by: str
+    """
+```
+
+**Examples:**
+
+```python
+# Auto-paginate through all
+for dataset in list_datasets(client, 'image', DataSetScope.client, page_size=-1):
+    print(dataset['name'])
+
+# Get first 20 only
+datasets = list(list_datasets(client, 'video', DataSetScope.client, page_size=20))
+```
+
+</Accordion>
+
+<Accordion title="LabellerrDataset.fetch_files()" icon="file">
+
+```python
+from labellerr.core.datasets import LabellerrDataset
+
+dataset = LabellerrDataset(client=client, dataset_id="dataset_id")
+files = dataset.fetch_files()
+```
+
+**Returns:**
+
+List of file dictionaries with metadata including:
+- file_id: str
+- file_name: str
+- status: str
+- file_type: str
+- file_size: int
+
+</Accordion>
+
+<Accordion title="LabellerrProject - Properties" icon="folder-tree">
+
+```python
+from labellerr.core.projects import LabellerrProject
+
+project = LabellerrProject(client=client, project_id="project_id")
+
+# Available properties:
+project.project_id           # str: Project identifier
+project.data_type            # str: Data type (image, video, etc.)
+project.attached_datasets    # list: List of dataset IDs
+project.created_by           # str: Creator email
+project.created_at           # datetime: Creation timestamp
+project.annotation_template_id  # str: Template ID
+project.status_code          # int: Project status code
+```
+
+**Methods:**
+- `attach_dataset_to_project(dataset_id=None, dataset_ids=None)`
+- `detach_dataset_from_project(dataset_id=None, dataset_ids=None)`
+- `bulk_assign_files(file_ids, new_status, assign_to=None)`
+- `upload_preannotations(annotation_format, annotation_file, conf_bucket=None, _async=False)`
+- `create_export(export_config)`
+
+</Accordion>
+</AccordionGroup>
+
+---
+
+## Best Practices
+
+<CardGroup cols={2}>
+  <Card title="Use Auto-Pagination" icon="arrows-rotate">
+    Set `page_size=-1` for `list_datasets()` to automatically handle all pages without manual intervention
+  </Card>
+  
+  <Card title="Leverage Generators" icon="memory">
+    Process datasets as they're retrieved instead of loading all into memory at once
+  </Card>
+  
+  <Card title="Filter by Scope" icon="filter">
+    Use `DataSetScope.client` for workspace-level datasets or `DataSetScope.project` for project-specific ones
+  </Card>
+  
+  <Card title="Error Handling" icon="shield-check">
+    Always wrap API calls in try-except blocks to catch `LabellerrError` exceptions
+  </Card>
+</CardGroup>
 
 ---
 
