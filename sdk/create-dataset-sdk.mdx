@@ -34,7 +34,11 @@ A **dataset** in Labellerr is a standalone collection of files (images, videos, 
 ```python Required Imports lines icon="code"
 from labellerr.client import LabellerrClient
 from labellerr.core.schemas import DatasetConfig
-from labellerr.core.datasets import create_dataset, LabellerrDataset
+from labellerr.core.datasets import (
+    create_dataset_from_local,
+    create_dataset_from_connection,
+    LabellerrDataset
+)
 ```
 
 ---
@@ -47,21 +51,25 @@ from labellerr.core.datasets import create_dataset, LabellerrDataset
 ```python Create Dataset with Folder lines icon="folder-open"
 from labellerr.client import LabellerrClient
 from labellerr.core.schemas import DatasetConfig
-from labellerr.core.datasets import create_dataset
+from labellerr.core.datasets import create_dataset_from_local
 
-client = LabellerrClient(api_key='your_api_key', api_secret='your_api_secret', client_id='your_client_id')
+client = LabellerrClient(
+    api_key='your_api_key',
+    api_secret='your_api_secret',
+    client_id='your_client_id'
+)
 
-dataset = create_dataset(
+dataset = create_dataset_from_local(
     client=client,
     dataset_config=DatasetConfig(
         dataset_name="My Image Dataset",
         dataset_description="A collection of images for object detection",
         data_type="image"
     ),
-    folder_to_upload="path/to/your/image/folder",
-    path="local"
+    folder_to_upload="path/to/your/image/folder"
 )
 
+dataset.create()
 print(f"Dataset created with ID: {dataset.dataset_id}")
 print(f"Total files: {dataset.files_count}")
 ```
@@ -79,11 +87,15 @@ print(f"Total files: {dataset.files_count}")
 ```python Create Dataset with File List lines icon="file"
 from labellerr.client import LabellerrClient
 from labellerr.core.schemas import DatasetConfig
-from labellerr.core.datasets import create_dataset
+from labellerr.core.datasets import create_dataset_from_local
 
-client = LabellerrClient(api_key='your_api_key', api_secret='your_api_secret', client_id='your_client_id')
+client = LabellerrClient(
+    api_key='your_api_key',
+    api_secret='your_api_secret',
+    client_id='your_client_id'
+)
 
-dataset = create_dataset(
+dataset = create_dataset_from_local(
     client=client,
     dataset_config=DatasetConfig(
         dataset_name="Curated Image Dataset",
@@ -106,37 +118,47 @@ print(f"Dataset created with ID: {dataset.dataset_id}")
 <Card title="Connect AWS S3 Bucket" icon="aws">
 ```python Create Dataset with AWS S3 lines icon="aws"
 from labellerr.client import LabellerrClient
-from labellerr.core.schemas import DatasetConfig
-from labellerr.core.datasets import create_dataset
-from labellerr import schemas
+from labellerr.core.schemas import DatasetConfig, AWSConnectionParams, DatasetDataType, ConnectionType
+from labellerr.core.datasets import create_dataset_from_connection
+from labellerr.core.connectors import LabellerrS3Connection
 
-client = LabellerrClient(api_key='your_api_key', api_secret='your_api_secret', client_id='your_client_id')
-
-# Configure AWS connector
-aws_config = schemas.AWSConnectorConfig(
-    bucket_name="my-s3-bucket",
-    access_key_id="your_aws_access_key",
-    secret_access_key="your_aws_secret_key",
-    region="us-east-1",
-    path="path/to/data/in/bucket"
+client = LabellerrClient(
+    api_key='your_api_key',
+    api_secret='your_api_secret',
+    client_id='your_client_id'
 )
 
-dataset = create_dataset(
+# Create AWS S3 connection
+s3_connection = LabellerrS3Connection.create_connection(
+    client=client,
+    params=AWSConnectionParams(
+        aws_access_key="your_aws_access_key",
+        aws_secrets_key="your_aws_secret_key",
+        path="s3://my-s3-bucket/path/to/data/",
+        data_type=DatasetDataType.image,
+        connection_type=ConnectionType._IMPORT,
+        name="My S3 Import Connection",
+        description="AWS S3 bucket for image datasets"
+    )
+)
+
+# Create dataset using the connection
+dataset = create_dataset_from_connection(
     client=client,
     dataset_config=DatasetConfig(
         dataset_name="S3 Image Dataset",
         dataset_description="Images stored in AWS S3",
-        data_type="image",
-        connector_type="aws"
+        data_type="image"
     ),
-    connector_config=aws_config
+    connection=s3_connection,
+    path="path/to/data/in/bucket"  # Relative path within the bucket
 )
 
 print(f"Dataset created with S3 connection: {dataset.dataset_id}")
 ```
 
 <Note>
-The SDK will create a connection to your S3 bucket and link it to the dataset. Files are accessed directly from S3 without local downloads.
+The SDK creates a connection to your S3 bucket and links it to the dataset. Files are accessed directly from S3 without local downloads.
 </Note>
 </Card>
 
@@ -147,29 +169,39 @@ The SDK will create a connection to your S3 bucket and link it to the dataset. F
 <Card title="Connect GCS Bucket" icon="google">
 ```python Create Dataset with GCS lines icon="google"
 from labellerr.client import LabellerrClient
-from labellerr.core.schemas import DatasetConfig
-from labellerr.core.datasets import create_dataset
-from labellerr import schemas
+from labellerr.core.schemas import DatasetConfig, GCSConnectionParams, DatasetDataType, ConnectionType
+from labellerr.core.datasets import create_dataset_from_connection
+from labellerr.core.connectors import LabellerrGCSConnection
 
-client = LabellerrClient(api_key='your_api_key', api_secret='your_api_secret', client_id='your_client_id')
-
-# Configure GCS connector
-gcs_config = schemas.GCPConnectorConfig(
-    bucket_name="my-gcs-bucket",
-    service_account_json="path/to/service-account-key.json",
-    project_id="your-gcp-project-id",
-    path="path/to/data/in/bucket"
+client = LabellerrClient(
+    api_key='your_api_key',
+    api_secret='your_api_secret',
+    client_id='your_client_id'
 )
 
-dataset = create_dataset(
+# Create GCS connection
+gcs_connection = LabellerrGCSConnection.create_connection(
+    client=client,
+    params=GCSConnectionParams(
+        svc_account_json="path/to/service-account-key.json",
+        path="gs://my-gcs-bucket/path/to/data/",
+        data_type=DatasetDataType.video,
+        connection_type=ConnectionType._IMPORT,
+        name="My GCS Import Connection",
+        description="Google Cloud Storage bucket for video datasets"
+    )
+)
+
+# Create dataset using the connection
+dataset = create_dataset_from_connection(
     client=client,
     dataset_config=DatasetConfig(
         dataset_name="GCS Video Dataset",
         dataset_description="Videos stored in Google Cloud Storage",
-        data_type="video",
-        connector_type="gcp"
+        data_type="video"
     ),
-    connector_config=gcs_config
+    connection=gcs_connection,
+    path="path/to/data/in/bucket"  # Relative path within the bucket
 )
 
 print(f"Dataset created with GCS connection: {dataset.dataset_id}")
@@ -180,32 +212,41 @@ print(f"Dataset created with GCS connection: {dataset.dataset_id}")
 
 ### Method 4: Use Existing Cloud Connection
 
-<Card title="Reuse Connection ID" icon="link">
+<Card title="Reuse Connection" icon="link">
 If you've already created a cloud connection, you can reuse it for new datasets:
 
 ```python Create Dataset with Existing Connection lines icon="link"
 from labellerr.client import LabellerrClient
 from labellerr.core.schemas import DatasetConfig
-from labellerr.core.datasets import create_dataset
+from labellerr.core.datasets import create_dataset_from_connection
+from labellerr.core.connectors import LabellerrConnection
 
-client = LabellerrClient(api_key='your_api_key', api_secret='your_api_secret', client_id='your_client_id')
+client = LabellerrClient(
+    api_key='your_api_key',
+    api_secret='your_api_secret',
+    client_id='your_client_id'
+)
 
-dataset = create_dataset(
+# Get existing connection
+connection = LabellerrConnection(client=client, connection_id="existing_connection_id_here")
+
+# Create dataset using existing connection
+dataset = create_dataset_from_connection(
     client=client,
     dataset_config=DatasetConfig(
         dataset_name="Reusing S3 Connection",
-        data_type="image",
-        connector_type="aws"
+        data_type="image"
     ),
-    connection_id="existing_connection_id_here"
+    connection=connection,
+    path="path/to/data/in/bucket"
 )
 
 print(f"Dataset created using existing connection: {dataset.dataset_id}")
 ```
 
-<Warning>
-**Important:** You cannot provide both `connection_id` and `connector_config`. Use one or the other.
-</Warning>
+<Note>
+**Connection Reuse:** You can create multiple datasets from the same connection by specifying different paths within your cloud storage.
+</Note>
 </Card>
 
 ---
@@ -219,7 +260,7 @@ print(f"Dataset created using existing connection: {dataset.dataset_id}")
 from labellerr.client import LabellerrClient
 from labellerr.core.datasets import LabellerrDataset
 
-client = LabellerrClient(api_key='your_api_key', api_secret='your_api_secret', client_id='your_client_id')
+client = LabellerrClient(api_key='your_api_key', api_secret='your_api_secret')
 
 dataset = LabellerrDataset(client=client, dataset_id="your_dataset_id")
 
@@ -246,7 +287,7 @@ print(f"Status Code: {dataset.status_code}")
 from labellerr.client import LabellerrClient
 from labellerr.core.datasets import LabellerrDataset
 
-client = LabellerrClient(api_key='your_api_key', api_secret='your_api_secret', client_id='your_client_id')
+client = LabellerrClient(api_key='your_api_key', api_secret='your_api_secret')
 
 dataset = LabellerrDataset(client=client, dataset_id="your_dataset_id")
 files = dataset.fetch_files()
@@ -268,7 +309,7 @@ Enable advanced AI-powered multimodal indexing for your dataset to enable semant
 from labellerr.client import LabellerrClient
 from labellerr.core.datasets import LabellerrDataset
 
-client = LabellerrClient(api_key='your_api_key', api_secret='your_api_secret', client_id='your_client_id')
+client = LabellerrClient(api_key='your_api_key', api_secret='your_api_secret')
 
 dataset = LabellerrDataset(client=client, dataset_id="your_dataset_id")
 result = dataset.enable_multimodal_indexing(is_multimodal=True)
@@ -296,7 +337,7 @@ Multimodal indexing uses AI to analyze and understand the content of your files 
 from labellerr.client import LabellerrClient
 from labellerr.core.datasets import LabellerrDataset
 
-client = LabellerrClient(api_key='your_api_key', api_secret='your_api_secret', client_id='your_client_id')
+client = LabellerrClient(api_key='your_api_key', api_secret='your_api_secret')
 
 dataset = LabellerrDataset(client=client, dataset_id="dataset_to_delete")
 result = dataset.delete_dataset(dataset_id=dataset.dataset_id)
@@ -320,15 +361,14 @@ For datasets connected to cloud storage (AWS S3 or GCS), you can sync to fetch n
 from labellerr.client import LabellerrClient
 from labellerr.core.datasets import LabellerrDataset
 
-client = LabellerrClient(api_key='your_api_key', api_secret='your_api_secret', client_id='your_client_id')
+client = LabellerrClient(api_key='your_api_key', api_secret='your_api_secret')
 
 dataset = LabellerrDataset(client=client, dataset_id="your_dataset_id")
 result = dataset.sync_datasets(
-    project_id="associated_project_id",
+    project="project", #pass entire object
     path="path/in/bucket",
     data_type="image",
-    email_id="user@example.com",
-    connection_id="your_connection_id"
+    connection=connection #pass entire object   
 )
 
 print(f"Dataset synchronized: {result}")
@@ -347,20 +387,19 @@ Use this feature when new files are added to your cloud storage bucket and you w
 ```python Complete Dataset Workflow lines icon="rocket"
 from labellerr.client import LabellerrClient
 from labellerr.core.schemas import DatasetConfig
-from labellerr.core.datasets import create_dataset, LabellerrDataset
+from labellerr.core.datasets import create_dataset_from_local, LabellerrDataset
 
-client = LabellerrClient(api_key='your_api_key', api_secret='your_api_secret', client_id='your_client_id')
+client = LabellerrClient(api_key='your_api_key', api_secret='your_api_secret')
 
 # Step 1: Create dataset with local files
-dataset = create_dataset(
+dataset = create_dataset_from_local(
     client=client,
     dataset_config=DatasetConfig(
         dataset_name="Production Image Dataset",
         dataset_description="High-quality images for production annotation",
         data_type="image"
     ),
-    folder_to_upload="path/to/images",
-    path="local"
+    folder_to_upload="path/to/images"
 )
 
 # Step 2: Wait for dataset to be ready and check files
@@ -386,11 +425,11 @@ print(f"Dataset {dataset.dataset_id} is ready to be used in projects!")
 
 <Card title="Best Practices for Error Handling" icon="shield">
 ```python Error Handling Example lines icon="exclamation-triangle"
-from labellerr.core.datasets import create_dataset, LabellerrDataset
+from labellerr.core.datasets import create_dataset_from_local, LabellerrDataset
 from labellerr.core.exceptions import LabellerrError
 
 try:
-    dataset = create_dataset(
+    dataset = create_dataset_from_local(
         client=client,
         dataset_config=DatasetConfig(dataset_name="Test Dataset", data_type="image"),
         folder_to_upload="path/to/folder"

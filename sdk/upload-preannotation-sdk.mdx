@@ -50,10 +50,12 @@ Mismatched file names will prevent annotations from being applied to the corresp
 </Warning>
 
 
-## Implementation Methods
+## Implementation
+
+The SDK provides a unified method with optional async behavior:
 
 <Tabs>
-  <Tab title="Synchronous Method">
+  <Tab title="Synchronous (Default)">
     <Info>
       **Recommended for:** Batch processing scripts and sequential workflows where blocking behavior is acceptable
     </Info>
@@ -68,17 +70,18 @@ client = LabellerrClient('your_api_key', 'your_api_secret', 'your_client_id')
 
 # Configure upload parameters
 project_id = 'project_123'
-annotation_format = 'coco'
+annotation_format = 'coco_json'
 annotation_file = '/path/to/annotations.json'
 
 try:
     # Get project instance
     project = LabellerrProject(client=client, project_id=project_id)
     
-    # Execute synchronous upload
+    # Execute synchronous upload (blocks until complete)
     result = project.upload_preannotations(
         annotation_format=annotation_format,
-        annotation_file=annotation_file
+        annotation_file=annotation_file,
+        _async=False  # Default: blocks until completion
     )
     
     # Validate completion status
@@ -99,7 +102,7 @@ except LabellerrError as e:
 
   </Tab>
 
-  <Tab title="Asynchronous Method">
+  <Tab title="Asynchronous">
     <Info>
       **Recommended for:** Production applications, web services, and scenarios requiring non-blocking operations
     </Info>
@@ -114,22 +117,22 @@ client = LabellerrClient('your_api_key', 'your_api_secret', 'your_client_id')
 
 # Configure upload parameters
 project_id = 'project_123'
-annotation_format = 'coco'
+annotation_format = 'coco_json'
 annotation_file = '/path/to/annotations.json'
 
 try:
     # Get project instance
     project = LabellerrProject(client=client, project_id=project_id)
     
-    # Initiate asynchronous upload (returns a Future that automatically monitors status)
-    future = project.upload_preannotation_async(
+    # Initiate asynchronous upload (returns a Future)
+    future = project.upload_preannotations(
         annotation_format=annotation_format,
-        annotation_file=annotation_file
+        annotation_file=annotation_file,
+        _async=True  # Returns immediately with Future
     )
     
     print("Upload initiated - processing asynchronously")
     
-    # The future automatically polls for completion status
     # You can execute other operations while waiting
     # perform_other_tasks()
     
@@ -162,10 +165,10 @@ except LabellerrError as e:
 
 ## Method Comparison
 
-Select the appropriate method based on your application requirements:
+Use the `_async` parameter to control execution behavior:
 
 <CardGroup cols={2}>
-  <Card title="Synchronous Method" icon="hourglass">
+  <Card title="Synchronous (_async=False)" icon="hourglass">
     **Use Cases:**
     - Batch processing scripts
     - Sequential workflow automation
@@ -175,9 +178,10 @@ Select the appropriate method based on your application requirements:
     - Simplified implementation
     - Direct result return
     - Blocking execution model
+    - Default behavior
   </Card>
   
-  <Card title="Asynchronous Method" icon="rocket">
+  <Card title="Asynchronous (_async=True)" icon="rocket">
     **Use Cases:**
     - Web applications
     - Real-time dashboards
@@ -185,7 +189,7 @@ Select the appropriate method based on your application requirements:
     
     **Characteristics:**
     - Non-blocking operation
-    - Immediate return
+    - Returns Future object immediately
     - Configurable timeout handling
     - Parallel task support
   </Card>

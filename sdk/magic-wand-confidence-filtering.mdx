@@ -69,11 +69,12 @@ The slider control appears automatically when annotations are uploaded with conf
 
 ```python
 from labellerr.client import LabellerrClient
+from labellerr.core.projects import LabellerrProject
 
 # Initialize client
 client = LabellerrClient(
     api_key='your_api_key',
-    api_secret='your_api_secret', 
+    api_secret='your_api_secret',
     client_id='your_client_id'
 )
 
@@ -83,7 +84,8 @@ project = LabellerrProject(client=client, project_id='your_project_id')
 result = project.upload_preannotations(
     annotation_format='coco_json',
     annotation_file='annotations.json',
-    conf_bucket='low'  # Low confidence annotations
+    conf_bucket='low',  # Low confidence annotations
+    _async=False  # Default: blocks until completion
 )
 
 print(f"Status: {result['response']['status']}")
@@ -102,6 +104,7 @@ print(f"Status: {result['response']['status']}")
 
 ```python
 from labellerr.client import LabellerrClient
+from labellerr.core.projects import LabellerrProject
 
 # Initialize client
 client = LabellerrClient(
@@ -116,7 +119,8 @@ project = LabellerrProject(client=client, project_id='your_project_id')
 result = project.upload_preannotations(
     annotation_format='coco_json',
     annotation_file='annotations.json',
-    conf_bucket='medium'  # Medium confidence annotations
+    conf_bucket='medium',  # Medium confidence annotations
+    _async=False  # Default: blocks until completion
 )
 
 print(f"Status: {result['response']['status']}")
@@ -135,6 +139,7 @@ print(f"Status: {result['response']['status']}")
 
 ```python
 from labellerr.client import LabellerrClient
+from labellerr.core.projects import LabellerrProject
 
 # Initialize client
 client = LabellerrClient(
@@ -149,7 +154,8 @@ project = LabellerrProject(client=client, project_id='your_project_id')
 result = project.upload_preannotations(
     annotation_format='coco_json',
     annotation_file='annotations.json',
-    conf_bucket='high'  # High confidence annotations
+    conf_bucket='high',  # High confidence annotations
+    _async=False  # Default: blocks until completion
 )
 
 print(f"Status: {result['response']['status']}")
