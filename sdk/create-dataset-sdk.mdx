@@ -69,6 +69,7 @@ dataset = create_dataset_from_local(
     folder_to_upload="path/to/your/image/folder"
 )
 
+dataset.create()
 print(f"Dataset created with ID: {dataset.dataset_id}")
 print(f"Total files: {dataset.files_count}")
 ```
@@ -364,11 +365,10 @@ client = LabellerrClient(api_key='your_api_key', api_secret='your_api_secret')
 
 dataset = LabellerrDataset(client=client, dataset_id="your_dataset_id")
 result = dataset.sync_datasets(
-    project_id="associated_project_id",
+    project="project", #pass entire object
     path="path/in/bucket",
     data_type="image",
-    email_id="user@example.com",
-    connection_id="your_connection_id"
+    connection=connection #pass entire object   
 )
 
 print(f"Dataset synchronized: {result}")
