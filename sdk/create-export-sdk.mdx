@@ -64,15 +64,6 @@ Before creating an S3 export, you need to:
 1. Create an AWS S3 connection using your AWS credentials
 2. Get the `connection_id` from the created connection
 
-#### Acceptable values:
-
-*   statuses:
-    *   `'review'`, `'r_assigned'`,`'client_review'`, `'cr_assigned'`,`'accepted'`
-*   export_format:
-    *   `'json'`, `'coco_json'`, `'csv'`, `'png'`
-*   export_destination:
-    *   `'s3'`
-
 #### Example Usage:
 
 ```python S3 Export Example lines icon="cloud-arrow-up"
@@ -82,55 +73,35 @@ from labellerr.core.connectors import LabellerrS3Connection
 from labellerr.core.schemas import AWSConnectionParams, CreateExportParams
 from labellerr.core.exceptions import LabellerrError
 
-# Initialize the client with your API credentials
 client = LabellerrClient(api_key, api_secret, client_id)
 
-# Step 1: Create an S3 connection (if not already created)
-try:
-    connection = LabellerrS3Connection.create_connection(
-        client=client,
-        params=AWSConnectionParams(
-            aws_access_key="your_aws_access_key",
-            aws_secrets_key="your_aws_secret_key",
-            name="S3 Export Connection",
-            description="Connection for exporting annotations to S3"
-        )
+# Create S3 connection
+connection = LabellerrS3Connection.create_connection(
+    client=client,
+    params=AWSConnectionParams(
+        aws_access_key="your_aws_access_key",
+        aws_secrets_key="your_aws_secret_key",
+        name="S3 Export Connection",
+        description="Connection for exporting annotations to S3"
     )
-    connection_id = connection.connection_id
-    print(f"S3 Connection created successfully. Connection ID: {connection_id}")
-except LabellerrError as e:
-    print(f"S3 connection creation failed: {str(e)}")
-
-# Step 2: Create S3 export
-project_id = 'your_project_id'
-
-export_config = CreateExportParams(
-    export_name="S3 Weekly Export",
-    export_description="Export of all accepted annotations to S3",
-    export_format="coco_json",
-    statuses=['review', 'r_assigned', 'client_review', 'cr_assigned', 'accepted'],
-    export_destination="s3",
-    connection_id=connection_id,
-    export_folder_path="bucket_name/path/to/folder/"  # Note: trailing slash is important
 )
 
-try:
-    # Get project instance
-    project = LabellerrProject(client=client, project_id=project_id)
-    
-    # Create S3 export
-    export = project.create_export(export_config)
-    export_id = export.report_id
-    print(f"S3 export created successfully. Export ID: {export_id}")
-    
-    # Optionally, check current status
-    print(f"Current status: {export._status}")
-    
-    # Optionally, poll until completion
-    final_status = export.status(interval=2.0, timeout=300)
-    print(f"Final status: {final_status}")
-except LabellerrError as e:
-    print(f"S3 export creation failed: {str(e)}")
+# Create S3 export
+project = LabellerrProject(client=client, project_id='your_project_id')
+export = project.create_export(
+    CreateExportParams(
+        export_name="S3 Weekly Export",
+        export_description="Export of all accepted annotations to S3",
+        export_format="coco_json",
+        statuses=['review', 'r_assigned', 'client_review', 'cr_assigned', 'accepted'],
+        export_destination="s3",
+        connection_id=connection.connection_id,
+        export_folder_path="bucket_name/path/to/folder/"  # trailing slash is important
+    )
+)
+
+print(f"Export ID: {export.report_id}")
+export.status()  # Poll until completion
 ```
 
 **Important Notes**:
