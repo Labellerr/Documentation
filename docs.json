@@ -177,7 +177,8 @@
               "sdk/video-project-operations-sdk",
               "sdk/upload-preannotation-sdk",
               "sdk/create-export-sdk",
-              "sdk/magic-wand-confidence-filtering"
+              "sdk/magic-wand-confidence-filtering",
+              "sdk/changelog"
             ]
           }
         ]

@@ -1,0 +1,444 @@
+---
+title: "SDK Changelog"
+description: "Track updates, improvements, and breaking changes across Labellerr SDK versions"
+icon: clock-rotate-left
+---
+
+<Note>
+  **Latest Version: v2.0.0** - Major refactoring with improved architecture, enhanced payload structure, and new features. See details below.
+</Note>
+
+---
+
+## Version 2.0.0 (November 2025)
+
+<Warning>
+  **Breaking Changes** - This release includes significant API changes. Please review the migration notes carefully.
+</Warning>
+
+### Architecture & Infrastructure
+
+<AccordionGroup>
+  <Accordion title="Modular Architecture">
+    Complete restructuring from monolithic 2000+ line files to organized, maintainable modules:
+    
+    **New Structure:**
+    - `labellerr/core/annotation_templates/` - Template management
+    - `labellerr/core/autolabel/` - Model training features
+    - `labellerr/core/connectors/` - S3 and GCS connections
+    - `labellerr/core/datasets/` - Dataset CRUD operations
+    - `labellerr/core/exports/` - Export handling with polling
+    - `labellerr/core/projects/` - Project management
+    - `labellerr/core/schemas/` - Pydantic validation models
+    - `labellerr/core/users/` - User management
+    
+    **Benefits:**
+    - Separation of concerns with single responsibility per module
+    - Factory pattern for automatic type-specific object instantiation
+    - Easier maintenance and extensibility
+    - Better code discoverability
+  </Accordion>
+
+  <Accordion title="Enhanced Payload Structure with Type Safety">
+    **Major Improvement:** All function parameters now use Pydantic models for validation instead of plain dictionaries.
+    
+    **Old Approach:**
+    ```python
+    # Plain dictionary - no validation
+    payload = {"project_name": "My Project", "data_type": "image", ...}
+    ```
+    
+    **New Approach:**
+    ```python
+    from labellerr.core.schemas import CreateProjectParams, RotationConfig
+    
+    # Type-safe with automatic validation
+    params = CreateProjectParams(
+        project_name="My Project",
+        data_type="image",
+        rotations=RotationConfig(
+            annotation_rotation_count=1,
+            review_rotation_count=1,
+            client_review_rotation_count=1
+        )
+    )
+    ```
+    
+    **Benefits:**
+    - Automatic validation before API calls
+    - IDE autocomplete and type checking
+    - Clear, self-documenting schema fields
+    - Early error detection
+    - Organized schemas by domain (autolabel, connectors, datasets, exports, files, projects, users)
+  </Accordion>
+
+  <Accordion title="Improved Project Creation Pipeline">
+    **New Workflow:** Project creation now follows an explicit, modular pipeline for better control and reusability.
+    
+    **Old Approach:**
+    ```python
+    # Everything in one call - datasets created inline
+    project = create_project(
+        client=client,
+        payload={
+            "project_name": "My Project",
+            "folder_to_upload": "./images",
+            "annotation_template_id": "template_123",
+            ...
+        }
+    )
+    ```
+    
+    **New Approach:**
+    ```python
+    # Step 1: Create dataset
+    dataset = create_dataset_from_local(
+        client=client,
+        dataset_config=DatasetConfig(
+            dataset_name="My Dataset",
+            data_type="image"
+        ),
+        folder_to_upload="./images"
+    )
+    dataset.status()  # Wait for completion
+    
+    # Step 2: Get annotation template
+    template = LabellerrAnnotationTemplate(client, "template_123")
+    
+    # Step 3: Create project with explicit dependencies
+    project = create_project(
+        client=client,
+        params=CreateProjectParams(...),
+        datasets=[dataset],
+        annotation_template=template
+    )
+    ```
+    
+    **Why This Change?**
+    - **Explicit Dependencies:** Datasets and templates validated before project creation
+    - **Better Error Handling:** Issues caught earlier in the pipeline
+    - **Reusability:** Same dataset can be attached to multiple projects
+    - **Clearer Flow:** Each step is explicit, testable, and maintainable
+    - **Type Safety:** Pydantic validation at each step
+  </Accordion>
+</AccordionGroup>
+
+### New Features
+
+<AccordionGroup>
+  <Accordion title="Cloud Export Support (AWS S3 & GCS)">
+    Export annotations directly to cloud storage with automatic status polling:
+    ```python
+    from labellerr.core.schemas import CreateExportParams
+    
+    export = project.create_export(
+        export_config=CreateExportParams(
+            export_name="Production Export",
+            export_format="json",
+            connection_id="s3_conn_123",
+            export_destination="s3",
+            export_folder_path="bucket/exports/"
+        )
+    )
+    # Automatically polls until completion
+    final_status = export.status()
+    ```
+    
+    **Features:**
+    - Direct export to AWS S3 or GCS
+    - Automatic polling mechanism
+    - Multiple export formats (JSON, CSV, COCO JSON)
+    - Status filtering support
+  </Accordion>
+
+  <Accordion title="Autolabel Model Training">
+    Train custom models on your annotated data with configurable hyperparameters:
+    ```python
+    from labellerr.core.autolabel import LabellerrAutoLabel
+    from labellerr.core.schemas import TrainingRequest, Hyperparameters
+    
+    autolabel = LabellerrAutoLabel(client=client)
+    job = autolabel.train(
+        training_request=TrainingRequest(
+            model_id="yolov11",
+            hyperparameters=Hyperparameters(
+                epochs=100,
+                batch_size=16,
+                learning_rate=0.001
+            ),
+            job_name="Custom Training"
+        )
+    )
+    ```
+    
+    **Features:**
+    - Train YOLOv11 and other models
+    - Configurable hyperparameters
+    - Job status tracking
+    - List all training jobs
+  </Accordion>
+
+  <Accordion title="Enhanced Dataset Operations">
+    **Split Dataset Creation:**
+    - `create_dataset_from_local()` - For local file/folder uploads
+    - `create_dataset_from_connection()` - For cloud storage connections
+    
+    **Auto-Pagination:**
+    ```python
+    # Iterate through all datasets automatically
+    for dataset in list_datasets(client, datatype="image", scope="client", page_size=-1):
+        process(dataset)
+    ```
+    
+    **Additional Features:**
+    - New `delete_dataset()` function
+    - Improved sync operations for AWS S3 and GCS
+    - Better status tracking with polling
+    - Type-specific dataset classes (Image, Video, Audio, Document)
+  </Accordion>
+
+  <Accordion title="Annotation Template Management">
+    Dedicated module for structured annotation template creation:
+    ```python
+    from labellerr.core.annotation_templates import create_annotation_guideline
+    from labellerr.core.schemas import CreateTemplateParams, AnnotationQuestion
+    
+    template = create_annotation_guideline(
+        client=client,
+        params=CreateTemplateParams(
+            data_type="image",
+            template_name="Object Detection Template",
+            questions=[
+                AnnotationQuestion(
+                    option_type="BoundingBox",
+                    question_text="Identify objects",
+                    options=[...]
+                )
+            ]
+        )
+    )
+    ```
+    
+    **Features:**
+    - Type-safe question definitions
+    - Reusable templates across projects
+    - Multiple question types (BoundingBox, polygon, radio, etc.)
+    - Automatic validation
+  </Accordion>
+
+  <Accordion title="Enhanced Connection Management">
+    **Dedicated Connection Classes:**
+    - `LabellerrS3Connection` - AWS S3 operations
+    - `LabellerrGCSConnection` - Google Cloud Storage operations
+    
+    **Features:**
+    ```python
+    from labellerr.core.connectors import LabellerrS3Connection
+    from labellerr.core.schemas import AWSConnectionParams
+    
+    # Test connection before creating
+    test_result = LabellerrS3Connection.test_connection(client, params)
+    
+    # Create connection with type safety
+    connection = LabellerrS3Connection.create_connection(
+        client=client,
+        params=AWSConnectionParams(
+            aws_access_key="...",
+            aws_secrets_key="...",
+            s3_path="s3://bucket/path/",
+            connection_type="export",
+            name="Production S3"
+        )
+    )
+    ```
+    
+    - Connection testing before creation
+    - Support for import and export types
+    - Better error handling
+    - Type-safe parameters
+  </Accordion>
+</AccordionGroup>
+
+### Breaking Changes
+
+<AccordionGroup>
+  <Accordion title="Project Creation (HIGH IMPACT)">
+    **Old approach:**
+    ```python
+    project = create_project(
+        client=client,
+        payload={
+            "project_name": "My Project",
+            "folder_to_upload": "./images",
+            "annotation_template_id": "template_123",
+            ...
+        }
+    )
+    ```
+
+    **New approach:**
+    ```python
+    # Step 1: Create dataset
+    dataset = create_dataset_from_local(
+        client=client,
+        dataset_config=DatasetConfig(
+            dataset_name="My Dataset",
+            data_type="image"
+        ),
+        folder_to_upload="./images"
+    )
+    dataset.status()  # Wait for completion
+
+    # Step 2: Get annotation template
+    template = LabellerrAnnotationTemplate(client, "template_123")
+
+    # Step 3: Create project
+    project = create_project(
+        client=client,
+        params=CreateProjectParams(...),
+        datasets=[dataset],
+        annotation_template=template
+    )
+    ```
+
+    **Why?** Explicit dependencies, better error handling, and dataset reusability.
+  </Accordion>
+
+  <Accordion title="Dataset Creation (MEDIUM IMPACT)">
+    **Old:**
+    ```python
+    dataset = create_dataset(
+        client=client,
+        dataset_config={...},
+        folder_to_upload="./images"
+    )
+    ```
+
+    **New:**
+    ```python
+    from labellerr.core.datasets import create_dataset_from_local
+    from labellerr.core.schemas import DatasetConfig
+
+    dataset = create_dataset_from_local(
+        client=client,
+        dataset_config=DatasetConfig(
+            dataset_name="My Dataset",
+            data_type="image"
+        ),
+        folder_to_upload="./images"
+    )
+    ```
+  </Accordion>
+
+  <Accordion title="Import Changes (LOW IMPACT)">
+    Update imports from root to `labellerr.core.*`:
+    ```python
+    # Core imports remain backward compatible
+    from labellerr import LabellerrClient
+    
+    # New modular imports
+    from labellerr.core.datasets import create_dataset_from_local, LabellerrDataset
+    from labellerr.core.projects import create_project, LabellerrProject
+    from labellerr.core.schemas import DatasetConfig, CreateProjectParams
+    from labellerr.core.connectors import LabellerrS3Connection
+    ```
+  </Accordion>
+</AccordionGroup>
+
+### Additional Improvements
+
+- **Connection Pooling**: Improved HTTP connection management for better performance
+- **Error Handling**: Enhanced error messages with automatic retry logic
+- **Polling Mechanism**: Smart status tracking for long-running operations (exports, datasets)
+- **Testing Infrastructure**: Comprehensive unit and integration test coverage
+- **Documentation**: Improved code examples and API documentation
+- **Type-Specific Classes**: Specialized methods for Image, Video, Audio, and Document types
+- **Performance**: Optimized request handling and data transfer
+
+### Migration Notes
+
+1. **Update SDK**: `pip install --upgrade labellerr`
+2. **Update imports**: Change to new `labellerr.core.*` modules
+3. **Refactor project creation**: Follow new 3-step process (dataset → template → project)
+4. **Use Pydantic schemas**: Replace dict payloads with schema models
+5. **Test thoroughly**: Validate all SDK operations in dev/staging before production
+
+<Tip>
+  Need help migrating? See our [detailed migration guide](/sdk/migration-guide) or contact support@labellerr.com
+</Tip>
+
+**GitHub Release**: [v2.0.0](https://github.com/tensormatics/SDKPython/releases/tag/v2.0.0)
+
+---
+
+## Version 1.0.1 (October 2025)
+
+### Bug Fixes
+
+- Fixed polling timeout in dataset creation
+- Improved error handling for pre-annotation uploads
+- Corrected export status checking for edge cases
+
+### Improvements
+
+- Enhanced connection retry logic
+- Improved logging for debugging
+- Performance optimizations for file uploads
+
+**GitHub Release**: [v1.0.1](https://github.com/tensormatics/SDKPython/releases/tag/v1.0.1)
+
+---
+
+## Version 1.0.0 (September 2025)
+
+### Initial Release
+
+First stable release of the Labellerr Python SDK.
+
+### Core Features
+
+- **Client Initialization**: Simple authentication with API credentials
+- **Dataset Operations**: Create, list, and manage datasets
+- **Project Management**: Create and configure annotation projects
+- **File Operations**: Upload files and manage annotations
+- **Export Functionality**: Export annotations in multiple formats
+- **Pre-annotations**: Upload existing annotations
+- **User Management**: Manage team members and permissions
+- **Video Support**: Keyframe management for video projects
+
+### Core Modules
+
+- `LabellerrClient` - Main client for API communication
+- Dataset operations (create, upload, sync)
+- Project operations (create, configure, manage)
+- File management
+- User management
+- Export operations
+
+**GitHub Release**: [v1.0.0](https://github.com/tensormatics/SDKPython/releases/tag/v1.0.0)
+
+---
+
+## Support & Resources
+
+<CardGroup cols={2}>
+  <Card title="Documentation" icon="book" href="/sdk/getting-started">
+    Comprehensive SDK guides and examples
+  </Card>
+  <Card title="GitHub" icon="github" href="https://github.com/tensormatics/SDKPython">
+    View source code and report issues
+  </Card>
+  <Card title="Support" icon="life-ring" href="mailto:support@labellerr.com">
+    Get help from our team
+  </Card>
+  <Card title="Cookbooks" icon="code" href="/cookbooks/sdk-tutorials">
+    End-to-end examples and tutorials
+  </Card>
+</CardGroup>
+
+---
+
+<Info>
+  **Semantic Versioning**: We follow [SemVer](https://semver.org/). Breaking changes increment the major version (e.g., 1.x → 2.0).
+</Info>
+
