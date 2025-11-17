@@ -1,12 +1,10 @@
 ---
 title: "How to Create an Export Using SDK"
-description: "Learn how to use the Labellerr SDK to export project data locally in various formats, check export status, and fetch downloadable URLs."
+description: "Learn how to use the Labellerr SDK to export project data locally or to AWS S3 in various formats, check export status, and fetch downloadable URLs."
 icon: file-export
 ---
 
 ### Local Export
-
----
 
 The SDK provides functionality to export project data locally. This feature allows you to export annotations in various formats for further analysis or backup purposes.
 
@@ -54,11 +52,98 @@ except LabellerrError as e:
 
 ---
 
-### Check Export Status
+### S3 Export
+
+The SDK also provides functionality to export project data directly to AWS S3 buckets. This feature allows you to export annotations in various formats directly to your S3 storage for automated workflows, backup, or integration with other systems.
+
+**The export created will be available in the exports section of Labellerr dashboard. Here is where you can find the** [**export in our tool**](/actions/create-export)**.**
+
+#### Prerequisites:
+
+Before creating an S3 export, you need to:
+1. Create an AWS S3 connection using your AWS credentials
+2. Get the `connection_id` from the created connection
+
+#### Acceptable values:
+
+*   statuses:
+    *   `'review'`, `'r_assigned'`,`'client_review'`, `'cr_assigned'`,`'accepted'`
+*   export_format:
+    *   `'json'`, `'coco_json'`, `'csv'`, `'png'`
+*   export_destination:
+    *   `'s3'`
+
+#### Example Usage:
+
+```python S3 Export Example lines icon="cloud-arrow-up"
+from labellerr.client import LabellerrClient
+from labellerr.core.projects import LabellerrProject
+from labellerr.core.connectors import LabellerrS3Connection
+from labellerr.core.schemas import AWSConnectionParams, CreateExportParams
+from labellerr.core.exceptions import LabellerrError
+
+# Initialize the client with your API credentials
+client = LabellerrClient(api_key, api_secret, client_id)
+
+# Step 1: Create an S3 connection (if not already created)
+try:
+    connection = LabellerrS3Connection.create_connection(
+        client=client,
+        params=AWSConnectionParams(
+            aws_access_key="your_aws_access_key",
+            aws_secrets_key="your_aws_secret_key",
+            name="S3 Export Connection",
+            description="Connection for exporting annotations to S3"
+        )
+    )
+    connection_id = connection.connection_id
+    print(f"S3 Connection created successfully. Connection ID: {connection_id}")
+except LabellerrError as e:
+    print(f"S3 connection creation failed: {str(e)}")
+
+# Step 2: Create S3 export
+project_id = 'your_project_id'
+
+export_config = CreateExportParams(
+    export_name="S3 Weekly Export",
+    export_description="Export of all accepted annotations to S3",
+    export_format="coco_json",
+    statuses=['review', 'r_assigned', 'client_review', 'cr_assigned', 'accepted'],
+    export_destination="s3",
+    connection_id=connection_id,
+    export_folder_path="bucket_name/path/to/folder/"  # Note: trailing slash is important
+)
+
+try:
+    # Get project instance
+    project = LabellerrProject(client=client, project_id=project_id)
+    
+    # Create S3 export
+    export = project.create_export(export_config)
+    export_id = export.report_id
+    print(f"S3 export created successfully. Export ID: {export_id}")
+    
+    # Optionally, check current status
+    print(f"Current status: {export._status}")
+    
+    # Optionally, poll until completion
+    final_status = export.status(interval=2.0, timeout=300)
+    print(f"Final status: {final_status}")
+except LabellerrError as e:
+    print(f"S3 export creation failed: {str(e)}")
+```
+
+**Important Notes**:
+- The `export_folder_path` should follow the pattern: `bucket_name/path/to/folder/` (the trailing slash is important)
+- Make sure your AWS credentials have write permissions to the specified S3 bucket
+- You can reuse the same `connection_id` for multiple exports without creating a new connection each time
+- The export will be uploaded directly to your S3 bucket at the specified path
 
 ---
 
-This method allows users to check the export status of a previously triggered export task. The status will indicate whether the export is still processing, completed, or failed. Moreover, if the export is successful then the function also sends the downloadable file link url with it expire time and status.
+### Check Export Status
+
+This method allows users to check the export status of a previously triggered export task (both local and S3 exports). The status will indicate whether the export is still processing, completed, or failed. For local exports, if successful, the function also sends the downloadable file link URL with its expiration time and status. For S3 exports, it indicates when the export has been successfully uploaded to your S3 bucket.
 
 #### Example Usage :
 
@@ -92,9 +177,9 @@ except LabellerrError as e:
 
 ### Fetch Export Download URL
 
----
+This endpoint is used to fetch the **downloadable link** for a previously created **local export** using the export's UUID and report ID. The response includes a signed URL from which the export file can be downloaded with the time left to expire.
 
-This endpoint is used to fetch the **downloadable link** for a previously created export using the export's UUID and report ID. The response includes a signed URL from which the export file can be downloaded with the time left to expire.
+**Note**: This method is only applicable for local exports. For S3 exports, the files are directly uploaded to your S3 bucket at the specified path.
 
 #### Example Usage :
 

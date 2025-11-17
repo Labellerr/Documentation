@@ -49,6 +49,9 @@ dataset = create_dataset_from_local(
     folder_to_upload="path/to/images"
 )
 
+# Wait for dataset to be ready
+dataset.status()  # Polls until dataset processing is complete
+
 # 2. Create annotation template
 template = create_template(
     client=client,
@@ -110,6 +113,9 @@ You can either create a new dataset or use an existing one.
         ),
         folder_to_upload="path/to/images"
     )
+    
+    # Wait for dataset processing to complete
+    dataset.status()
     ```
   </Tab>
   
@@ -276,6 +282,10 @@ dataset1 = LabellerrDataset(client=client, dataset_id="dataset_id_1")
 dataset2 = LabellerrDataset(client=client, dataset_id="dataset_id_2")
 dataset3 = LabellerrDataset(client=client, dataset_id="dataset_id_3")
 
+# Ensure all datasets are ready
+for dataset in [dataset1, dataset2, dataset3]:
+    dataset.status()
+
 # Create project with all datasets
 project = create_project(
     client=client,
@@ -330,6 +340,9 @@ video_dataset = create_dataset_from_local(
     ),
     folder_to_upload="path/to/videos"
 )
+
+# Wait for dataset processing to complete
+video_dataset.status()
 
 # Create video template
 video_template = create_template(
@@ -536,6 +549,11 @@ def create_annotation_project():
         print(f"   ✓ Dataset created: {dataset.dataset_id}")
         print(f"   Files count: {dataset.files_count}")
         
+        # Wait for dataset processing to complete
+        print("\n⏳ Waiting for dataset to be ready...")
+        dataset.status()
+        print("   ✓ Dataset is ready!")
+        
         # Step 2: Create annotation template
         print("\n📋 Creating annotation template...")
         questions = [
@@ -636,12 +654,18 @@ if __name__ == "__main__":
   <Accordion title="Dataset has no files error" icon="circle-exclamation">
     **Error:** `Dataset {dataset_id} has no files`
     
-    **Cause:** The dataset was created but files haven't finished uploading or no files were provided.
+    **Cause:** The dataset was created but files haven't finished uploading or processing.
     
     **Solution:**
-    - Wait for dataset upload to complete
-    - Check `dataset.files_count` before creating project
+    - Always call `dataset.status()` before creating a project to ensure dataset is ready
+    - This method polls until dataset processing is complete
+    ```python
+    dataset = create_dataset_from_local(...)
+    dataset.status()  # Wait for completion
+    project = create_project(...)  # Now safe to create
+    ```
     - Verify folder path is correct and contains files
+    - Check `dataset.files_count` to confirm files were uploaded
   </Accordion>
   
   <Accordion title="Data type mismatch" icon="exclamation-triangle">

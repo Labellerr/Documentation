@@ -69,7 +69,6 @@ dataset = create_dataset_from_local(
     folder_to_upload="path/to/your/image/folder"
 )
 
-dataset.create()
 print(f"Dataset created with ID: {dataset.dataset_id}")
 print(f"Total files: {dataset.files_count}")
 ```
@@ -402,8 +401,9 @@ dataset = create_dataset_from_local(
     folder_to_upload="path/to/images"
 )
 
-# Step 2: Wait for dataset to be ready and check files
+# Step 2: Wait for dataset processing to complete
 print(f"Dataset ID: {dataset.dataset_id}")
+dataset.status()  # Wait for dataset to be ready
 print(f"Files uploaded: {dataset.files_count}")
 
 # Step 3: Enable multimodal indexing
@@ -435,6 +435,10 @@ try:
         folder_to_upload="path/to/folder"
     )
     print(f"Dataset created successfully: {dataset.dataset_id}")
+    
+    # Wait for processing to complete
+    dataset.status()
+    print(f"Dataset is ready with {dataset.files_count} files")
 except LabellerrError as e:
     print(f"Dataset creation failed: {str(e)}")
 ```
