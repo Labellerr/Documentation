@@ -371,51 +371,52 @@ icon: clock-rotate-left
 
 ---
 
-## Version 1.0.1 (October 2025)
-
-### Bug Fixes
-
-- Fixed polling timeout in dataset creation
-- Improved error handling for pre-annotation uploads
-- Corrected export status checking for edge cases
+## Version 1.0.1 (September 2025)
 
 ### Improvements
+- New project creation flow with updated payload structure  
+- Better validation for `annotation_guide` and `annotation_template_id`  
+- `"created_by"` email now included automatically during project creation  
+- Modularized SDK structure for easier maintenance  
+- Automated release pipeline added via `release_manager`  
+- Enhanced export status handling (polling + download URL fetching)
 
-- Enhanced connection retry logic
-- Improved logging for debugging
-- Performance optimizations for file uploads
+### Bug Fixes
+- Fixed `check_export_status` inconsistencies  
+- Improved error handling for invalid project creation payloads  
+- Corrected edge-case failures in export polling  
+- Minor fixes in annotation guide validation logic
 
-**GitHub Release**: [v1.0.1](https://github.com/tensormatics/SDKPython/releases/tag/v1.0.1)
+### Branch Strategy
+- **main** → production-ready releases  
+- **develop** → pre-release testing versions  
+
+**GitHub Release**: https://github.com/Labellerr/SDKPython/releases/tag/v1.0.1
 
 ---
 
-## Version 1.0.0 (September 2025)
+## Version 1.0.0 (December 2024)
 
 ### Initial Release
-
-First stable release of the Labellerr Python SDK.
+First public release of the Labellerr Python SDK.
 
 ### Core Features
-
-- **Client Initialization**: Simple authentication with API credentials
-- **Dataset Operations**: Create, list, and manage datasets
-- **Project Management**: Create and configure annotation projects
-- **File Operations**: Upload files and manage annotations
-- **Export Functionality**: Export annotations in multiple formats
-- **Pre-annotations**: Upload existing annotations
-- **User Management**: Manage team members and permissions
-- **Video Support**: Keyframe management for video projects
+- **Client Initialization**: Authenticate using `LabellerrClient`  
+- **Project Management**: Create and configure annotation projects  
+- **Dataset Operations**: Manage datasets across image, video, audio, text, and documents  
+- **Pre-annotations**: Upload annotations (sync & async)  
+- **Export Functionality**: Export annotations in `json`, `coco_json`, `csv`, `png`  
+- **Retrieval APIs**: Fetch all projects and datasets  
+- **Error Handling**: `LabellerrError` for managed exception handling  
 
 ### Core Modules
+- `LabellerrClient` — main API client  
+- Project operations (`initiate_create_project`)  
+- Pre-annotation upload methods  
+- Local export utilities  
+- Dataset retrieval helpers  
 
-- `LabellerrClient` - Main client for API communication
-- Dataset operations (create, upload, sync)
-- Project operations (create, configure, manage)
-- File management
-- User management
-- Export operations
-
-**GitHub Release**: [v1.0.0](https://github.com/tensormatics/SDKPython/releases/tag/v1.0.0)
+**GitHub Release**: https://github.com/Labellerr/SDKPython/releases/tag/v1
 
 ---
 
