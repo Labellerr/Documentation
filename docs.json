@@ -188,10 +188,8 @@
         "pages": [
           "cookbooks/automobile",
           "cookbooks/build-ai-agents",
-          "cookbooks/construction",
           "cookbooks/fine-tune-yolo",
           "cookbooks/healthcare",
-          "cookbooks/life-sciences-biotech",
           "cookbooks/manufacturing",
           "cookbooks/model-notebooks",
           "cookbooks/retail",
@@ -199,6 +197,17 @@
           "cookbooks/sdk-tutorials",
           "cookbooks/security",
           "cookbooks/sports"
+        ]
+      },
+      {
+        "tab": "Product Updates",
+        "groups": [
+          {
+            "group": "Product Updates",
+            "pages": [
+                  "product-releases/2025"
+            ]
+          }
         ]
       }
     ],
