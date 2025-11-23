@@ -170,6 +170,7 @@
             "group": "SDK Documentation",
             "pages": [
               "sdk/getting-started",
+              "sdk/mcp-server",
               "sdk/create-dataset-sdk",
               "sdk/create-project-sdk",
               "sdk/add-annotation-questions",
