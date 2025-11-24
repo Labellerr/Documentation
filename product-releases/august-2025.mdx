@@ -1,0 +1,143 @@
+---
+title: "August 2025 - Product Updates"
+description: "Frame-by-frame precision in video annotation, SAM2 tracking, and enhanced visibility filters"
+icon: "calendar-check"
+---
+
+This month's release focuses on improving video annotation workflows, enhancing SAM2 tracking, and adding finer control for editing. These updates are designed to make annotation more accurate, efficient, and user-friendly for both annotators and reviewers.
+
+## 1. Frame-by-Frame Precision in Video Annotation
+
+<iframe 
+  width="100%" 
+  height="450" 
+  src="https://www.youtube.com/embed/thYGwOb77SI?si=039azUvrfcr9qna7" 
+  title="Frame-by-Frame Precision in Video Annotation" 
+  frameborder="0" 
+  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+  referrerpolicy="strict-origin-when-cross-origin" 
+  allowfullscreen>
+</iframe>
+
+The video player has been upgraded to ensure frame-level accuracy and a smoother annotation workflow. This update addresses sync issues caused by time-based playback and provides a more reliable environment for video annotation. No more labels drifting off-sync. With frame-accurate playback, annotations stick exactly where they should, which means cleaner training data and fewer noisy samples downstream.
+
+**Key Improvements:**
+- Frame-based rendering powered by a backend streaming API
+- Accurate annotation sync with frames during playback and navigation
+- Next and Previous frame controls for precise navigation
+- Manual frame seeking with exact frame display
+- Smooth playback at correct FPS using sequential frames
+- Error handling with retry support and fallback display
+- Loading indicators to manage network delays
+
+---
+
+## 2. Review Annotations Faster with Timeline Keyframes
+
+<iframe 
+  width="100%" 
+  height="450" 
+  src="https://www.youtube.com/embed/0XVHRicaf4g?si=q8u0uwSwWHEynVjF" 
+  title="Review Annotations Faster with Timeline Keyframes" 
+  frameborder="0" 
+  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+  referrerpolicy="strict-origin-when-cross-origin" 
+  allowfullscreen>
+</iframe>
+
+Keyframes can now be created, managed, and reviewed directly on the video timeline. This makes it easier for annotators to label efficiently and for reviewers to validate annotation quality at a glance.
+
+**Key Improvements:**
+- Visual pins displayed on the timeline for all keyframes in the active track or layer
+- Hover tooltips showing timestamp and frame number for each keyframe
+- Click on any pin to instantly jump the player to that frame
+- Add keyframes using a dedicated button, context menu, or keyboard shortcut (K)
+- Delete keyframes with the Delete key or context menu options
+- Popover list provided for overlapping pins to ensure precise selection
+- Full API integration for fetching, creating, and deleting keyframes with smooth UI updates
+- Keyboard accessibility support with focusable pins and shortcuts
+- Optimized rendering for hundreds or thousands of pins without lag
+
+This update reduces cognitive overhead by providing a faster way to navigate annotations and ensures reviewers can easily assess annotation completeness and accuracy.
+
+---
+
+## 3. Track Multiple Objects in One SAM2 Run
+
+<iframe 
+  width="100%" 
+  height="450" 
+  src="https://www.youtube.com/embed/81O5BBMxi20?si=Vtd5pA_gQjBaWjHt" 
+  title="Track Multiple Objects in One SAM2 Run" 
+  frameborder="0" 
+  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+  referrerpolicy="strict-origin-when-cross-origin" 
+  allowfullscreen>
+</iframe>
+
+Instead of running SAM2 separately for each object, you can now track all selected annotations in a single job. This dramatically speeds up labeling while lowering compute costs.
+
+**Key Improvements:**
+- Magic wand beside Objects to select timelines that contain SAM prompts
+- Single job execution for all chosen timelines in one run
+- In-app and email notifications on completion or failure
+- Job detail view with status and progress information
+- Option to cancel an active job
+- Option to keep or discard partial progress, with discard as the default
+- Test coverage for backend and UI flows
+
+---
+
+## 4. Apply SAM2 Reliably to Bounding Box Workflows
+
+We resolved errors that appeared during SAM2 runs on bounding box annotations, ensuring a stable and predictable experience for annotators. With this fix, users can confidently create bounding box labels and run SAM2 without interruptions.
+
+**Key Improvements:**
+- Stability fixes for SAM2 execution on bounding box annotations
+- Error-free integration between bounding box labeling and SAM2 tracking
+- More reliable experience when creating projects from new datasets
+- Tested and validated in QA environment with consistent results
+
+This enhancement makes bounding box workflows smoother and ensures SAM2 can be applied seamlessly during annotation.
+
+---
+
+## 5. Enhance Visibility During Annotation with Non-Destructive Filters
+
+Brightness and contrast filters are now built into the labeling interface, helping annotators see details more clearly without altering the source data. This is especially useful for low-light, medical, or noisy datasets.
+
+**Key Improvements:**
+- Reliable controls for brightness and contrast across images and video frames
+- Non-destructive adjustments that preserve the source asset
+- Per-frame and continuous playback rendering with consistent results
+- Reset to default and quick compare to view changes instantly
+- Persistent settings during a session for smoother multi-frame work
+- Keyboard support for fine-step adjustments
+- Clear tooltips and accessible labels for each control
+- Performance tuning for smooth scrubbing and playback while filters are active
+
+---
+
+## How These Updates Help You
+
+- **Higher Accuracy**: Frame-based video playback keeps annotations in perfect sync
+- **Faster Workflows**: Single SAM2 runs save time and resources
+- **Better Visibility**: Keyframes, markers, and filters improve clarity
+- **Smarter Reviews**: Reviewers can quickly validate annotation quality with fewer clicks
+
+---
+
+## What's Next
+
+We are preparing additional features such as advanced file management, extended automation support, and improved object detection agents.
+
+---
+
+## Wrapping Up
+
+The August 2025 release delivers precise frame rendering, smarter SAM2 tracking, intuitive keyframe management, stable bounding box workflows, and improved annotation filters. These updates create a faster, more reliable, and more productive annotation environment.
+
+We encourage you to explore the new features and share your feedback with us.
+
+**Labellerr Team**
+

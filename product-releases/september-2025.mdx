@@ -1,0 +1,100 @@
+---
+title: "September 2025 - Product Updates"
+description: "Smarter project indexing, polyline grouping, and required object annotations"
+icon: "calendar-check"
+---
+
+This month's release introduces enhancements to project creation, improved handling of grouped annotations, and new validation for object-type tasks. Together, these updates make project workflows faster, more transparent, and more reliable for annotators and reviewers.
+
+## 1. Start Annotating Projects Immediately with Smarter Indexing
+
+<iframe 
+  width="100%" 
+  height="450" 
+  src="https://www.youtube.com/embed/vGHo2FhCbuc?si=XKa_hKGjOXPyU6QM" 
+  title="Start Annotating Projects Immediately" 
+  frameborder="0" 
+  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+  referrerpolicy="strict-origin-when-cross-origin" 
+  allowfullscreen>
+</iframe>
+
+Project creation is no longer blocked by Elasticsearch indexing delays or failures. Users can now begin annotating files immediately after project creation, while advanced search features become available once indexing completes.
+
+**Key Improvements:**
+- Projects are usable instantly after creation, regardless of indexing state
+- Clear indexing states displayed across the UI: Indexing in Progress, Indexing Complete, or Indexing Failed
+- Progress indicators with counts and ETA shown via popovers and banners
+- Basic file search and filters (file status, file ID, file name) remain available even if indexing has not finished
+- Advanced filters are gracefully limited until indexing completes
+- In-app notifications on project creation, indexing completion, or indexing failure
+- Email notifications sent if indexing takes longer than one minute, with guidance and tutorials on advanced search
+- Support ticket option provided when indexing fails
+- Analytics tracking for indexing duration, frequency of failures, and retries
+- Observability improvements to monitor job success and recovery
+
+These changes ensure project creation is seamless, with immediate usability and clear communication to reduce confusion and downtime.
+
+---
+
+## 2. Keep Complex Datasets Organized with Polyline Grouping
+
+<iframe 
+  width="100%" 
+  height="450" 
+  src="https://www.youtube.com/embed/kNz15Xv0XUU?si=4ZLYv12eU-cvMZrp" 
+  title="Polyline Grouping" 
+  frameborder="0" 
+  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+  referrerpolicy="strict-origin-when-cross-origin" 
+  allowfullscreen>
+</iframe>
+
+Polyline annotations can now be grouped and managed just like other annotation types. For projects with dense or overlapping shapes, grouping makes it easier to keep related annotations connected, filter them quickly, and review them with clarity.
+
+**Key Improvements:**
+- Group IDs are now rendered in the left panel for all grouped polylines
+- Grouped annotations are correctly highlighted both in the panel and on the canvas
+- Filtering by group ID works reliably across grouped polylines
+- Hovering on one annotation highlights the entire group for easier navigation
+
+This improvement ensures greater consistency across annotation types and reduces confusion when working with multiple related polylines.
+
+---
+
+## 3. Guarantee Completeness with Required Object Annotations
+
+Object-type annotations (polygons, bounding boxes, pixel masks) can now be marked as required. This prevents annotators from accidentally submitting incomplete files and ensures that critical object data is always captured.
+
+**Key Improvements:**
+- Support for marking object-type questions as required, similar to classification questions
+- Required annotations are now indicated with a clear red asterisk on the UI
+- Prevents accidental submission of incomplete files
+- SDK and UI behavior aligned for consistent validation
+
+This update ensures annotation quality by enforcing completeness before submission.
+
+---
+
+## How These Updates Help You
+
+- **Faster Start**: Projects are now usable right after creation, with no waiting for indexing
+- **Better Organization**: Grouped annotations bring more clarity to complex datasets
+- **Stronger Validation**: Required object annotations protect against incomplete submissions
+
+---
+
+## What's Next
+
+Our upcoming focus will be on expanding dataset management, strengthening collaboration tools, and refining annotation review workflows.
+
+---
+
+## Wrapping Up
+
+The September 2025 release improves transparency in project creation, strengthens annotation consistency with grouping support, and raises quality standards with required object-type validation. These updates deliver smoother workflows and greater confidence in project outcomes.
+
+We encourage you to explore the new features and continue sharing your feedback with us.
+
+**Labellerr Team**
+

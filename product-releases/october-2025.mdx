@@ -1,0 +1,223 @@
+---
+title: "October 2025 - Product Updates"
+description: "File tagging, full-screen view mode, SDK automation, and enhanced canvas shortcuts"
+icon: "calendar-check"
+---
+
+This month's release focuses on improving how teams organize datasets, streamline annotations, and automate workflows through the SDK. From intelligent file tagging and new canvas shortcuts to SDK-level automation for user and file management, these updates make Labellerr faster, more intuitive, and ready for large-scale ML operations.
+
+## 1. File Tagging for Dataset Organization
+
+Users can now tag files within Labellerr projects to create structured train, validation, and test splits. This feature helps in preparing machine learning datasets directly within the Labellerr platform.
+
+**Key Improvements:**
+- Ability to add predefined tags such as train, val, and test
+- Support for adding custom tags (e.g., batch-1, high-quality) for advanced organization
+- Tags can be searched and filtered for quick access
+- Real-time updates, changes reflect instantly across the system
+- Backend support for tag storage and indexing through Firestore and Elasticsearch
+- Enhanced search API allowing users to filter files based on tags
+
+This update provides a more flexible and ML-friendly dataset management experience, making it easier to maintain structured data pipelines within Labellerr.
+
+---
+
+## 2. Reusable File Viewer Grid and List Component
+
+<iframe 
+  width="100%" 
+  height="450" 
+  src="https://www.youtube.com/embed/ftWms0IbdNA?si=x3p4csQrAPPjEjZU" 
+  title="Reusable File Viewer Grid Component" 
+  frameborder="0" 
+  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+  referrerpolicy="strict-origin-when-cross-origin" 
+  allowfullscreen>
+</iframe>
+
+<iframe 
+  width="100%" 
+  height="450" 
+  src="https://www.youtube.com/embed/Bfw5U-K4V34?si=GfmzmJke9OVO28Kp" 
+  title="Reusable File Viewer List Component" 
+  frameborder="0" 
+  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+  referrerpolicy="strict-origin-when-cross-origin" 
+  allowfullscreen>
+</iframe>
+
+A new reusable file viewer component has been developed to provide a consistent and efficient way to display images, audio, and video files across the Labellerr application. This ensures that all media assets follow a unified visual experience.
+
+**Key Improvements:**
+- Reusable grid and list view component for displaying project files uniformly
+- Support for image, audio, and video previews in both views
+- Hover-based video preview that allows users to quickly inspect content without fully opening it
+- Optimized layout for handling large file collections with smooth performance
+- Consistent UI and UX across all modules that display media assets
+- Simplified integration for developers, allowing this component to be reused across the platform
+
+This enhancement establishes a cohesive design system and improves the speed and ease of navigating through visual and multimedia datasets.
+
+---
+
+## 3. Full-Screen File View Mode with Contextual Controls
+
+Users can now open files directly in full-screen view mode from the file listing page, enabling a distraction-free workspace for detailed annotation and review. The navigation and interaction experience has been redesigned for clarity, continuity, and control.
+
+**Key Improvements:**
+- New full-screen route replaces the previous popup-based file view for a seamless browsing experience
+- Dedicated Back button restores users to the file listing page with existing filters preserved
+- Collapsed questions panel by default for a cleaner layout; annotations panel remains visible
+- Accept and Reject buttons available by default for files in Review or Client Review status
+
+**Enhanced viewing interactions:**
+- Toggle annotation visibility on the canvas
+- Highlight annotations on hover
+- Adjust annotation opacity
+- Apply image filters directly from view mode
+- Play and pause videos, and add markers on the timeline
+
+**Action restrictions to maintain data integrity:**
+- No new annotations or edits allowed
+- No attribute modifications or group changes
+- Classification updates and right-click keyframe actions disabled
+
+This update provides a more immersive, intuitive review experience while preserving contextual continuity through stateful navigation and applied filters.
+
+---
+
+## 4. Polyline Annotations with Occlusion Support
+
+Annotators can now mark occluded segments directly while drawing polylines, improving both speed and precision. This removes the need for separate occlusion-related questions and allows users to manage everything within a single workflow.
+
+**Key Improvements:**
+- Right-click detection during polyline drawing to mark occluded segments instantly
+- Visual differentiation of occluded segments using gray dashed lines (#808080)
+- Persistent data storage with occluded segments saved in the backend and restored on reload
+- Backward compatibility with previously created annotations to ensure smooth transition
+- Enhanced usability: annotations retain visual styling and occlusion indicators even after saving and reloading
+
+This enhancement streamlines the annotation workflow for complex visual data, allowing users to mark visibility conditions more efficiently and maintain consistency across datasets.
+
+---
+
+## 5. Improved Polygon Eraser Transparency
+
+<iframe 
+  width="100%" 
+  height="450" 
+  src="https://www.youtube.com/embed/Rir6v2T5WgU?si=9grs9Ue76IdDR_mc" 
+  title="Improved Polygon Eraser Transparency" 
+  frameborder="0" 
+  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+  referrerpolicy="strict-origin-when-cross-origin" 
+  allowfullscreen>
+</iframe>
+
+The polygon eraser tool has been refined to offer better visual clarity while editing annotations. When eraser mode is activated, the targeted polygon now becomes fully transparent, allowing annotators to see the underlying regions clearly before erasing.
+
+**Key Improvements:**
+- Full 100% transparency applied to the target polygon when eraser mode is enabled
+- Clear visualization of the underlying image area for accurate erasure
+- Automatic restoration of original polygon opacity when eraser mode is turned off
+- Backend persistence ensures erased regions are saved correctly and reloaded accurately
+- Improved testing coverage across both image and video annotation modes
+
+This enhancement provides greater precision and control during polygon editing, reducing guesswork and improving annotation accuracy.
+
+---
+
+## 6. Quick Label Change from Canvas
+
+<iframe 
+  width="100%" 
+  height="450" 
+  src="https://www.youtube.com/embed/0VkmBUOkp2I?si=trq1PFtMT1GVsdUt" 
+  title="Quick Label Change from Canvas" 
+  frameborder="0" 
+  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+  referrerpolicy="strict-origin-when-cross-origin" 
+  allowfullscreen>
+</iframe>
+
+Annotators can now change the label of any object directly from the canvas using a simple keyboard shortcut. This eliminates the need to search for the object in the annotations tray, making the relabeling process faster and more intuitive.
+
+**Key Improvements:**
+- Introduced keyboard shortcut (L) for quick label change directly from the canvas
+- Simplified relabeling workflow for polygons and other object annotations
+- Preserves remarks and metadata when the label is updated
+- Reduces dependency on the annotation tray, improving speed and accuracy
+- Streamlined UI behavior: relabeling now feels natural and integrated into the annotation flow
+
+This feature enhances productivity by minimizing navigation steps and allowing annotators to make changes directly within their workspace.
+
+---
+
+## 7. Bulk File Assignment via SDK
+
+A new SDK-level bulk assignment API has been introduced, allowing developers and enterprise clients to automate file assignment and status updates efficiently within their workflows.
+
+**Key Improvements:**
+- Ability to bulk-assign files to users or update file statuses directly via SDK
+- Supports both file_ids and slice_ids for flexible bulk operations
+- Integrated with Labellerr's advanced filters to search and retrieve files programmatically before assignment
+- Validation checks for invalid user emails, unrecognized statuses, or files outside the project scope
+- Comprehensive error handling and informative response messages for failed or partial assignments
+- Backend consistency with existing Files section behavior in the Labellerr app
+
+This addition empowers large-scale users and automation scripts to manage dataset workflows more effectively without manual intervention through the UI.
+
+---
+
+## 8. Project User Management via SDK
+
+Developers can now add or remove users from Labellerr projects directly through the SDK, making it easier to programmatically manage large-scale labeling workflows and user assignments.
+
+**Key Improvements:**
+- Introduced SDK endpoints for adding and removing users from projects
+- Users already present in the workspace can be added using their email ID
+- If a user does not exist in the workspace, the SDK prompts for additional details (e.g., full name) before creation
+- Import users from existing projects to replicate permissions and streamline setup
+- Validation checks for invalid or duplicate email IDs
+- Error handling with clear messages for missing or mismatched user information
+- Seamless integration with project-level role and permission structures
+
+This feature simplifies workflow automation for organizations and teams that manage multiple projects and contributors, ensuring smooth onboarding and access control through SDK automation.
+
+---
+
+## How These Updates Help You
+
+- **Smarter Workflows**: Automate user and file operations seamlessly through the SDK, reducing repetitive management tasks
+- **Faster Labeling**: Save time with intuitive canvas shortcuts and efficient bulk actions, allowing annotators to focus on quality
+- **Better Visibility**: Experience improved clarity with enhanced viewers, list components, and full-screen file modes
+- **ML-Ready Datasets**: Structure and tag your datasets effortlessly, enabling faster and cleaner model training pipelines
+
+---
+
+## Conclusive Thoughts
+
+The October 2025 updates mark a strong stride toward a smarter and more scalable Labellerr.
+
+With streamlined dataset management, unified viewing components, and SDK-powered automation, these upgrades help teams label, review, and manage projects faster than ever before.
+
+As we continue evolving the platform, our focus remains on empowering both developers and annotators with a unified, intelligent workspace built for the future of data labeling.
+
+**The Labellerr Team**
+
+---
+
+## FAQs
+
+**Q1. How does file tagging improve dataset management in Labellerr?**
+
+File tagging enables users to organize datasets into structured splits like train, validation, and test sets. It allows better searchability, filtering, and ML-readiness directly within the Labellerr platform.
+
+**Q2. What are the key benefits of SDK-level automation in Labellerr?**
+
+SDK automation allows teams to manage users, assign files, and update statuses programmatically. This reduces repetitive manual work and ensures consistent workflows across large-scale ML operations.
+
+**Q3. How do the new canvas shortcuts and full-screen view improve annotation efficiency?**
+
+Annotators can now relabel objects, toggle annotations, and review files faster with keyboard shortcuts and full-screen mode, reducing context-switching and improving productivity.
+
