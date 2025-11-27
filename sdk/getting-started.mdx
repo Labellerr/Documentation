@@ -14,8 +14,6 @@ The **Labellerr SDK** is a Python library designed to make interaction with the 
 
 This documentation will guide you through installing the SDK, understanding its core functionalities, and handling common errors.
 
-Prefer a runnable notebook with sample data and ready-made cells? [Open the end-to-end SDK cookbook in Google Colab](https://colab.research.google.com/github/Labellerr/Hands-On-Learning-in-Computer-Vision/blob/main/SDK%20Tutorials/Labellerr_SDK_End_to_End_Annotation_Pipeline.ipynb)
-
 ## Installation
 
 To install the Labellerr SDK, use the following command:
@@ -26,13 +24,41 @@ pip install git+https://github.com/Labellerr/SDKPython.git
 
 ## Getting Started
 
-#### Obtaining API Credentials
+### Obtaining API Credentials
 
-You can obtain your `api_key` and `api_secret` for your workspace by visiting the following URL in your browser:
+To use the Labellerr SDK, you'll need three credentials: `api_key`, `api_secret`, and `client_id`.
 
-`https://<your-workspace-name>.labellerr.com/workspace/api-keys`
+<Steps>
+  <Step title="Log in to Labellerr">
+    Log in to your Labellerr account at [https://login.labellerr.com/](https://login.labellerr.com/)
+  </Step>
+  
+  <Step title="Create your Workspace">
+    Create a new workspace or access your existing workspace from the dashboard.
+  </Step>
+  
+  <Step title="Get your API Key and Secret">
+    Visit your workspace API keys page:
+    
+    ```
+    https://<your-workspace-name>.labellerr.com/workspace/api-keys
+    ```
+    
+    Copy your `api_key` and `api_secret` from this page.
+  </Step>
+  
+  <Step title="Request your Client ID">
+    To obtain your `client_id`, please contact our [support team](mailto:support@tensormatics.com?subject=Request%20for%20Client%20ID&body=Hi%20team,%0A%0AI%20would%20like%20to%20request%20my%20Client%20ID.%0A%0AMy%20name%3A%20%3Cyour%20name%3E%0AMy%20workspace%20ID%3A%20%3Cyour%20workspace%20ID%3E%0AMy%20email%20used%20in%20the%20workspace%3A%20%3Cyour%20email%3E%0APurpose%20of%20request%3A%20%3Cbrief%20reason%3E%0A%0AThank%20you).
+  </Step>
+</Steps>
 
-Once installed, you can start by importing and initializing the `LabellerrClient`. This client will handle all communication with the Labellerr platform.
+<Tip>
+  Keep your credentials secure and never commit them to version control. Consider using environment variables or a secure configuration file.
+</Tip>
+
+### Initialize the Client
+
+Once you have your credentials, import and initialize the `LabellerrClient`. This client handles all communication with the Labellerr platform.
 
 ### Understanding the SDK Structure
 
@@ -314,7 +340,7 @@ print(f"✓ Dataset created: {dataset.dataset_id}")
 
 <AccordionGroup>
   <Accordion title="How do I get my client_id?">
-    To obtain your `client_id`, please contact our support team at [support@labellerr.com](mailto:support@labellerr.com). The client ID is a unique identifier for your organization and will be provided by the Labellerr team.
+    To obtain your `client_id`, please contact our [support team](mailto:support@tensormatics.com?subject=Request%20for%20Client%20ID&body=Hi%20team,%0A%0AI%20would%20like%20to%20request%20my%20Client%20ID.%0A%0AMy%20name%3A%20%3Cyour%20name%3E%0AMy%20workspace%20ID%3A%20%3Cyour%20workspace%20ID%3E%0AMy%20email%20used%20in%20the%20workspace%3A%20%3Cyour%20email%3E%0APurpose%20of%20request%3A%20%3Cbrief%20reason%3E%0A%0AThank%20you).
   </Accordion>
   
   <Accordion title="Where can I find my API credentials?">

@@ -16,7 +16,11 @@ from labellerr.core.projects import list_projects
 from labellerr.core.exceptions import LabellerrError
 
 # Initialize the client with your API credentials
-client = LabellerrClient(api_key, api_secret, client_id)
+client = LabellerrClient(
+    api_key='your_api_key',
+    api_secret='your_api_secret',
+    client_id='your_client_id'
+)
 
 try:
     # List all projects - returns list of LabellerrProject objects
@@ -57,7 +61,11 @@ from labellerr.core.schemas import DataSetScope
 from labellerr.core.exceptions import LabellerrError
 
 # Initialize the client with your API credentials
-client = LabellerrClient(api_key, api_secret, client_id)
+client = LabellerrClient(
+    api_key='your_api_key',
+    api_secret='your_api_secret',
+    client_id='your_client_id'
+)
 
 try:
     # Get all datasets using list_datasets with auto-pagination
@@ -193,7 +201,11 @@ from labellerr.core.datasets import LabellerrDataset
 from labellerr.core.exceptions import LabellerrError
 
 # Initialize the client with your API credentials
-client = LabellerrClient(api_key, api_secret, client_id)
+client = LabellerrClient(
+    api_key='your_api_key',
+    api_secret='your_api_secret',
+    client_id='your_client_id'
+)
 
 try:
     # Get dataset instance
@@ -229,7 +241,11 @@ from labellerr.core.projects import LabellerrProject
 from labellerr.core.exceptions import LabellerrError
 
 # Initialize the client with your API credentials
-client = LabellerrClient(api_key, api_secret, client_id)
+client = LabellerrClient(
+    api_key='your_api_key',
+    api_secret='your_api_secret',
+    client_id='your_client_id'
+)
 
 try:
     # Get project instance
@@ -251,7 +267,11 @@ from labellerr.client import LabellerrClient
 from labellerr.core.projects import LabellerrProject
 from labellerr.core.exceptions import LabellerrError
 
-client = LabellerrClient(api_key, api_secret, client_id)
+client = LabellerrClient(
+    api_key='your_api_key',
+    api_secret='your_api_secret',
+    client_id='your_client_id'
+)
 
 try:
     project = LabellerrProject(client=client, project_id="your_project_id")
@@ -275,7 +295,11 @@ from labellerr.client import LabellerrClient
 from labellerr.core.projects import LabellerrProject
 from labellerr.core.exceptions import LabellerrError
 
-client = LabellerrClient(api_key, api_secret, client_id)
+client = LabellerrClient(
+    api_key='your_api_key',
+    api_secret='your_api_secret',
+    client_id='your_client_id'
+)
 
 try:
     project = LabellerrProject(client=client, project_id="your_project_id")
@@ -307,7 +331,11 @@ from labellerr.client import LabellerrClient
 from labellerr.core.projects import LabellerrProject
 from labellerr.core.exceptions import LabellerrError
 
-client = LabellerrClient(api_key, api_secret, client_id)
+client = LabellerrClient(
+    api_key='your_api_key',
+    api_secret='your_api_secret',
+    client_id='your_client_id'
+)
 
 try:
     project = LabellerrProject(client=client, project_id="your_project_id")

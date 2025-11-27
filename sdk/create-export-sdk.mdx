@@ -25,7 +25,11 @@ from labellerr.core.projects import LabellerrProject
 from labellerr.core.exceptions import LabellerrError
 
 # Initialize the client with your API credentials
-client = LabellerrClient(api_key, api_secret, client_id)
+client = LabellerrClient(
+    api_key='your_api_key',
+    api_secret='your_api_secret',
+    client_id='your_client_id'
+)
 
 project_id = 'your_project_id'
 
@@ -73,7 +77,11 @@ from labellerr.core.connectors import LabellerrS3Connection
 from labellerr.core.schemas import AWSConnectionParams, CreateExportParams
 from labellerr.core.exceptions import LabellerrError
 
-client = LabellerrClient(api_key, api_secret, client_id)
+client = LabellerrClient(
+    api_key='your_api_key',
+    api_secret='your_api_secret',
+    client_id='your_client_id'
+)
 
 # Create S3 connection
 connection = LabellerrS3Connection.create_connection(
@@ -124,7 +132,11 @@ from labellerr.core.projects import LabellerrProject
 from labellerr.core.exceptions import LabellerrError
 
 # Initialize the client with your API credentials
-client = LabellerrClient(api_key, api_secret, client_id)
+client = LabellerrClient(
+    api_key='your_api_key',
+    api_secret='your_api_secret',
+    client_id='your_client_id'
+)
 
 # Example input
 project_id = 'your_project_id'
@@ -160,7 +172,11 @@ from labellerr.core.exceptions import LabellerrError
 import uuid
 
 # Initialize the client with your API credentials
-client = LabellerrClient(api_key, api_secret, client_id)
+client = LabellerrClient(
+    api_key='your_api_key',
+    api_secret='your_api_secret',
+    client_id='your_client_id'
+)
 
 project_id = 'your_project_id'
 report_ids = ['export_report_id']  # make sure it is a list

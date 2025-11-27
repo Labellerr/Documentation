@@ -72,7 +72,11 @@ from labellerr.client import LabellerrClient
 from labellerr.core.projects import LabellerrProject
 from labellerr.core.schemas import KeyFrame
 
-client = LabellerrClient(api_key='your_api_key', api_secret='your_api_secret', client_id='your_client_id')
+client = LabellerrClient(
+    api_key='your_api_key',
+    api_secret='your_api_secret',
+    client_id='your_client_id'
+)
 
 try:
     # Get video project instance
@@ -141,7 +145,11 @@ Remove keyframes by specifying their frame numbers:
 from labellerr.client import LabellerrClient
 from labellerr.core.projects import LabellerrProject
 
-client = LabellerrClient(api_key='your_api_key', api_secret='your_api_secret', client_id='your_client_id')
+client = LabellerrClient(
+    api_key='your_api_key',
+    api_secret='your_api_secret',
+    client_id='your_client_id'
+)
 
 try:
     project = LabellerrProject(client=client, project_id="video_project_id")
