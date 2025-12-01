@@ -191,7 +191,7 @@ try:
         client_id=client_id,
         aws_access_key="your_aws_access_key",
         aws_secrets_key="your_aws_secret_key",
-        s3_path="s3://your-bucket-name/path/to/data",
+        path="s3://your-bucket-name/path/to/data",
         data_type="image",
         name="My S3 Connection",
         description="Production data bucket",
@@ -247,7 +247,7 @@ try:
     connection_params = GCSConnectionParams(
         client_id=client_id,
         svc_account_json="/path/to/service-account.json",
-        gcs_path="gs://your-bucket-name/path/to/data",
+        path="gs://your-bucket-name/path/to/data",
         data_type="image",
         name="My GCS Connection",
         description="Production GCS bucket",

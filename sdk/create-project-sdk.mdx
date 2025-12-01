@@ -172,6 +172,7 @@ Define the questions your annotators will answer.
   
   <Tab title="Multiple Questions">
     ```python
+    from labellerr.core.annotation_templates import create_template
     from labellerr.core.schemas import *
     import uuid
 
@@ -277,6 +278,12 @@ print(f"Datasets: {project.attached_datasets}")
 ### Using Multiple Datasets
 
 Attach multiple datasets to a single project for larger annotation workflows:
+
+<Warning>
+**Homogeneous Data Requirement**
+
+All datasets attached to a single project **must be of the same data type** (e.g., all `image`, all `video`, etc.). You cannot mix different data types in the same project.
+</Warning>
 
 ```python
 from labellerr.core.datasets import LabellerrDataset
