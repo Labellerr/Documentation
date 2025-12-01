@@ -470,6 +470,99 @@ except LabellerrError as e:
 
 ---
 
+## Troubleshooting Cloud Connections
+
+<Warning>
+**Required Permissions**
+
+Before creating datasets from cloud storage, ensure your IAM user (S3) or Service Account (GCS) has the required permissions. See:
+- [AWS S3 Permissions Guide](/getting-started/connect-aws-s3)
+- [GCS Permissions Guide](/getting-started/connect-gcs)
+</Warning>
+
+### Common Issues
+
+<Card title="Troubleshooting Reference" icon="bug">
+| Issue | Symptom | Solution |
+|-------|---------|----------|
+| Dataset status 500 | "Dataset created successfully" but status shows 500/Failed | Connection lacks bucket permissions - test connection first |
+| "Dataset has no files" | Files exist in S3/GCS but dataset shows 0 files | IAM user/service account missing read permissions |
+| Internal server error | Error with tracking ID in UI | Check connection permissions, contact support with tracking ID |
+</Card>
+
+### Best Practice: Always Test Connection First
+
+<Card title="Test Connection Before Creating Datasets" icon="shield-check">
+Always test your connection before creating datasets to catch permission issues early:
+
+```python Test Connection
+from labellerr.client import LabellerrClient
+from labellerr.core.connectors import LabellerrConnection
+from labellerr.core.schemas import ConnectionType, DatasetDataType
+
+# Initialize client
+client = LabellerrClient(api_key, api_secret, client_id)
+
+# Get your existing connection
+connection = LabellerrConnection(client=client, connection_id="your_connection_id")
+
+# Test the connection on your specific path
+test_result = connection.test(
+    path="s3://your-bucket/path/to/data/",  # or gs:// for GCS
+    connection_type=ConnectionType._IMPORT,
+    data_type=DatasetDataType.image
+)
+print(f"Connection test: {test_result}")
+```
+
+<Note>
+**Path Formats:**
+- AWS S3: `s3://bucket-name/path/to/folder/`
+- GCS: `gs://bucket-name/path/to/folder/`
+</Note>
+</Card>
+
+### Checking Dataset Status After Creation
+
+<Card title="Verify Dataset Status" icon="circle-check">
+Always check dataset status after creation to ensure it processed successfully:
+
+```python Check Dataset Status
+from labellerr.core.datasets import create_dataset_from_connection
+
+# Create dataset
+dataset = create_dataset_from_connection(
+    client=client,
+    dataset_config=dataset_config,
+    connection=connection,
+    path="s3://your-bucket/path/to/data/"
+)
+print(f"Dataset ID: {dataset.dataset_id}")
+
+# Check status - this waits for processing to complete
+dataset.status()
+
+# Verify status code
+print(f"Status Code: {dataset.status_code}")
+print(f"Files Count: {dataset.files_count}")
+
+# Status codes:
+# 300 = Ready (success)
+# 500 = Failed (usually permissions issue)
+```
+
+<Warning>
+If `status_code` is **500**, the dataset creation failed. This is usually due to:
+1. Missing bucket permissions on the IAM user/service account
+2. Invalid path format
+3. Bucket doesn't exist or is inaccessible
+
+Check the connection permissions and test the connection before retrying.
+</Warning>
+</Card>
+
+---
+
 ## Common Use Cases
 
 <CardGroup cols={2}>

@@ -30,6 +30,48 @@ Please note that the procedures outlined in this guide pertain to connecting an 
 
 Please follow the reference link for more information
 
+## Quick Reference
+
+### S3 URI Format
+
+<Card title="S3 Path Format" icon="link">
+```
+Format: s3://bucket-name/path/to/folder/
+Example: s3://my-annotation-bucket/images/batch-001/
+```
+
+<Warning>
+When entering the path in Labellerr UI, **remove the `s3://` prefix**. Enter only: `bucket-name/path/to/folder/`
+</Warning>
+</Card>
+
+### Required Permissions Summary
+
+<Tabs>
+  <Tab title="Import (Read)">
+| Permission | Purpose |
+|------------|---------|
+| `s3:GetObject` | Read files from bucket |
+| `s3:ListBucket` | List bucket contents |
+| `s3:GetBucketCors` | Get CORS configuration |
+| `s3:GetBucketLocation` | Get bucket region |
+| `s3:PutBucketCors` | Set CORS policy (or configure manually) |
+  </Tab>
+  <Tab title="Export (Write)">
+| Permission | Purpose |
+|------------|---------|
+| `s3:PutObject` | Write/upload annotation files |
+| `s3:DeleteObject` | Delete files if needed |
+| `s3:ListBucket` | List bucket contents |
+
+<Note>Export permissions are required **in addition** to import permissions.</Note>
+  </Tab>
+</Tabs>
+
+<Tip>
+**Using Google Cloud Storage instead?** See our [GCS Connection Guide](/getting-started/connect-gcs) for Google Cloud Storage setup instructions.
+</Tip>
+
 ## CREATE IAM USER
 
 <Steps>
@@ -292,3 +334,109 @@ Please follow the reference link for more information
 </Steps>
 
 That's it, this is how you can connect AWS S3 with our Labellerr Data Connector. Now you can successfully, Create a Project.
+
+## Troubleshooting
+
+<AccordionGroup>
+  <Accordion title="Dataset creation shows status 500 or 'Failed'">
+**Symptom:** Dataset appears to create successfully but then shows "Failed" status or status code 500.
+
+**Cause:** The IAM user/connection does not have the required permissions to access the S3 bucket.
+
+**Solution:**
+1. Verify the IAM policy is correctly attached to your user
+2. Ensure the bucket name in the policy matches your actual bucket
+3. Check that the `/*` wildcard is included for object-level permissions
+4. Test the connection before creating datasets:
+
+```python
+from labellerr.core.connectors import LabellerrConnection
+from labellerr.core.schemas import ConnectionType, DatasetDataType
+
+connection = LabellerrConnection(client=client, connection_id="your_connection_id")
+test_result = connection.test(
+    path="s3://your-bucket/path/to/data/",
+    connection_type=ConnectionType._IMPORT,
+    data_type=DatasetDataType.image
+)
+```
+  </Accordion>
+
+  <Accordion title="'Dataset has no files' error">
+**Symptom:** Files exist in S3 bucket but dataset shows 0 files.
+
+**Cause:** The connection lacks read permissions (`s3:GetObject`, `s3:ListBucket`) on the bucket.
+
+**Solution:**
+1. Verify `s3:GetObject` permission is set on the bucket objects (`arn:aws:s3:::bucket-name/*`)
+2. Verify `s3:ListBucket` permission is set on the bucket (`arn:aws:s3:::bucket-name`)
+3. Check that the path format is correct: `s3://bucket-name/folder/`
+  </Accordion>
+
+  <Accordion title="Connection test fails">
+**Symptom:** Connection test returns an error when trying to connect.
+
+**Cause:** Invalid credentials, wrong path format, or insufficient permissions.
+
+**Solution:**
+1. Verify your Access Key and Secret Access Key are correct
+2. Check the path format: `s3://bucket-name/path/to/folder/`
+3. Ensure the IAM user has all required permissions listed above
+4. Verify the bucket exists and is in the correct AWS region
+  </Accordion>
+
+  <Accordion title="CORS errors in browser">
+**Symptom:** Images don't load in the Labellerr annotation interface due to CORS errors.
+
+**Cause:** Missing CORS configuration on the S3 bucket.
+
+**Solution:**
+Either grant `s3:PutBucketCors` permission to allow Labellerr to set CORS automatically, or configure CORS manually on your bucket:
+
+```json
+[
+  {
+    "AllowedHeaders": ["*"],
+    "AllowedMethods": ["GET", "HEAD"],
+    "AllowedOrigins": ["*.labellerr.com"],
+    "ExposeHeaders": [],
+    "MaxAgeSeconds": 3600
+  }
+]
+```
+  </Accordion>
+
+  <Accordion title="'No files found with status' during export">
+**Symptom:** Export fails with "No files found with the given status" error.
+
+**Cause:** Files have not been moved to the expected workflow stage (review, client_review, or accepted).
+
+**Solution:**
+1. Ensure files have been annotated AND reviewed before exporting
+2. Check the `statuses` parameter in your export configuration
+3. Valid statuses for export: `review`, `client_review`, `accepted`
+  </Accordion>
+
+  <Accordion title="Internal server error with tracking ID">
+**Symptom:** An "Internal server error" appears with a tracking ID.
+
+**Cause:** Usually indicates a server-side issue, often related to permissions.
+
+**Solution:**
+1. Note the tracking ID for support reference
+2. Check connection permissions are still valid
+3. Verify IAM user credentials haven't been rotated or revoked
+4. Contact [support@tensormatics.com](mailto:support@tensormatics.com) with the tracking ID
+  </Accordion>
+</AccordionGroup>
+
+## Related Guides
+
+<CardGroup cols={2}>
+  <Card title="Connect Google Cloud Storage" icon="google" href="/getting-started/connect-gcs">
+    Set up GCS bucket connection with service account authentication
+  </Card>
+  <Card title="Create Projects" icon="folder-plus" href="/getting-started/create-project">
+    Learn how to create annotation projects with your connected data
+  </Card>
+</CardGroup>

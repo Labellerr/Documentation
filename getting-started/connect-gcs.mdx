@@ -14,6 +14,52 @@ By creating an IAM user with appropriate permissions, you can grant Labellerr th
 Please note that the procedures outlined in this guide pertain to connecting a GCS bucket and LABELLERR within the same Google Cloud account.
 </Note>
 
+## Quick Reference
+
+### GCS URI Format
+
+<Card title="GCS Path Format" icon="link">
+```
+Format: gs://bucket-name/path/to/folder/
+Example: gs://my-gcs-bucket/annotations/dataset-001/
+```
+</Card>
+
+### Required Permissions Summary
+
+<Tabs>
+  <Tab title="Import (Read)">
+| Permission | Purpose |
+|------------|---------|
+| `storage.objects.get` | Read files from bucket |
+| `storage.objects.list` | List files in bucket |
+| `storage.buckets.get` | Get bucket metadata |
+| `storage.buckets.update` | Update bucket settings (CORS) |
+  </Tab>
+  <Tab title="Export (Write)">
+| Permission | Purpose |
+|------------|---------|
+| `storage.objects.create` | Write/upload annotation files |
+| `storage.objects.delete` | Delete files if needed |
+
+<Note>Export permissions are required **in addition** to import permissions.</Note>
+  </Tab>
+</Tabs>
+
+### S3 vs GCS Comparison
+
+| Feature | AWS S3 | Google Cloud Storage |
+|---------|--------|---------------------|
+| URI Format | `s3://bucket/path/` | `gs://bucket/path/` |
+| Authentication | Access Key + Secret Key | Service Account JSON |
+| Import Permissions | 5 permissions | 4 permissions |
+| Export Permissions | +2 permissions | +2 permissions |
+| CORS Setup | Via IAM policy or manual | Via bucket settings |
+
+<Tip>
+**Using AWS S3 instead?** See our [AWS S3 Connection Guide](/getting-started/connect-aws-s3) for S3 setup instructions.
+</Tip>
+
 To connect data with GCS in Labellerr:
 
 ## Prerequisites
@@ -148,3 +194,90 @@ To connect data with GCS in Labellerr:
 </Steps>
 
 And you're done, this is how you can connect your GCS bucket with Labellerr.
+
+## Troubleshooting
+
+<AccordionGroup>
+  <Accordion title="Service account JSON is invalid">
+**Symptom:** Connection test fails with "invalid service account" error.
+
+**Cause:** The JSON key file is corrupted, expired, or incorrectly formatted.
+
+**Solution:**
+1. Go to **IAM & Admin > Service Accounts** in Google Cloud Console
+2. Select your service account
+3. Click **Manage keys**
+4. Delete the old key and create a new one
+5. Download the new JSON key file and use it for the connection
+  </Accordion>
+
+  <Accordion title="Permission denied error">
+**Symptom:** Connection test fails with "permission denied" or "403 Forbidden" error.
+
+**Cause:** The service account doesn't have the required role assigned to the bucket.
+
+**Solution:**
+1. Go to **Cloud Storage > Buckets** in Google Cloud Console
+2. Select your bucket and click **Permissions** tab
+3. Click **ADD** and enter the service account email
+4. Assign the custom role you created with the required permissions
+5. Click **SAVE**
+  </Accordion>
+
+  <Accordion title="Bucket not found">
+**Symptom:** Connection test fails with "bucket not found" error.
+
+**Cause:** The bucket name in the path doesn't match the actual bucket name.
+
+**Solution:**
+1. Verify the gs:// path matches your exact bucket name
+2. Check for typos in the bucket name
+3. Ensure the bucket exists in the same Google Cloud project
+4. Path format should be: `gs://exact-bucket-name/folder/`
+  </Accordion>
+
+  <Accordion title="Dataset creation shows status 500 or 'Failed'">
+**Symptom:** Dataset appears to create successfully but then shows "Failed" status.
+
+**Cause:** The service account doesn't have the required permissions to access the GCS bucket.
+
+**Solution:**
+1. Verify all required permissions are in the custom role
+2. Ensure the role is assigned to the bucket (not just the project)
+3. Test the connection before creating datasets:
+
+```python
+from labellerr.core.connectors import LabellerrConnection
+from labellerr.core.schemas import ConnectionType, DatasetDataType
+
+connection = LabellerrConnection(client=client, connection_id="your_connection_id")
+test_result = connection.test(
+    path="gs://your-bucket/path/to/data/",
+    connection_type=ConnectionType._IMPORT,
+    data_type=DatasetDataType.image
+)
+```
+  </Accordion>
+
+  <Accordion title="'No files found with status' during export">
+**Symptom:** Export fails with "No files found with the given status" error.
+
+**Cause:** Files have not been moved to the expected workflow stage.
+
+**Solution:**
+1. Ensure files have been annotated AND reviewed before exporting
+2. Check the `statuses` parameter in your export configuration
+3. Valid statuses for export: `review`, `client_review`, `accepted`
+  </Accordion>
+</AccordionGroup>
+
+## Related Guides
+
+<CardGroup cols={2}>
+  <Card title="Connect AWS S3" icon="aws" href="/getting-started/connect-aws-s3">
+    Set up AWS S3 bucket connection with IAM user authentication
+  </Card>
+  <Card title="Create Projects" icon="folder-plus" href="/getting-started/create-project">
+    Learn how to create annotation projects with your connected data
+  </Card>
+</CardGroup>

@@ -37,18 +37,16 @@ To use the Labellerr SDK, you'll need three credentials: `api_key`, `api_secret`
     Create a new workspace or access your existing workspace from the dashboard.
   </Step>
   
-  <Step title="Get your API Key and Secret">
+  <Step title="Get your API Credentials">
     Visit your workspace API keys page:
     
     ```
     https://<your-workspace-name>.labellerr.com/workspace/api-keys
     ```
     
-    Copy your `api_key` and `api_secret` from this page.
-  </Step>
-  
-  <Step title="Request your Client ID">
-    To obtain your `client_id`, please contact our [support team](mailto:support@tensormatics.com?subject=Request%20for%20Client%20ID&body=Hi%20team,%0A%0AI%20would%20like%20to%20request%20my%20Client%20ID.%0A%0AMy%20name%3A%20%3Cyour%20name%3E%0AMy%20workspace%20ID%3A%20%3Cyour%20workspace%20ID%3E%0AMy%20email%20used%20in%20the%20workspace%3A%20%3Cyour%20email%3E%0APurpose%20of%20request%3A%20%3Cbrief%20reason%3E%0A%0AThank%20you).
+    From this page, you can obtain all three credentials:
+    - **API Key & Secret**: Copy from the API Keys table
+    - **Client ID**: Click the **Show Client ID** button to reveal and copy your client ID
   </Step>
 </Steps>
 
@@ -140,6 +138,21 @@ Replace `'your-api-key'` and `'your-api-secret'` with your actual credentials pr
 ## Working with Cloud Connections
 
 The Labellerr SDK supports seamless integration with cloud storage providers like AWS S3 and Google Cloud Storage (GCS). You can create, test, list, and manage connections programmatically.
+
+<Warning>
+**Required Permissions**
+
+Before creating cloud connections, ensure your IAM user (S3) or Service Account (GCS) has the required permissions:
+
+| Provider | Import Permissions | Export Permissions |
+|----------|-------------------|-------------------|
+| AWS S3 | `s3:GetObject`, `s3:ListBucket`, `s3:GetBucketCors`, `s3:GetBucketLocation`, `s3:PutBucketCors` | + `s3:PutObject`, `s3:DeleteObject` |
+| GCS | `storage.objects.get`, `storage.objects.list`, `storage.buckets.get`, `storage.buckets.update` | + `storage.objects.create`, `storage.objects.delete` |
+
+For detailed setup instructions, see:
+- [AWS S3 Permissions Guide](/getting-started/connect-aws-s3)
+- [GCS Permissions Guide](/getting-started/connect-gcs)
+</Warning>
 
 ### Creating and Testing Connections
 
@@ -314,33 +327,19 @@ Always test your connection before creating datasets:
 
 ## Using Connections with Datasets
 
-Once you've created and tested a connection, you can use it to create datasets:
+Once you've created and tested a cloud connection (S3 or GCS), you can use it to create datasets directly from your cloud storage. This allows you to manage large volumes of files without manual uploads, and keeps your data in sync with your existing cloud infrastructure.
 
-```python Create Dataset from Cloud Connection
-from labellerr.core.datasets import create_dataset_from_connection
-from labellerr.core.schemas import DatasetConfig
+<Card title="Create Datasets from Cloud Storage" icon="database" href="/sdk/create-dataset-sdk#method-2-create-dataset-with-aws-s3-connection">
+  Learn how to create datasets using your S3 or GCS connections in our dedicated **Create Datasets** guide, including complete code examples and troubleshooting tips.
+</Card>
 
-# Using the created connection
-dataset = create_dataset_from_connection(
-    client=client,
-    dataset_config=DatasetConfig(
-        dataset_name="Cloud Dataset",
-        data_type="image",
-        dataset_description="Dataset from cloud storage"
-    ),
-    connection=s3_connection,  # or gcs_connection
-    path="s3://your-bucket-name/path/to/data"  # Specific path in the bucket
-)
-
-print(f"✓ Dataset created: {dataset.dataset_id}")
-```
 ---
 
 ## Frequently Asked Questions
 
 <AccordionGroup>
   <Accordion title="How do I get my client_id?">
-    To obtain your `client_id`, please contact our [support team](mailto:support@tensormatics.com?subject=Request%20for%20Client%20ID&body=Hi%20team,%0A%0AI%20would%20like%20to%20request%20my%20Client%20ID.%0A%0AMy%20name%3A%20%3Cyour%20name%3E%0AMy%20workspace%20ID%3A%20%3Cyour%20workspace%20ID%3E%0AMy%20email%20used%20in%20the%20workspace%3A%20%3Cyour%20email%3E%0APurpose%20of%20request%3A%20%3Cbrief%20reason%3E%0A%0AThank%20you).
+    Visit your workspace API keys page at `https://<your-workspace-name>.labellerr.com/workspace/api-keys` and click the **Show Client ID** button to reveal and copy your client ID.
   </Accordion>
   
   <Accordion title="Where can I find my API credentials?">
