@@ -171,8 +171,8 @@
             "pages": [
               "sdk/getting-started",
               "sdk/create-dataset-sdk",
-              "sdk/create-project-sdk",
               "sdk/add-annotation-questions",
+              "sdk/create-project-sdk",
               "sdk/retrieve-projects-datasets-sdk",
               "sdk/video-project-operations-sdk",
               "sdk/upload-preannotation-sdk",
