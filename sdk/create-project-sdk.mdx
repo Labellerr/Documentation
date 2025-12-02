@@ -234,6 +234,14 @@ Define the questions your annotators will answer.
         annotation_template_id="your_template_id"
     )
     ```
+    
+    <Tip>
+    **Finding the Template ID:**
+    
+    You can find the `annotation_template_id` in two ways:
+    1. **Dashboard URL:** When viewing a template in the Labellerr dashboard, the ID is in the URL (e.g., `.../templates/d290f1ee-6c54...`).
+    2. **Creation Response:** When you create a template via SDK, the ID is returned in the response (`template.annotation_template_id`).
+    </Tip>
   </Tab>
 </Tabs>
 
