@@ -1,0 +1,267 @@
+---
+title: "November 2025 - Product Updates"
+description: "SAM3 integration, preview strips, polygon splitting, boundary annotations, and SDK enhancements"
+icon: "calendar-check"
+---
+
+This month's release brings powerful AI-driven annotation capabilities, enhanced user experience improvements, and expanded SDK functionality. From SAM3's ability to label similar objects with a single prompt to intelligent preview strips and smarter polygon editing, these updates accelerate annotation workflows and improve dataset quality at scale.
+
+## 1. SAM3 Integration: Label All Similar Objects with a Single Visual Prompt
+
+<iframe 
+  width="100%" 
+  height="450" 
+  src="https://www.youtube.com/embed/YWiN365E6HY" 
+  title="SAM3 Integration - Label Similar Objects" 
+  frameborder="0" 
+  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+  referrerpolicy="strict-origin-when-cross-origin" 
+  allowfullscreen>
+</iframe>
+
+Now you can label all similar objects like cars, players, or products using just one single visual prompt—whether it's a box or a polygon. SAM3 intelligently identifies and labels all similar instances across your image, dramatically reducing repetitive annotation work.
+
+**Key Improvements:**
+- Single visual prompt (box or polygon) automatically labels all similar objects in the image
+- Intelligent object detection powered by SAM3's advanced segmentation capabilities
+- Significant time savings for datasets with multiple instances of the same object class
+- Works seamlessly with image-based projects
+- Automated labeling maintains consistency across similar objects
+
+**Future Work:**
+- Support for negative prompting and incremental prompting to refine results
+- Individual accept/reject controls for each detected object (accept all, reject all)
+- Reduced latency for faster processing
+- Extension to video projects for frame-by-frame similar object detection
+
+This feature transforms how teams handle repetitive labeling tasks, making it possible to annotate hundreds of similar objects in seconds rather than hours.
+
+---
+
+## 2. File Preview Strip for Seamless Navigation
+
+<iframe 
+  width="100%" 
+  height="450" 
+  src="https://www.youtube.com/embed/MrHSBp2r9Go" 
+  title="File Preview Strip Navigation" 
+  frameborder="0" 
+  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+  referrerpolicy="strict-origin-when-cross-origin" 
+  allowfullscreen>
+</iframe>
+
+When viewing files in full-page mode, a smart preview strip now renders at the bottom, showing thumbnails of other files in the queue. This allows annotators and reviewers to navigate between files effortlessly without returning to the file listing page.
+
+**Key Improvements:**
+- Preview strip displays thumbnails of all files from the current page in the file listing
+- Click any thumbnail to instantly open that file in full view
+- Toggle visibility of the preview strip to maximize canvas space
+- Expand and collapse the preview section as needed
+- Auto-navigation: when a file is accepted or rejected, the next file in line opens automatically
+- On the last file, the current file remains open after accept/reject
+- Smart pagination: previous and next pages load automatically when navigating to the edges
+- Accept and reject actions available directly from the preview mode
+- Works across all data types (image, video, audio, document, text)
+
+**Performance Optimizations:**
+- Pre-fetching of file links and annotations for files adjacent to the current view
+- Static thumbnails for audio and document files ensure consistent UI
+- Smooth transitions between files with minimal loading time
+
+This update creates a more fluid review experience, enabling teams to process files faster while maintaining context and continuity across their annotation queue.
+
+---
+
+## 3. Automatic Polygon Splitting in Clip Mode
+
+<iframe 
+  width="100%" 
+  height="450" 
+  src="https://www.youtube.com/embed/SAjPf6ALKOU" 
+  title="Automatic Polygon Splitting in Clip Mode" 
+  frameborder="0" 
+  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+  referrerpolicy="strict-origin-when-cross-origin" 
+  allowfullscreen>
+</iframe>
+
+Clip Mode now intelligently handles polygon splitting. When a clipping operation divides a polygon into multiple pieces, each piece automatically becomes a separate, fully editable polygon annotation.
+
+**Previous Behavior:**
+- When clipping resulted in multiple polygon pieces (MultiPolygon), only the largest piece by area was retained
+- Smaller pieces were automatically discarded, leading to data loss
+
+**New Behavior:**
+- All resulting polygon pieces are preserved as individual annotations
+- Each split polygon becomes independently editable
+- Maintains annotation metadata and labels across all split instances
+- Supports complex clipping scenarios with multiple resulting polygons
+
+**Key Improvements:**
+- Zero data loss during polygon clipping operations
+- Automatic instance creation for each split piece
+- Preserves annotation attributes and relationships
+- Enables more precise editing workflows for complex shapes
+- Intuitive behavior that matches user expectations
+
+This enhancement is particularly valuable for annotating overlapping objects, partial occlusions, and complex scenes where precise boundary definition requires splitting annotations.
+
+---
+
+## 4. Improved Polygon and Polyline Annotations Near Boundaries
+
+<iframe 
+  width="100%" 
+  height="450" 
+  src="https://www.youtube.com/embed/ykRVxLSsWGE" 
+  title="Boundary-Aware Polygon Annotations" 
+  frameborder="0" 
+  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+  referrerpolicy="strict-origin-when-cross-origin" 
+  allowfullscreen>
+</iframe>
+
+Annotating objects that extend to image boundaries is now significantly easier. Users can place polygon and polyline points outside the image boundary, and the system automatically adjusts them to snap precisely to the edge—no more tedious zooming and manual alignment.
+
+**Previous Workflow:**
+- Annotators had to zoom in significantly to place points at the boundary edge
+- Even with zoom, boundary points were often imprecise
+- Manual adjustments were time-consuming and frustrating
+
+**New Workflow:**
+- Mark polygon or polyline points freely, even outside the image boundary
+- Points automatically snap to the nearest boundary edge
+- No user intervention required for boundary alignment
+- Maintains precision without requiring zoom
+
+**Key Improvements:**
+- Intelligent boundary detection and automatic point adjustment
+- Dramatically faster annotation for objects at image edges
+- Eliminates precision errors at boundaries
+- Works for both polygon and polyline annotation types
+- Reduces cognitive load and physical effort during annotation
+- Particularly valuable for satellite imagery, medical scans, and full-frame objects
+
+This UX enhancement removes a common point of friction in annotation workflows, making boundary annotations as easy as annotating objects in the center of the image.
+
+---
+
+## 5. Model Inference via SDK
+
+Teams can now run inference using their trained Autolabel models directly through the SDK, with flexible options for how predictions are applied to unlabeled files.
+
+**Inference Modes:**
+
+**Magic Wand Mode:**
+- Enables the Magic Wand tool with three confidence score buckets
+- Provides users with visual confidence indicators for each prediction
+- Allows manual refinement before accepting annotations
+
+**Pre-Label Mode:**
+- Automatically annotates unlabeled files
+- Preserves the current file status (keeps files in their existing workflow stage)
+- Ideal for adding AI assistance without disrupting review pipelines
+
+**Send-to-Review Mode:**
+- Annotates unlabeled files and automatically advances them to the review stage
+- Streamlines workflows by moving AI-labeled data directly into the review queue
+- Reduces manual status updates for high-confidence predictions
+
+**Key Improvements:**
+- Programmatic access to trained Autolabel models
+- Flexible annotation strategies based on confidence and workflow requirements
+- Seamless integration with existing annotation and review pipelines
+- Batch processing support for large datasets
+- API-level control over model inference parameters
+
+This SDK capability enables organizations to build automated labeling pipelines that combine AI predictions with human validation, significantly accelerating dataset preparation while maintaining quality control.
+
+---
+
+## 6. Autolabel Training Job Management via SDK
+
+Training jobs can now be triggered, monitored, and managed entirely through the SDK, with transparent data splits and full control over the training lifecycle.
+
+**Training Data Management:**
+- Pull data from projects using predefined tags: train, val, and test
+- Complete transparency in data distribution across training, validation, and test sets
+- User-defined control over dataset splits for reproducible experiments
+- Tag-based organization ensures consistent model training pipelines
+
+**Training Pipeline:**
+- Autolabel training jobs execute as Cloud Run jobs for scalability
+- Progress tracking through MLflow integration (existing pipeline)
+- Model storage and versioning in MLflow
+- Real-time monitoring of training metrics and performance
+
+**SDK Capabilities:**
+- Trigger Training: Start training jobs with specified dataset splits
+- Monitor Progress: Track training status, metrics, and progress in real-time
+- Cancel Jobs: Stop running training jobs when needed
+- Retrieve Statistics: Get detailed training metrics after model completion
+- Download Models: Export trained models for offline deployment and inference
+
+**Infrastructure Updates:**
+- AutoLabelCore repository deprecated in favor of consolidated MLtraining repository
+- Training management functions converted to Python and integrated into MLtraining
+- Streamlined codebase for better maintainability and extensibility
+
+**Key Improvements:**
+- End-to-end programmatic control over model training lifecycle
+- Transparent data management with tag-based splits
+- Integration with industry-standard MLOps tools (MLflow)
+- Ability to cancel, monitor, and retrieve training jobs
+- Offline model deployment support
+- Cleaner architecture with unified training interface
+
+This update empowers data science teams to build fully automated training pipelines, from data preparation through model deployment, all controlled through code.
+
+---
+
+## How These Updates Help You
+
+- **AI-Powered Efficiency**: SAM3 integration and SDK inference capabilities reduce manual annotation time by up to 10x for repetitive tasks
+- **Seamless Navigation**: Preview strips and enhanced file navigation eliminate context switching and speed up review workflows
+- **Precision at Scale**: Improved boundary handling and polygon splitting ensure accurate annotations without tedious manual adjustments
+- **Automated Pipelines**: SDK training and inference capabilities enable end-to-end MLOps automation
+- **Quality Control**: Flexible inference modes and confidence-based tools maintain high annotation standards while leveraging AI assistance
+
+---
+
+## What's Next
+
+We are preparing additional enhancements including negative prompting for SAM3, video support for boundary annotations, and extended automation features for enterprise workflows.
+
+---
+
+## Wrapping Up
+
+The November 2025 updates represent a significant leap forward in AI-assisted annotation and workflow automation. With SAM3's revolutionary one-prompt-many-objects capability, intelligent preview navigation, and comprehensive SDK control over training and inference, Labellerr continues to bridge the gap between manual annotation and fully automated pipelines.
+
+These features are designed for teams that need to scale their labeling operations while maintaining the highest quality standards. As we move into 2026, our focus remains on empowering both annotators and ML engineers with intelligent tools that reduce repetitive work and accelerate the path from raw data to production-ready models.
+
+**The Labellerr Team**
+
+---
+
+## FAQs
+
+<AccordionGroup>
+  <Accordion title="Q1. How does SAM3 differ from previous SAM versions in Labellerr?">
+    SAM3 introduces the ability to label all similar objects in an image with a single visual prompt, whereas previous versions required individual prompts for each object. This dramatically reduces annotation time for datasets with multiple instances of the same object class, making it ideal for scenarios like crowd detection, vehicle counting, and product annotation.
+  </Accordion>
+
+  <Accordion title="Q2. Can I use the file preview strip with custom filters applied?">
+    Yes, the preview strip respects all filters applied in the file listing page. When you navigate through files using the preview strip, your filters remain active, ensuring you only see relevant files in your queue. This includes status filters, tag filters, assignment filters, and search queries.
+  </Accordion>
+
+  <Accordion title="Q3. How do I choose between Magic Wand, Pre-Label, and Send-to-Review modes for SDK inference?">
+    Use Magic Wand when you want human annotators to review and refine AI predictions with visual confidence indicators. Use Pre-Label when you want to add AI assistance without changing file workflow status. Use Send-to-Review when you have high confidence in predictions and want to streamline files directly into the review queue.
+  </Accordion>
+
+  <Accordion title="Q4. Can I monitor training jobs in real-time through the SDK?">
+    Yes, the SDK provides real-time access to training job status, progress metrics, and performance statistics through integration with MLflow. You can query job status at any time and retrieve detailed metrics upon completion.
+  </Accordion>
+</AccordionGroup>
+
