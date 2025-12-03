@@ -258,7 +258,7 @@ project = create_project(
             client_review_rotation_count=1  # Client review once
         ),
         use_ai=False,  # Optional: Enable AI assistance
-        created_by="user@example.com"  # Optional: Creator email
+        created_by="YOUR_EMAIL@company.com"  # Optional: Creator email
     ),
     datasets=[dataset],
     annotation_template=template
@@ -400,7 +400,7 @@ video_project = create_project(
 | `data_type` | DatasetDataType | Yes | Type of data being annotated | DatasetDataType.image |
 | `rotations` | RotationConfig | Yes | Annotation and review cycle settings | RotationConfig(1, 1, 1) |
 | `use_ai` | bool | No | Enable AI-assisted annotation | True / False (default) |
-| `created_by` | str | No | Email of project creator | "user@example.com" |
+| `created_by` | str | No | Email of project creator | "YOUR_EMAIL@company.com" |
 
 <Note>
 The `data_type` must match the data type of all attached datasets.
@@ -473,6 +473,10 @@ To unlock higher rotation counts and improve annotation quality through multiple
 
 <Card title="Available Question Types" icon="question">
 Choose the appropriate question type for your annotation needs.
+
+<Tip>
+  **New to annotation types?** Learn more about each annotation type with visual examples in our [Annotation Types Guide](https://docs.labellerr.com/actions/annotations-guide#these-are-the-annotation-types-that-you-can-use-on-labellerr).
+</Tip>
 
 **Object-Based Questions (Drawing):**
 
@@ -627,7 +631,7 @@ def create_annotation_project():
                     client_review_rotation_count=1
                 ),
                 use_ai=True,  # Enable AI assistance
-                created_by="project.manager@company.com"
+                created_by="YOUR_EMAIL@company.com"  # Replace with actual email
             ),
             datasets=[dataset],
             annotation_template=template

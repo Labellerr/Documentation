@@ -324,6 +324,10 @@ except LabellerrError as e:
 
 You can bulk assign multiple files to a new status in a project, optionally assigning them to a specific user.
 
+<Warning>
+**Important Requirement:** The user being assigned to (specified in `assign_to` parameter) must already be added to the project. If the user is not present in the project, the bulk assign operation will fail.
+</Warning>
+
 #### Example Usage:
 
 ```python Bulk Assign Files lines icon="layer-group"
@@ -344,7 +348,7 @@ try:
     result = project.bulk_assign_files(
         file_ids=["file_id_1", "file_id_2", "file_id_3"],
         new_status="review",
-        assign_to="reviewer@example.com"  # optional
+        assign_to="ASSIGNEE_EMAIL@company.com"  # Optional: Replace with actual user email
     )
     
     print(f"Files assigned successfully: {result}")
@@ -386,7 +390,7 @@ Imagine you have 500 images that need annotation. After annotators finish, you w
 result = project.bulk_assign_files(
     file_ids=all_500_file_ids,
     new_status="review",
-    assign_to="senior_reviewer@example.com"
+    assign_to="REVIEWER_EMAIL@company.com"  # Replace with actual reviewer email
 )
 ```
 
