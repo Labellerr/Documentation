@@ -191,10 +191,13 @@ client = LabellerrClient(
 project_id = 'your_project_id'
 project = LabellerrProject(client=client, project_id=project_id)
 
-# Separate your predictions by confidence
+# Separate your predictions by confidence (cumulative filtering)
+# When slider is at Low: shows ALL annotations (low + medium + high)
+# When slider is at Medium: shows medium + high annotations only
+# When slider is at High: shows only high confidence annotations
 prediction_files = {
     'low': 'predictions_low_confidence.json',     # < 0.5 confidence
-    'medium': 'predictions_medium_confidence.json', # 0.5 - 0.8 confidence
+    'medium': 'predictions_medium_confidence.json', # >= 0.5 and <= 0.8 confidence
     'high': 'predictions_high_confidence.json'     # > 0.8 confidence
 }
 
@@ -236,7 +239,14 @@ for level, result in results.items():
 
 ## Confidence Bucket Guidelines
 
-Choose the appropriate confidence bucket based on your model's prediction confidence scores:
+Choose the appropriate confidence bucket based on your model's prediction confidence scores. The Magic Wand uses **cumulative filtering**, where each threshold level progressively filters annotations:
+
+<Info>
+**How Cumulative Filtering Works**:
+- **Low threshold** (slider at lowest): Shows ALL annotations (low + medium + high)
+- **Medium threshold** (slider at middle): Shows medium + high annotations only (filters out low)
+- **High threshold** (slider at highest): Shows only high confidence annotations (filters out low + medium)
+</Info>
 
 <CardGroup cols={3}>
   <Card title="Low Confidence" icon="circle-exclamation" color="#ef4444">
@@ -248,10 +258,10 @@ Choose the appropriate confidence bucket based on your model's prediction confid
     - Challenging image conditions
     - Edge cases
     
-    **Review Strategy**:
-    - Thorough manual review required
-    - Expect corrections needed
-    - Focus annotator attention here
+    **Slider Behavior**:
+    - Visible at ALL slider positions
+    - Always shown regardless of threshold
+    - Requires thorough manual review
   </Card>
   
   <Card title="Medium Confidence" icon="circle-half-stroke" color="#f59e0b">
@@ -263,10 +273,10 @@ Choose the appropriate confidence bucket based on your model's prediction confid
     - Standard image conditions
     - Common object types
     
-    **Review Strategy**:
+    **Slider Behavior**:
+    - Visible at medium and high thresholds
+    - Hidden when slider filters to low only
     - Quick verification recommended
-    - Minor adjustments expected
-    - Balanced review effort
   </Card>
   
   <Card title="High Confidence" icon="circle-check" color="#10b981">
@@ -278,10 +288,10 @@ Choose the appropriate confidence bucket based on your model's prediction confid
     - Ideal image conditions
     - Well-trained categories
     
-    **Review Strategy**:
-    - Spot-check validation
+    **Slider Behavior**:
+    - Visible only at high threshold
+    - Hidden at low and medium thresholds
     - Minimal corrections needed
-    - Fast-track approval
   </Card>
 </CardGroup>
 
