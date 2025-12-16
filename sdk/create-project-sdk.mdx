@@ -526,6 +526,46 @@ AnnotationQuestion(
 </Card>
 ---
 
+## Import Users from Another Project
+
+Copy the user list (with roles/permissions) from one project to another in the same workspace-existing users are not duplicated.
+
+```python
+from labellerr.client import LabellerrClient
+from labellerr.core.projects import LabellerrProject
+import os
+
+# Initialize client
+client = LabellerrClient(
+    api_key=os.getenv("API_KEY"),
+    api_secret=os.getenv("API_SECRET"),
+    client_id=os.getenv("CLIENT_ID"),
+)
+
+# Target project (already created)
+target_project = LabellerrProject(
+    client=client,
+    project_id="your_target_project_id",
+)
+
+# Source project to import users from
+source_project = LabellerrProject(
+    client=client,
+    project_id=os.getenv("IMPORT_USERS_FROM_PROJECT_ID"),
+)
+
+# Import users (roles/permissions preserved; no duplicates)
+target_project.import_users(from_project=source_project)
+print("Users imported successfully")
+```
+
+<Info>
+- Same-workspace only; roles/permissions are preserved.
+- If a user already exists in the target project, they are not duplicated.
+</Info>
+
+---
+
 ## Complete End-to-End Example
 
 Here's a production-ready example with error handling:
