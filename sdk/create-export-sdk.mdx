@@ -22,6 +22,7 @@ The SDK provides functionality to export project data locally. This feature allo
 ```python Local Export Example lines icon="download"
 from labellerr.client import LabellerrClient
 from labellerr.core.projects import LabellerrProject
+from labellerr.core.schemas import CreateExportParams
 from labellerr.core.exceptions import LabellerrError
 
 # Initialize the client with your API credentials
@@ -33,21 +34,25 @@ client = LabellerrClient(
 
 project_id = 'your_project_id'
 
-export_config = {
-    "export_name": "Weekly Export",
-    "export_description": "Export of all accepted annotations",
-    "export_format": "coco_json",
-    "statuses": ['review', 'r_assigned','client_review', 'cr_assigned','accepted']
-}
-
 try:
     # Get project instance
     project = LabellerrProject(client=client, project_id=project_id)
     
+    # Create export configuration using CreateExportParams
+    export_config = CreateExportParams(
+        export_name="Weekly Export",
+        export_description="Export of all accepted annotations",
+        export_format="coco_json",
+        statuses=['review', 'r_assigned','client_review', 'cr_assigned','accepted']
+    )
+    
     # Create export
-    result = project.create_local_export(export_config)
-    export_id = result["response"]['report_id']
-    print(f"Local export created successfully. Export ID: {export_id}")
+    export = project.create_export(export_config)
+    print(f"Local export created successfully. Export ID: {export.report_id}")
+    
+    # Optionally wait for completion
+    export.status()  # Polls until export is complete
+    
 except LabellerrError as e:
     print(f"Local export creation failed: {str(e)}")
 ```
@@ -117,6 +122,203 @@ export.status()  # Poll until completion
 - Make sure your AWS credentials have write permissions to the specified S3 bucket
 - You can reuse the same `connection_id` for multiple exports without creating a new connection each time
 - The export will be uploaded directly to your S3 bucket at the specified path
+
+---
+
+### List All Exports
+
+The SDK provides functionality to retrieve all exports associated with a project. This method returns both completed and in-progress exports, making it easy to track and manage your export history.
+
+#### Example Usage:
+
+```python List All Exports Example lines icon="list"
+from labellerr.client import LabellerrClient
+from labellerr.core.projects import LabellerrProject
+from labellerr.core.exceptions import LabellerrError
+
+# Initialize the client with your API credentials
+client = LabellerrClient(
+    api_key='your_api_key',
+    api_secret='your_api_secret',
+    client_id='your_client_id'
+)
+
+project_id = 'your_project_id'
+
+try:
+    # Get project instance
+    project = LabellerrProject(client=client, project_id=project_id)
+    
+    # List all exports for the project
+    exports = project.list_exports()
+    
+    print(f"Completed exports: {len(exports.completed)}")
+    print(f"In-progress exports: {len(exports.in_progress)}")
+    
+    # Access individual completed exports
+    for export in exports.completed:
+        print(f"Export ID: {export.get('report_id')}")
+        print(f"  Name: {export.get('export_name')}")
+        print(f"  Status: {export.get('export_status')}")
+        print(f"  Created: {export.get('created_at')}")
+    
+    # Access in-progress exports
+    for export in exports.in_progress:
+        print(f"In-progress Export ID: {export.get('report_id')}")
+        print(f"  Name: {export.get('export_name')}")
+        
+except LabellerrError as e:
+    print(f"Failed to list exports: {str(e)}")
+```
+
+**Response Structure:**
+
+The `list_exports()` method returns an `ExportsListResponse` object with two properties:
+- `completed`: List of all completed exports
+- `in_progress`: List of all exports currently being processed
+
+**Use Cases:**
+- Track export history for a project
+- Find specific export IDs for status checks or downloads
+- Monitor ongoing export operations
+- Audit export activities
+- Automate export management workflows
+
+---
+
+### Incremental Export with Timestamp Filtering
+
+<Note>
+  **New Feature**: Filter files based on their last updated time to create incremental exports!
+</Note>
+
+You can now filter files based on their last updated timestamp when creating exports. This powerful feature enables incremental backups where only files modified after a specific time are exported, significantly reducing export size and processing time.
+
+#### Key Features:
+
+- **Timestamp Format**: Unix timestamp in milliseconds
+- **Filter Criteria**: Files updated after the specified timestamp
+- **Works with**: Both local and S3 export destinations
+- **Optional Parameter**: When not provided, all files matching status criteria are exported
+
+#### Example Usage - Incremental Local Export:
+
+```python Incremental Export Example lines icon="clock-rotate-left"
+from labellerr.client import LabellerrClient
+from labellerr.core.projects import LabellerrProject
+from labellerr.core.schemas import CreateExportParams
+from labellerr.core.exceptions import LabellerrError
+import time
+
+# Initialize the client
+client = LabellerrClient(
+    api_key='your_api_key',
+    api_secret='your_api_secret',
+    client_id='your_client_id'
+)
+
+project = LabellerrProject(client=client, project_id='your_project_id')
+
+# Calculate timestamp for 7 days ago (in milliseconds)
+seven_days_ago = int((time.time() - 7*24*60*60) * 1000)
+
+try:
+    # Create export with timestamp filter
+    export_config = CreateExportParams(
+        export_name="Weekly Incremental Export",
+        export_description="Export files updated in last 7 days",
+        export_format="coco_json",
+        statuses=['review', 'accepted'],
+        updated_after_timestamp=seven_days_ago  # Only files updated after this time
+    )
+    
+    export = project.create_export(export_config)
+    print(f"Export created with ID: {export.report_id}")
+    
+    # Wait for export to complete
+    final_status = export.status()
+    print(f"Export completed: {final_status}")
+    
+except LabellerrError as e:
+    print(f"Export creation failed: {str(e)}")
+```
+
+#### Example Usage - Incremental S3 Export:
+
+```python Incremental S3 Export Example lines icon="cloud"
+from labellerr.core.schemas import CreateExportParams, ExportDestination
+from datetime import datetime
+import time
+
+# Get timestamp for midnight today (in milliseconds)
+today = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
+today_midnight = int(today.timestamp() * 1000)
+
+# Create incremental S3 export
+export_config = CreateExportParams(
+    export_name="Daily Incremental S3 Export",
+    export_description="Export only files modified today",
+    export_format="json",
+    statuses=['accepted'],
+    export_destination=ExportDestination.S3,
+    connection_id="your_s3_connection_id",
+    export_folder_path="bucket_name/exports/daily/",
+    updated_after_timestamp=today_midnight  # Only files updated today
+)
+
+export = project.create_export(export_config)
+print(f"S3 incremental export started: {export.report_id}")
+```
+
+#### Practical Use Cases:
+
+<CardGroup cols={2}>
+  <Card title="Incremental Backups" icon="floppy-disk">
+    Export only files modified since your last backup, reducing storage and bandwidth
+  </Card>
+  
+  <Card title="Daily/Weekly Exports" icon="calendar">
+    Automate exports for specific time windows (last 24 hours, last week, etc.)
+  </Card>
+  
+  <Card title="Change Tracking" icon="timeline">
+    Monitor and export recently modified annotations for quality control
+  </Card>
+  
+  <Card title="Workflow Automation" icon="robot">
+    Create automated pipelines that process only recent changes
+  </Card>
+</CardGroup>
+
+**Important Notes:**
+- The timestamp must be in **milliseconds** (multiply seconds by 1000)
+- The filter is based on the file's "last updated time" in the system
+- Combines with status filters - only files matching both criteria are exported
+- Works seamlessly with both local and S3 export destinations
+
+**Timestamp Conversion Examples:**
+
+```python
+import time
+from datetime import datetime, timedelta
+
+# Current time in milliseconds
+now_ms = int(time.time() * 1000)
+
+# 24 hours ago
+yesterday = int((time.time() - 24*60*60) * 1000)
+
+# Specific date and time
+specific_date = datetime(2024, 12, 17, 0, 0, 0)
+specific_timestamp = int(specific_date.timestamp() * 1000)
+
+# Last Monday midnight
+today = datetime.now()
+days_since_monday = (today.weekday() - 0) % 7
+last_monday = today - timedelta(days=days_since_monday)
+last_monday_midnight = last_monday.replace(hour=0, minute=0, second=0, microsecond=0)
+last_monday_ms = int(last_monday_midnight.timestamp() * 1000)
+```
 
 ---
 
@@ -191,6 +393,85 @@ try:
     print(f"Download URL: {download_url}")
 except LabellerrError as e:
     print(f"Failed to fetch download URL: {str(e)}")
+```
+
+---
+
+## Export Management Features Summary
+
+<CardGroup cols={2}>
+  <Card title="List All Exports" icon="list" href="#list-all-exports">
+    Retrieve all completed and in-progress exports for your project
+  </Card>
+  
+  <Card title="Incremental Exports" icon="clock-rotate-left" href="#incremental-export-with-timestamp-filtering">
+    Filter files by timestamp for efficient incremental backups
+  </Card>
+  
+  <Card title="Local Export" icon="download" href="#local-export">
+    Export annotations to downloadable files
+  </Card>
+  
+  <Card title="S3 Export" icon="cloud" href="#s3-export">
+    Export directly to AWS S3 buckets
+  </Card>
+  
+  <Card title="Export Status" icon="magnifying-glass" href="#check-export-status">
+    Monitor export progress with automatic download URLs
+  </Card>
+  
+  <Card title="Download URLs" icon="link" href="#fetch-export-download-url">
+    Fetch signed download links for completed exports
+  </Card>
+</CardGroup>
+
+---
+
+## Quick Reference
+
+### Export Formats
+
+| Format | Description | Use Case |
+|--------|-------------|----------|
+| `json` | Standard JSON format | General purpose, easy to parse |
+| `coco_json` | COCO dataset format | Computer vision, object detection |
+| `csv` | Comma-separated values | Spreadsheet analysis, reports |
+| `png` | Image format | Visual verification, masks |
+
+### Export Statuses
+
+| Status | Description |
+|--------|-------------|
+| `review` | Files in review stage |
+| `r_assigned` | Files assigned for review |
+| `client_review` | Files in client review |
+| `cr_assigned` | Files assigned for client review |
+| `accepted` | Accepted/completed files |
+
+### Common Timestamp Calculations
+
+```python
+import time
+from datetime import datetime, timedelta
+
+# Last 24 hours
+yesterday = int((time.time() - 86400) * 1000)
+
+# Last 7 days
+week_ago = int((time.time() - 7*86400) * 1000)
+
+# Last 30 days
+month_ago = int((time.time() - 30*86400) * 1000)
+
+# Start of today
+today = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
+today_start = int(today.timestamp() * 1000)
+
+# Start of this week (Monday)
+days_since_monday = (datetime.now().weekday() - 0) % 7
+week_start = datetime.now() - timedelta(days=days_since_monday)
+week_start = week_start.replace(hour=0, minute=0, second=0, microsecond=0)
+week_start_ms = int(week_start.timestamp() * 1000)
 ```
 
 ---
