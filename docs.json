@@ -170,7 +170,6 @@
             "group": "SDK Documentation",
             "pages": [
               "sdk/getting-started",
-              "sdk/mcp-server",
               "sdk/create-dataset-sdk",
               "sdk/create-project-sdk",
               "sdk/add-annotation-questions",
@@ -180,6 +179,12 @@
               "sdk/create-export-sdk",
               "sdk/magic-wand-confidence-filtering",
               "sdk/changelog"
+            ]
+          },
+          {
+            "group": "MCP Server",
+            "pages": [
+              "sdk/mcp-server"
             ]
           }
         ]
