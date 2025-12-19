@@ -1,0 +1,423 @@
+---
+title: "MCP Server"
+description: "Use Labellerr with AI assistants like Claude and Cursor through the Model Context Protocol (MCP) server for natural language data annotation workflows."
+icon: robot
+---
+
+## Introduction
+
+The **Labellerr MCP Server** enables seamless interaction with the Labellerr platform using natural language through AI assistants such as **Claude Desktop** and **Cursor**. Built on the Model Context Protocol (MCP), it provides 23 comprehensive tools for managing datasets, projects, annotations, and exports through conversational interfaces.
+
+
+## Quick Start
+
+### Prerequisites
+
+- Python 3.8 or higher
+- Git installed on your system
+- Labellerr API credentials (API Key, API Secret, Client ID) - [Get your credentials](https://docs.labellerr.com/sdk/getting-started#obtaining-api-credentials)
+- Claude Desktop or Cursor installed
+
+### Installation
+
+First, clone the SDKPython repository:
+
+```bash Clone Repository
+git clone https://github.com/Labellerr/SDKPython.git
+cd SDKPython
+```
+
+Then install the required dependencies:
+
+```bash Install Dependencies
+pip install -r requirements.txt
+```
+
+### Configuration
+
+<Tabs>
+  <Tab title="Cursor">
+    Add to `~/.cursor/mcp.json`:
+
+```json Cursor Configuration
+{
+  "mcpServers": {
+    "labellerr": {
+      "command": "python3",
+      "args": ["/FULL/PATH/TO/SDKPython/labellerr/mcp_server/server.py"],
+      "env": {
+        "LABELLERR_API_KEY": "your_api_key",
+        "LABELLERR_API_SECRET": "your_api_secret",
+        "LABELLERR_CLIENT_ID": "your_client_id"
+      }
+    }
+  }
+}
+```
+  </Tab>
+  
+  <Tab title="Claude Desktop">
+    Add to Claude Desktop config:
+    - **macOS**: `~/Library/Application Support/Claude/claude_desktop_config.json`
+    - **Windows**: `%APPDATA%\Claude\claude_desktop_config.json`
+
+```json Claude Desktop Configuration
+{
+  "mcpServers": {
+    "labellerr": {
+      "command": "python3",
+      "args": ["/FULL/PATH/TO/SDKPython/labellerr/mcp_server/server.py"],
+      "env": {
+        "LABELLERR_API_KEY": "your_api_key",
+        "LABELLERR_API_SECRET": "your_api_secret",
+        "LABELLERR_CLIENT_ID": "your_client_id"
+      }
+    }
+  }
+}
+```
+  </Tab>
+</Tabs>
+
+<Warning>
+  **Important**: Use the absolute path to `server.py`. Restart your AI assistant completely after configuration.
+</Warning>
+
+## Available Tools
+
+The MCP server provides **23 comprehensive tools** organized into 5 functional categories to manage your complete annotation workflow:
+
+<AccordionGroup>
+  <Accordion title="Project Management (4 tools)" icon="folder-tree">
+    <ResponseField name="project_create" type="tool">
+      Create a new annotation project (requires dataset_id and template_id)
+    </ResponseField>
+    <ResponseField name="project_list" type="tool">
+      List all projects in your workspace
+    </ResponseField>
+    <ResponseField name="project_get" type="tool">
+      Get detailed information about a specific project
+    </ResponseField>
+    <ResponseField name="project_update_rotation" type="tool">
+      Update annotation rotation configuration
+    </ResponseField>
+  </Accordion>
+
+  <Accordion title="Dataset Management (5 tools)" icon="database">
+    <ResponseField name="dataset_create" type="tool">
+      Create dataset with automatic file upload and status polling
+    </ResponseField>
+    <ResponseField name="dataset_upload_files" type="tool">
+      Upload individual files to create a dataset
+    </ResponseField>
+    <ResponseField name="dataset_upload_folder" type="tool">
+      Upload an entire folder of files
+    </ResponseField>
+    <ResponseField name="dataset_list" type="tool">
+      List all datasets with filtering options
+    </ResponseField>
+    <ResponseField name="dataset_get" type="tool">
+      Get detailed information about a dataset
+    </ResponseField>
+  </Accordion>
+
+  <Accordion title="Annotation Operations (6 tools)" icon="pen-to-square">
+    <ResponseField name="template_create" type="tool">
+      Create annotation template with questions/guidelines
+    </ResponseField>
+    <ResponseField name="annotation_export" type="tool">
+      Export project annotations in various formats (JSON, COCO, CSV, PNG)
+    </ResponseField>
+    <ResponseField name="annotation_check_export_status" type="tool">
+      Check status of export jobs
+    </ResponseField>
+    <ResponseField name="annotation_download_export" type="tool">
+      Get download URL for completed exports
+    </ResponseField>
+    <ResponseField name="annotation_upload_preannotations" type="tool">
+      Upload pre-annotations (synchronous)
+    </ResponseField>
+    <ResponseField name="annotation_upload_preannotations_async" type="tool">
+      Upload pre-annotations (asynchronous)
+    </ResponseField>
+  </Accordion>
+
+  <Accordion title="Monitoring Tools (4 tools)" icon="chart-line">
+    <ResponseField name="monitor_system_health" type="tool">
+      Check MCP server health and connection status
+    </ResponseField>
+    <ResponseField name="monitor_active_operations" type="tool">
+      List all active operations and their status
+    </ResponseField>
+    <ResponseField name="monitor_project_progress" type="tool">
+      Get progress statistics for a project
+    </ResponseField>
+    <ResponseField name="monitor_job_status" type="tool">
+      Monitor background job status
+    </ResponseField>
+  </Accordion>
+
+  <Accordion title="Query Tools (4 tools)" icon="magnifying-glass">
+    <ResponseField name="query_project_statistics" type="tool">
+      Get detailed statistics for a project
+    </ResponseField>
+    <ResponseField name="query_dataset_info" type="tool">
+      Get detailed information about a dataset
+    </ResponseField>
+    <ResponseField name="query_operation_history" type="tool">
+      Query history of operations performed
+    </ResponseField>
+    <ResponseField name="query_search_projects" type="tool">
+      Search for projects by name or type
+    </ResponseField>
+  </Accordion>
+</AccordionGroup>
+
+## Usage Examples
+
+Interact with the MCP server using natural language commands through your AI assistant. Below are common usage patterns:
+
+### Create a Complete Project
+
+```
+Create an image annotation project called "Product Detection" with 
+bounding boxes for "Product" and "Defect". Upload images from 
+/Users/me/products and use my email user@example.com
+```
+
+**Automated workflow:**
+1. Upload images from the specified folder
+2. Create a dataset with uploaded files
+3. Generate an annotation template with bounding box questions
+4. Create and link the project with all resources
+
+### Monitor Project Progress
+
+```
+What's the progress on all my annotation projects?
+```
+
+### Export Annotations
+
+```
+Export all accepted annotations from project abc123 in COCO JSON format
+```
+
+### Upload Additional Data
+
+```
+Upload images from /Users/me/more-data to dataset xyz789
+```
+
+## Project Creation Workflow
+
+The MCP server implements a structured three-step workflow for creating annotation projects. When you request a complete project, the server automatically executes all steps in sequence.
+
+<Info>
+  **Automated Workflow**: Describe your requirements in natural language, and the MCP server handles the complete workflow automatically.
+</Info>
+
+<Steps>
+  <Step title="Step 1: Create Dataset" icon="database">
+    The server uploads your files and creates a dataset.
+    
+    **Process:**
+    - Files are uploaded to cloud storage
+    - Dataset is created and linked
+    - Processing status is monitored until completion
+    
+    **Example request:**
+    ```
+    Create a dataset called "Training Data" from folder /path/to/images
+    ```
+    
+    **Server response:**
+    ```
+    Uploaded 150 images
+    Dataset created: dataset_abc123
+    Dataset ready for annotation
+    ```
+  </Step>
+  
+  <Step title="Step 2: Create Template" icon="pen-to-square">
+    The server creates an annotation template with your specified questions.
+    
+    **Process:**
+    - Annotation questions are defined
+    - Question types are configured (BoundingBox, polygon, etc.)
+    - Template is validated and saved
+    
+    **Example request:**
+    ```
+    Create an annotation template with bounding boxes for "Car" and "Truck"
+    ```
+    
+    **Server response:**
+    ```
+    Template created: template_xyz789
+    Questions: Car (BoundingBox), Truck (BoundingBox)
+    ```
+  </Step>
+  
+  <Step title="Step 3: Create Project" icon="folder-plus">
+    The server links the dataset and template to create your project.
+    
+    **Process:**
+    - Dataset and template are validated
+    - Project is created with proper configuration
+    - Resources are linked and ready for annotation
+    
+    **Example request:**
+    ```
+    Create a project using dataset dataset_abc123 and template template_xyz789
+    ```
+    
+    **Server response:**
+    ```
+    Project created: project_final_456
+    Linked dataset: dataset_abc123 (150 files)
+    Linked template: template_xyz789
+    Ready to start annotation
+    ```
+  </Step>
+</Steps>
+
+<Tip>
+  **Unified Command**: You can create everything in one natural language request:
+  
+  ```
+  Create an image annotation project called "Vehicle Detection" with 
+  bounding boxes for "Car" and "Truck". Upload images from 
+  /Users/me/vehicles and use my email user@example.com
+  ```
+  
+  The MCP server will automatically execute all three steps and provide you with the final project ID.
+</Tip>
+
+**Workflow Benefits:**
+- Proper resource management
+- Clear project structure
+- Validation at each step
+- Automatic error handling
+
+## Supported Data Types
+
+The MCP server supports the following data types across all tools:
+
+| Data Type | Supported Formats |
+|-----------|------------------|
+| **Image** | JPG, PNG, TIFF |
+| **Video** | MP4 |
+| **Audio** | MP3, WAV |
+| **Document** | PDF |
+| **Text** | TXT |
+
+## Export Formats
+
+Annotations can be exported in multiple industry-standard formats:
+
+| Format | Description |
+|--------|-------------|
+| **json** | Labellerr native format with complete annotation metadata |
+| **coco_json** | COCO dataset format for computer vision tasks |
+| **csv** | Comma-separated values for tabular data analysis |
+| **png** | Segmentation masks for pixel-level annotations |
+
+## Error Handling
+
+The MCP server provides descriptive error messages to help diagnose and resolve issues:
+
+```
+Error: dataset_id is required
+Message: Please create a dataset first using dataset_upload_folder
+```
+
+All operations are logged in the operation history and can be queried using natural language:
+
+```
+Show me the history of operations I've performed
+```
+
+## Troubleshooting
+
+### AI Assistant Doesn't Show Tools
+
+**Resolution steps:**
+1. Completely restart your AI assistant (quit and reopen the application)
+2. Verify the path to `server.py` is absolute (starts with `/` on macOS/Linux or `C:\` on Windows)
+3. Test the server manually: `python3 /path/to/server.py`
+4. Check the MCP configuration file for syntax errors
+
+### Authentication Errors
+
+**Resolution steps:**
+1. Obtain fresh credentials from your Labellerr workspace
+2. Update the configuration file with the correct API credentials
+3. Ensure all three credentials (API Key, API Secret, Client ID) are present
+4. Restart your AI assistant after updating credentials
+
+### File Upload Issues
+
+**Common causes and solutions:**
+- Verify file paths are absolute, not relative
+- Check file system permissions for read access
+- Confirm file formats match the specified data type
+- Ensure sufficient disk space for upload operations
+
+---
+
+## Advanced Features
+
+### Operation History
+
+The server maintains a comprehensive log of all operations with timestamps, durations, and status information. Query the operation history using natural language:
+
+```
+Show me failed operations from the last hour
+```
+
+### Resource Caching
+
+Active projects and datasets are cached in memory for improved performance and faster access. View currently cached resources:
+
+```
+What Labellerr resources are currently active?
+```
+
+### Status Polling
+
+Dataset creation includes automatic status polling to monitor processing completion. Configure timeout settings as needed:
+
+```python
+dataset_create(
+  folder_path="/path/to/data",
+  wait_for_processing=True,
+  processing_timeout=300  # 5 minutes
+)
+```
+
+## Additional Resources
+
+For comprehensive documentation and technical references:
+
+- **[GitHub Repository](https://github.com/Labellerr/SDKPython)** - Source code and examples
+- **[MCP Server README](https://github.com/Labellerr/SDKPython/blob/main/labellerr/mcp_server/README.md)** - Detailed server documentation
+- **[API Documentation](https://api.labellerr.com/docs)** - Complete API reference
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="SDK Documentation" icon="code" href="/sdk/getting-started">
+    Learn about the Python SDK for programmatic access
+  </Card>
+  <Card title="Create Projects" icon="folder-plus" href="/sdk/create-project-sdk">
+    Detailed guide on creating annotation projects
+  </Card>
+  <Card title="Export Data" icon="download" href="/sdk/create-export-sdk">
+    Learn how to export your annotated data
+  </Card>
+  <Card title="Cookbooks" icon="book" href="/cookbooks/sdk-tutorials">
+    Practical examples and tutorials
+  </Card>
+</CardGroup>
+
