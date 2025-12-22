@@ -1,6 +1,6 @@
 ---
-title: "Retrieve Projects & Datasets"
-description: "Learn how to retrieve all projects and datasets associated with a client in Labellerr using the SDK, including linked and unlinked datasets."
+title: "Retrieve Projects, Datasets & Templates"
+description: "Learn how to retrieve all projects, datasets, and annotation templates associated with a client in Labellerr using the SDK, including linked and unlinked datasets."
 icon: database
 ---
 
@@ -112,7 +112,60 @@ This method is useful when you need to:
 *   Efficiently iterate through large numbers of datasets with pagination
 *   Memory-efficient processing of datasets using generators
 
-#### Advanced Pagination Examples
+### Retrieving All Templates
+
+You can retrieve all annotation templates associated with a client using the SDK's template listing functionality. This is useful when you want to reuse existing templates instead of creating new ones.
+
+#### Example Usage:
+
+```python Retrieve All Templates lines icon="clipboard-list"
+from labellerr.client import LabellerrClient
+from labellerr.core.annotation_templates import list_templates
+from labellerr.core.schemas import DatasetDataType
+from labellerr.core.exceptions import LabellerrError
+
+# Initialize the client with your API credentials
+client = LabellerrClient(
+    api_key='your_api_key',
+    api_secret='your_api_secret',
+    client_id='your_client_id'
+)
+
+try:
+    # List all templates for a specific data type
+    templates = list_templates(client, DatasetDataType.image)
+    
+    print(f"Found {len(templates)} templates:")
+    for template in templates:
+        print(f"- Template ID: {template.template_id}")
+        print(f"  Name: {template.template_name}")
+        print(f"  Questions: {template.questions}")
+        print()
+        
+except LabellerrError as e:
+    print(f"Failed to retrieve templates: {str(e)}")
+```
+
+<Tip>
+**Filter by Data Type:**
+Use `DatasetDataType` enum to filter templates by their supported data type:
+- `DatasetDataType.image` - Image annotation templates
+- `DatasetDataType.video` - Video annotation templates
+- `DatasetDataType.audio` - Audio annotation templates
+- `DatasetDataType.document` - Document annotation templates
+- `DatasetDataType.text` - Text annotation templates
+</Tip>
+
+This method is useful when you need to:
+
+*   List all available templates in your workspace
+*   Find a specific template ID to reuse in new projects
+*   Review template configurations and questions
+*   Avoid creating duplicate templates by checking existing ones first
+
+---
+
+#### Advanced Pagination Examples (Datasets)
 
 <Tabs>
 <Tab title="Auto-Pagination (Recommended)">
@@ -497,6 +550,48 @@ for dataset in list_datasets(client, 'image', DataSetScope.client, page_size=-1)
 
 # Get first 20 only
 datasets = list(list_datasets(client, 'video', DataSetScope.client, page_size=20))
+```
+
+</Accordion>
+
+<Accordion title="list_templates(client, data_type)" icon="clipboard-list">
+
+```python
+from labellerr.core.annotation_templates import list_templates
+from labellerr.core.schemas import DatasetDataType
+
+def list_templates(
+    client: LabellerrClient,
+    data_type: DatasetDataType
+) -> list[LabellerrAnnotationTemplate]:
+    """
+    Retrieves all annotation templates for a specific data type.
+    
+    Parameters:
+        client: LabellerrClient instance
+        data_type: DatasetDataType enum value (image, video, audio, document, text)
+        
+    Returns:
+        List of LabellerrAnnotationTemplate objects with properties:
+        - template_id: str
+        - template_name: str
+        - questions: list
+        - data_type: str
+        - created_at: datetime
+    """
+```
+
+**Example:**
+
+```python
+from labellerr.core.annotation_templates import list_templates
+from labellerr.core.schemas import DatasetDataType
+
+# Get all image templates
+templates = list_templates(client, DatasetDataType.image)
+for template in templates:
+    print(f"{template.template_id}: {template.template_name}")
+    print(f"  Questions: {len(template.questions)}")
 ```
 
 </Accordion>
