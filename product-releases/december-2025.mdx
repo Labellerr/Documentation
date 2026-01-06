@@ -1,0 +1,173 @@
+---
+title: "December 2025 - Product Updates"
+description: "MCP Server launch, SAM3 local pipeline, selective user import, incremental exports, and video pre-annotations"
+icon: "calendar-check"
+---
+
+## Happy New Year 2026! 🎉
+
+Thank you for your incredible support throughout 2025! We're back to work with renewed energy and excitement to make 2026 even better. As we close out the year, we're thrilled to share December's product updates, featuring groundbreaking conversational AI integrations, local auto-labeling pipelines, and powerful SDK enhancements that put more control in your hands.
+
+Let's dive into what we've built for you this month.
+
+## 1. Labellerr MCP Server: Control Labellerr with Natural Language
+
+We launched the **Labellerr MCP Server**, which enables you to use Labellerr through AI assistants such as Claude Desktop and Cursor using natural language. Built on the **[Model Context Protocol (MCP)](https://modelcontextprotocol.io/docs/getting-started/intro)**, it provides a structured way to manage datasets, projects, annotations, and exports through conversational workflows. Instead of manually clicking through UIs or writing API scripts, you can simply ask your AI assistant to create projects, upload datasets, or export annotations, and it happens automatically.
+
+**Example Workflows:**
+
+```
+"Create a new image annotation project called 'Traffic Detection' with a dataset from my local folder"
+
+"Export all accepted annotations from project X in COCO JSON format"
+
+"Show me the progress statistics for my current project"
+
+"Upload pre-annotations to project Y from this JSON file"
+```
+
+**Key Improvements:**
+
+- Natural language control of Labellerr inside Claude Desktop and Cursor through MCP integration
+- Twenty-three tools organized across project management, dataset management, annotation operations, monitoring, and query workflows
+- End-to-end project creation through a guided workflow covering dataset creation, template setup, and project linking
+- Support for multiple data types including images, videos, audio, documents, and text
+- Export support for common formats such as Labellerr JSON, COCO JSON, CSV, and segmentation masks
+
+**Documentation:** [Labellerr MCP Server Guide](https://docs.labellerr.com/sdk/mcp-server)
+
+---
+
+## 2. SAM3 Local Auto-Labeling Pipeline with Labellerr
+
+<iframe 
+  width="100%" 
+  height="450" 
+  src="https://www.youtube.com/embed/4DDyPiGWGh0" 
+  title="SAM3 Local Pipeline Demo" 
+  frameborder="0" 
+  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+  referrerpolicy="strict-origin-when-cross-origin" 
+  allowfullscreen>
+</iframe>
+
+After the launch of SAM3, there has been a lot of discussion around whether auto-labeling is still relevant. The reality is simpler: **Auto-labeling is not dead**. What matters is **where and how it runs**. We have enabled a **fully local SAM3 auto-labeling pipeline** that runs on your own system, without any paid inference or cloud dependency. You can generate high-quality pre-annotations locally and then bring them into Labellerr for review and refinement. This approach gives teams the best of both worlds: fast, AI-powered pre-labeling without cloud dependencies, combined with Labellerr's powerful review and refinement tools.
+
+**Key Improvements:**
+
+- Run SAM3 locally on your own image folders with zero inference costs
+- Use multiple class text prompts in a single run for batch processing
+- Generate COCO JSON pre-annotations directly from SAM3
+- Upload pre-annotations into Labellerr using the SDK for human review
+- Complete data privacy as images never leave your infrastructure
+
+**GitHub Repository:** [SAM3 Batch Inference Pipeline](https://github.com/Labellerr/SAM3_Batch_Inference)
+
+---
+
+## 3. Selective User Import from Projects
+
+<iframe 
+  width="100%" 
+  height="450" 
+  src="https://www.youtube.com/embed/Qz3LcaJ6cng" 
+  title="Selective User Import Demo" 
+  frameborder="0" 
+  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+  referrerpolicy="strict-origin-when-cross-origin" 
+  allowfullscreen>
+</iframe>
+
+Users can now **selectively import specific users** from an existing project instead of importing all members at once. This improvement gives teams finer control over project access and avoids clutter from unwanted users. Instead of inheriting entire project rosters, you can now choose exactly which annotators, reviewers, or managers to add, with their roles and permissions preserved. This feature streamlines team management and ensures that project membership remains intentional and organized.
+
+**Key Improvements:**
+
+- Choose individual users when importing from another project instead of importing all members
+- Prevents automatic addition of all users from the source project
+- Faster and more controlled project setup for targeted collaboration
+- Reduced risk of assigning unintended access or roles
+- Improved usability on the User Listing page with clearer selection flow
+
+---
+
+## 4. Incremental File Export via SDK Using Timestamps
+
+Developers can now perform **incremental file exports** through the SDK by specifying a UNIX timestamp. This ensures that only files updated on or after the given timestamp are exported, reducing unnecessary processing and improving efficiency for recurring data pipelines. Instead of exporting entire projects every time, subsequent exports can use the previous export's timestamp for true incremental sync, making it ideal for daily data syncs, continuous integration workflows, and automated backup systems.
+
+**Key Improvements:**
+
+- Timestamp-based export requests using a UNIX timestamp parameter
+- Exports return only files updated on or after the specified time
+- Improved efficiency by avoiding reprocessing of unchanged files
+- SDK integration of the list exports capability to view export history per project
+- Better support for scheduled and automated data sync workflows
+
+---
+
+## 5. Video Pre-Annotations Upload via SDK
+
+Users can now **upload pre-annotations for video projects**, enabling faster annotation and review workflows. This extends existing pre-label upload capabilities from image projects to video-based datasets. Instead of manually annotating videos from scratch, teams can now upload predictions from object tracking models, migrate annotations from other platforms, or bootstrap video projects with AI-generated keyframe annotations. This feature unlocks video-first workflows and makes Labellerr a comprehensive solution for both image and video annotation at scale.
+
+**Key Improvements:**
+
+- Support for uploading pre-annotations specifically for video projects via SDK
+- Defined and standardized pre-annotation payload structure for video data with frame-by-frame support
+- Ability to upload annotations directly into files in the unlabeled state
+- Seamless SDK integration to allow programmatic pre-annotation uploads
+- Improved review speed by eliminating the need to annotate from scratch
+
+---
+
+## How These Updates Help You
+
+- **Conversational Control**: MCP Server integration lets you manage entire annotation workflows through natural language in Claude or Cursor
+- **Cost-Effective Auto-Labeling**: Run SAM3 locally without inference fees while maintaining full data privacy
+- **Granular Access Control**: Selective user import ensures clean, intentional project team composition
+- **Efficient Data Pipelines**: Incremental exports save bandwidth and compute by processing only changed files
+- **Video Workflow Acceleration**: Pre-annotation upload for videos eliminates manual frame-by-frame labeling
+
+---
+
+## What's Next
+
+As we head into 2026, we're working on:
+
+- Enhanced multi-modal annotation support
+- Advanced workflow automation features 
+- Deeper MLOps integrations for training and deployment
+- Performance optimizations for large-scale enterprise projects
+- Expanded AI-assisted annotation capabilities across all data types
+
+---
+
+## Wrapping Up
+
+December 2025 marks a significant milestone in making Labellerr more accessible, efficient, and powerful. The MCP Server brings conversational AI to annotation workflows, the local SAM3 pipeline democratizes auto-labeling, and our SDK enhancements provide production-grade tools for incremental exports and video pre-annotations.
+
+These updates reflect our commitment to empowering teams with flexible, cost-effective tools that adapt to your infrastructure and workflow requirements. Whether you're a startup building your first dataset or an enterprise managing millions of annotations, Labellerr scales with you.
+
+Thank you for being part of our journey in 2025. Here's to an even more innovative 2026!
+
+**The Labellerr Team**
+
+---
+
+## FAQs
+
+<AccordionGroup>
+  <Accordion title="Q1. What AI assistants support the Labellerr MCP Server?">
+    Currently, the MCP Server works with **Claude Desktop** and **Cursor**. Both applications support the Model Context Protocol and can interact with Labellerr through natural language commands. We're monitoring the MCP ecosystem and will add support for additional assistants as they adopt the protocol.
+  </Accordion>
+
+  <Accordion title="Q2. Do I need a GPU to run the local SAM3 pipeline?">
+    While **a CUDA-capable GPU is highly recommended** for faster inference, SAM3 can technically run on CPU. However, processing times will be significantly longer. For production workflows, we recommend using a system with at least an NVIDIA GPU with 8GB+ VRAM for efficient batch processing.
+  </Accordion>
+
+  <Accordion title="Q3. Can I use incremental exports with formats other than COCO JSON?">
+    Yes, **incremental exports work with all supported formats**: Labellerr JSON, COCO JSON, CSV, and segmentation masks (PNG). The timestamp filtering is applied before export generation, so only files modified after the specified timestamp are included regardless of output format.
+  </Accordion>
+
+  <Accordion title="Q4. How does selective user import handle role permissions?">
+    When you import users selectively, their **roles and permissions are preserved from the source project**. For example, if User A is an annotator in the source project, they'll be added as an annotator in the destination project. You can modify their role after import if needed through the User Management interface.
+  </Accordion>
+</AccordionGroup>
