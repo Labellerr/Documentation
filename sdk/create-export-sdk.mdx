@@ -12,10 +12,24 @@ The SDK provides functionality to export project data locally. This feature allo
 
 #### Acceptable values:
 
-*   statuses:
+*   **statuses**: File workflow statuses to include in the export
     *   `'review'`, `'r_assigned'`,`'client_review'`, `'cr_assigned'`,`'accepted'`
-*   export_format:
+*   **export_format**: Output format for the exported data
     *   `'json'`, `'coco_json'`, `'csv'`, `'png'`
+
+<Accordion title="What do these status values mean?" icon="circle-info">
+  
+**File Status Definitions:**
+
+- **`review`** - Files that have been annotated and are currently in the review stage
+- **`r_assigned`** - Files that have been assigned to a reviewer but review hasn't started yet
+- **`client_review`** - Files that have passed internal review and are now in client review stage
+- **`cr_assigned`** - Files that have been assigned for client review but haven't been reviewed yet
+- **`accepted`** - Files that have completed all review stages and are accepted as final
+
+**Tip:** You can include multiple statuses in your export to capture files at different stages of your annotation workflow.
+
+</Accordion>
 
 #### Example Usage:
 
