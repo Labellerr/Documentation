@@ -13,7 +13,7 @@ The SDK provides functionality to export project data locally. This feature allo
 #### Acceptable values:
 
 *   **statuses**: File workflow statuses to include in the export
-    *   `'review'`, `'r_assigned'`,`'client_review'`, `'cr_assigned'`,`'accepted'`
+    *   `None`, `'assigned'`, `'review'`, `'r_assigned'`, `'client_review'`, `'cr_assigned'`, `'accepted'`, `'rejected'`, `'client_rejected'`, `'skipped'`, `'r_skipped'`, `'cr_skipped'`, `'critical'`, `'r_critical'`, `'cr_critical'`
 *   **export_format**: Output format for the exported data
     *   `'json'`, `'coco_json'`, `'csv'`, `'png'`
 
@@ -21,11 +21,21 @@ The SDK provides functionality to export project data locally. This feature allo
   
 **File Status Definitions:**
 
-- **`review`** - Files that have been annotated and are currently in the review stage
-- **`r_assigned`** - Files that have been assigned to a reviewer but review hasn't started yet
+- **`None`** - Unlabeled or pre-annotated files that haven't entered the annotation workflow yet
+- **`assigned`** - Files assigned to an annotator, annotation work is in progress
+- **`review`** - Files ready for review (passed annotation phase)
+- **`r_assigned`** - Files assigned to a reviewer, review work is in progress
 - **`client_review`** - Files that have passed internal review and are now in client review stage
-- **`cr_assigned`** - Files that have been assigned for client review but haven't been reviewed yet
-- **`accepted`** - Files that have completed all review stages and are accepted as final
+- **`cr_assigned`** - Files assigned for client review, client review work is in progress
+- **`accepted`** - Files that have completed all stages and passed by client (final approved state)
+- **`rejected`** - Files rejected by the reviewer during review stage
+- **`client_rejected`** - Files rejected by the client during client review stage
+- **`skipped`** - Files skipped by the annotator during annotation stage
+- **`r_skipped`** - Files skipped by the reviewer during review stage
+- **`cr_skipped`** - Files skipped by the client during client review stage
+- **`critical`** - Files skipped 2 times in annotation stage, will go into blocked state
+- **`r_critical`** - Files skipped 2 times in review stage, will go into blocked state
+- **`cr_critical`** - Files skipped 2 times in client review stage, will go into blocked state
 
 **Tip:** You can include multiple statuses in your export to capture files at different stages of your annotation workflow.
 
