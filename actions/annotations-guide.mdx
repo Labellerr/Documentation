@@ -12,10 +12,10 @@ icon: tags
 
 1.  **Bounding Box**
 2.  **Polygon**
-3.  **Line**
-4.  **Segmentation - Segment Anything**
-5.  **Landmark/Keypoint**
-6.  **Ellipse**
+3.  **Polyline**
+  
+4.  **Keypoint**
+5.  **Dot**
 
 Once on the Labelling Screen, the tools appear on the left.
 
@@ -24,15 +24,17 @@ Only the Objects selected while making a project would be visible. More can be a
 </Info>
 
 <Frame>
-  <img src="https://cdn.labellerr.com/1%20%20Documentation/cfaa92f4-0b79-4638-ad11-c1cc7e706407.webp" alt="Labelling Screen Tools" />
+  <img src="https://storage.googleapis.com/labellerr-cdn/%20%20%201%20labellerr_productupdate/newui.webp" alt="Labelling Screen Tools" />
 </Frame>
 
 ### Bounding Box
 
-Bounding box is a rectangular box used to highlight the location of an object. One of the most common types of annotation, generally used for object localization or detection.
-
+A bounding box is a rectangular frame used to mark the location of an object in an image. It is one of the most common annotation methods, typically used for object detection and localization. Use M for manual bounding box and A for AI-assisted bounding box.
 <Frame>
-  <img src="https://cdn.labellerr.com/1%20%20Documentation/215436f3-9513-40a5-8cd5-438c632ab5f4.webp" alt="Bounding Box Example" />
+  <img src="https://storage.googleapis.com/labellerr-cdn/%20%20%201%20labellerr_productupdate/boundingbox_manual.webp" alt="Bounding Box manual Example" />
+</Frame>
+<Frame>
+  <img src="https://storage.googleapis.com/labellerr-cdn/%20%20%201%20labellerr_productupdate/bunding%20box%20aimode.webp" alt="Bounding Box ai mode Example" />
 </Frame>
 
 <Tip>
@@ -49,10 +51,15 @@ For more, check out this video tutorial
 
 ### Polygon
 
-Polygon annotation is **a computer vision technique that outlines objects by connecting a series of points to form a polygon**. This accurately captures the true shape and boundaries of objects, making it ideal for handling complex or irregular shapes.
+Polygon annotation is a computer vision technique that outlines objects by connecting a series of points to form a polygon. This accurately captures the true shape and boundaries of objects, making it ideal for handling complex or irregular shapes.
+
+Additionally, you can place a single point to run SAM or use a box prompt to draw a bounding box around the object, enabling faster and more accurate polygon generation.
 
 <Frame>
-  <img src="https://cdn.labellerr.com/1%20%20Documentation/b883c2d6-adb4-4dd4-9b78-935212980e5e.webp" alt="Polygon Annotation Example" />
+  <img src="https://storage.googleapis.com/labellerr-cdn/%20%20%201%20labellerr_productupdate/aipolygon.webp" alt="Polygon Annotation dot Example" />
+</Frame>
+<Frame>
+  <img src="https://storage.googleapis.com/labellerr-cdn/%20%20%201%20labellerr_productupdate/boxprompt%20polygon.webp" alt="Polygon Annotation box Example" />
 </Frame>
 
 <Tip>
@@ -79,49 +86,34 @@ User can drag the cursor to draw the pixel perfect annotation on an object. Pres
 Press 'N' to close the polygon or simply drag the cursor to starting point.
 </Tip>
 
-### Line
+### Polyline
 
-Line annotation is mainly used to create lines across the image. Its basic use is road detection in self-driving vehicles.
-
-<Frame>
-  <img src="https://cdn.labellerr.com/1%20%20Documentation/a793a6c4-537b-4658-acaa-9db1895bd6d9.webp" alt="Line Annotation Example" />
-</Frame>
-
-### Segmentation - Segment Anything
-
-Segmentation enables pixel-wise annotation. All the pixels highlighted are assigned to a particular class. This type of annotation is best for environments with complex structures, e.g., Self-driving vehicle AI. SAM is **a new AI model from Meta AI that can "cut out" any object, in any image, with a single click.**
+Line annotation is mainly used to create lines across the image.
 
 <Frame>
-  <img src="https://cdn.labellerr.com/1%20%20Documentation/403a7f10-8a41-4167-bfca-3d519882ce94.webp" alt="Segmentation Example" />
+  <img src="https://storage.googleapis.com/labellerr-cdn/%20%20%201%20labellerr_productupdate/polyline.webp" alt="Line Annotation Example" />
 </Frame>
 
-<Tip>
-For more, check out this video tutorial
-</Tip>
 
-<iframe 
-  className="w-full aspect-video rounded-xl" 
-  src="https://www.youtube.com/embed/_E3Caj11h7c" 
-  title="Segmentation Tutorial" 
-  frameBorder="0" 
-  allowFullScreen>
-</iframe>
 
-### Landmark/Keypoint
+### Keypoint
 
 Landmark and Key-point annotation is used in shape variation and small object detection. It works by creating dots across an image, usually used for the detection of facial features, gestures, emotions, poses and body part distinction.
 
 <Frame>
-  <img src="https://cdn.labellerr.com/1%20%20Documentation/2fb5cdca-00b4-4dac-a443-3de8e6d9b52c.webp" alt="Landmark/Keypoint Example" />
+  <img src="https://storage.googleapis.com/labellerr-cdn/%20%20%201%20labellerr_productupdate/keypoint.webp" alt="Landmark/Keypoint Example" />
 </Frame>
 
-### Ellipse
+### Dot Annotation
 
-The **Ellipse annotation** is useful for the annotation of circular objects.
+Dot annotation is used to mark specific points in an image by placing single dots. It is commonly used for object counting, small object detection, and identifying points of interest.
+
 
 <Frame>
-  <img src="https://cdn.labellerr.com/1%20%20Documentation/ce71eb8c-efa1-41be-af42-b4d632e41da0.webp" alt="Ellipse Example" />
+  <img src="https://storage.googleapis.com/labellerr-cdn/%20%20%201%20labellerr_productupdate/dot.webp" alt="Dot Annotation Example" />
 </Frame>
+
+
 
 To predict the description/brief/keywords about the image using Generative AI, visit the [Image Captioning Using Generative AI](/features/image-captioning) guide.
 
