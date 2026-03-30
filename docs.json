@@ -204,25 +204,39 @@
         ]
       },
       {
-        "tab": "Product Updates",
-        "groups": [
-          {
-            "group": "Product Updates",
-            "pages": [
-              "product-releases/2025",
-              "product-releases/march-2025",
-              "product-releases/april-2025",
-              "product-releases/may-2025",
-              "product-releases/june-july-2025",
-              "product-releases/august-2025",
-              "product-releases/september-2025",
-              "product-releases/october-2025",
-              "product-releases/november-2025",
-              "product-releases/december-2025"
-            ]
-          }
-        ]
-      }
+  "tab": "Product Updates",
+  "groups": [
+    {
+      "group": "Product Updates",
+      "pages": [
+        
+        {
+          "group": "Product Updates 2026",
+          "pages": [
+            "product-releases/2026",
+            "product-releases/march-2026"
+            
+          ]
+        },
+        {
+          "group": "Product Updates 2025",
+          "pages": [
+            "product-releases/2025",
+            "product-releases/march-2025",
+            "product-releases/april-2025",
+            "product-releases/may-2025",
+            "product-releases/june-july-2025",
+            "product-releases/august-2025",
+            "product-releases/september-2025",
+            "product-releases/october-2025",
+            "product-releases/november-2025",
+            "product-releases/december-2025"
+          ]
+        }
+      ]
+    }
+  ]
+}
     ],
     "global": {
       "anchors": [
