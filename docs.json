@@ -99,7 +99,8 @@
                   "actions/client-review-grid",
                   "actions/delete-hide-unhide",
                   "actions/create-export",
-                  "actions/view-files-page"
+                  "actions/view-files-page",
+                  "actions/review-via-files"
                 ]
               }
             ]
@@ -214,8 +215,8 @@
           "group": "Product Updates 2026",
           "pages": [
             "product-releases/2026",
+            "product-releases/april-2026",
             "product-releases/march-2026"
-            
           ]
         },
         {
