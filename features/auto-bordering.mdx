@@ -1,5 +1,47 @@
 ---
 title: "Auto Bordering"
-description: ""
+description: "Learn how to use Auto Bordering in Labellerr to reuse common polygon edges while annotating adjacent objects."
 icon: border-all
 ---
+
+Auto Bordering helps you create polygons that share the same boundary without manually redrawing the common side. It is useful when two objects are touching each other and need clean, accurate borders between them.
+
+## What is Auto Bordering?
+
+When you have already created one polygon, Auto Bordering lets you use part of that polygon's border while drawing another polygon. This keeps the shared side consistent and avoids gaps or overlaps between adjacent annotations.
+
+## How to Use Auto Bordering
+
+<iframe 
+  className="w-full aspect-video rounded-xl" 
+  src="https://www.youtube.com/embed/N6zBdztpgFA"
+  title="Auto Bordering - Your Solution to Faster Annotation" 
+  frameBorder="0" 
+  allowFullScreen>
+</iframe>
+
+
+1.  **Draw the first polygon** around the object as usual.
+2.  **Start drawing the next polygon** that shares a boundary with the first one.
+3.  **Press and hold the Alt key** when you reach the side that should be common.
+4.  **Select the points** on the existing polygon border that you want to reuse.
+5.  **Continue drawing the remaining polygon** and close the shape.
+6.  **Review the shared border** to make sure both polygons are aligned correctly.
+
+## Example Use Case
+
+If you are annotating two adjacent land parcels, road lanes, buildings, or touching object segments, draw the first polygon completely. For the second polygon, use Auto Bordering on the side already created by the first polygon, then draw only the remaining outer boundary.
+
+## Benefits
+
+*   Reduces repeated manual drawing.
+*   Keeps common polygon borders clean and consistent.
+*   Helps avoid small gaps or overlaps between touching objects.
+*   Speeds up segmentation work for adjacent objects.
+
+## Best Practices
+
+*   Create the first polygon carefully because its border will be reused.
+*   Use Auto Bordering only for the side that is actually common between polygons.
+*   Zoom in while selecting border points for better accuracy.
+*   Review the final polygon before submitting the annotation.
