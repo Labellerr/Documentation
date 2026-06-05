@@ -1,0 +1,109 @@
+---
+title: "Template Versioning"
+description: "Learn how to create, manage, and roll back annotation template versions in Labellerr to maintain consistency across your projects."
+icon: code-branch
+---
+
+<Note>
+Template versioning gives teams full control over their annotation templates across projects. You can track changes, manage versions, and roll back when needed — without disrupting active workflows.
+</Note>
+
+<Card title="What This Guide Covers" icon="list-check">
+This guide covers everything you need to know about Template Versioning in Labellerr:
+
+* **Creating and saving** multiple versions of annotation templates
+* **Tracking changes** across project timelines
+* **Reverting** to previous versions with ease
+* **Viewing** version history with creator name and timestamp
+* **Applying** a specific version to a project from annotation settings
+</Card>
+
+## What is Template Versioning?
+
+Template versioning allows teams to manage the lifecycle of annotation templates across different projects. Every time a template is modified, a new version can be saved — preserving the history of changes while keeping active projects unaffected.
+
+This is especially useful for large-scale annotation workflows where templates evolve over time and multiple projects share the same label configuration.
+
+<iframe
+  width="100%"
+  height="400"
+  src="https://www.youtube.com/embed/RlNUPTVhYeM"
+  title="Template Versioning"
+  frameborder="0"
+  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+  referrerpolicy="strict-origin-when-cross-origin"
+  allowfullscreen>
+</iframe>
+
+---
+
+## Key Features
+
+<CardGroup cols={2}>
+  <Card title="Version History" icon="clock-rotate-left">
+    View a full history of all saved template versions, including the creator's name and the timestamp of each change.
+  </Card>
+  <Card title="Create New Versions" icon="floppy-disk">
+    Save any modification to a template as a new version, keeping previous versions intact and accessible.
+  </Card>
+  <Card title="Rollback Support" icon="rotate-left">
+    Revert to any previous version of a template instantly without disrupting other active projects using a different version.
+  </Card>
+  <Card title="Project-Level Application" icon="layer-group">
+    Apply any specific template version to a project independently through the annotation settings — changes won't impact other linked projects.
+  </Card>
+</CardGroup>
+
+---
+
+## How to Use Template Versioning
+
+<Steps>
+  <Step title="Open the Template in Annotation Settings">
+    Navigate to your project and go to the **Annotation Settings** (or Label Configuration). Here you will find the template associated with your project and the option to manage its versions.
+
+    <Frame>
+      <img src="https://storage.googleapis.com/labellerr-cdn/%20%201%20labelelrrdocs/Screenshot%202026-06-05%20122027.webp" alt="Annotation settings showing template version options" />
+    </Frame>
+  </Step>
+
+
+
+  <Step title="Create a New Version">
+    After making changes to the template (adding/editing objects or classifications), save it as a **new version**. This preserves the existing version history and does not affect projects still using older versions.
+
+    <Frame>
+      <img src="https://storage.googleapis.com/labellerr-cdn/%20%201%20labelelrrdocs/Screenshot%202026-06-05%20122045.webp" alt="Save new template version interface" />
+    </Frame>
+
+    <Info>
+    Each saved version is independent, updating a template to a new version in one project does **not** automatically update other projects using the same template.
+    </Info>
+  </Step>
+
+ 
+
+  <Step title="Apply a Specific Version to a Project">
+    From the annotation settings, you can browse all available versions and apply any specific version to the current project. This allows different projects to run on different template versions simultaneously.
+
+    <Frame>
+      <img src="https://storage.googleapis.com/labellerr-cdn/%20%201%20labelelrrdocs/Screenshot%202026-06-05%20122349.webp" alt="Apply a specific template version to a project" />
+    </Frame>
+  </Step>
+</Steps>
+
+---
+
+## FAQs
+
+**Q. What is the difference between Template Versioning and Workspace Level Guidelines?**
+
+Template Versioning allows teams to track, manage, and roll back changes to annotation templates across different versions, ensuring no work is lost during updates. Workspace Level Guidelines, on the other hand, provide a centralized place to define and share annotation standards that apply across all projects in a workspace, ensuring consistency without requiring per-project setup.
+
+**Q. Can I apply a specific template version to an existing project without affecting other projects?**
+
+Yes. Template versioning is managed at the project level through the annotation settings. You can view all available versions and apply any specific version to a project independently, without impacting other linked projects.
+
+<Note>
+For further assistance contact [support@tensormatics.com](mailto:support@tensormatics.com)
+</Note>
