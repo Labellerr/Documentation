@@ -62,7 +62,10 @@
                   "getting-started/navigate-dashboard",
                   "getting-started/status-bar-elements",
                   "getting-started/connect-aws-s3",
-                  "getting-started/connect-gcs"
+                  "getting-started/connect-gcs",
+                  "getting-started/delete-project",
+                  "getting-started/delete-dataset",
+                  "getting-started/template-versioning"
                 ]
               }
             ]
