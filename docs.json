@@ -132,8 +132,10 @@
                   "features/polygon-eraser",
                   "features/pose-keypoint-tracking",
                   "features/quality-metrics",
-                  "features/sam-2-object-tracking",
+                  "features/quick-edit-while-reviewing",
                   "features/segment-anything",
+                  "features/sam-2-object-tracking",
+                  "features/sam-3-multi-instance-auto-labeling",
                   "features/smart-file-filtering",
                   "features/text-captioning",
                   "features/user-settings"

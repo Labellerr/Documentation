@@ -1,0 +1,55 @@
+---
+title: "SAM 3 Multi-Instance Auto-Labeling"
+description: "Learn how Labellerr's SAM 3 Multi-Instance Auto-Labeling allows you to label all similar objects in an image with a single visual prompt to speed up annotation workflows."
+icon: sparkles
+---
+
+<iframe
+  className="w-full aspect-video rounded-xl"
+  src="https://www.youtube.com/embed/YWiN365E6HY"
+  title="SAM3 Integration - Label Similar Objects"
+  frameBorder="0"
+  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+  allowFullScreen
+/>
+
+# SAM 3 Multi-Instance Auto-Labeling
+
+Labeling multiple instances of the same object class in a single image (e.g., vehicles in a parking lot, players on a field, or products on a shelf) can be extremely repetitive and time-consuming. 
+
+With **SAM 3 Multi-Instance Auto-Labeling** (powered by Meta AI's Segment Anything Model 3), Labellerr allows you to label all similar objects in an image using just a **single visual prompt**. SAM 3 intelligently identifies and labels all matching instances across the entire image canvas, dramatically reducing manual effort and accelerating your annotation pipeline.
+
+---
+
+## Key Features
+
+- **Single-Prompt Auto-Labeling:** Draw a single bounding box or polygon outline, and the system automatically segment-labels all other similar objects in the image.
+- **Advanced Segmentation Power:** Powered by SAM 3's high-precision, zero-shot segmentation capabilities.
+- **Consistency:** Maintains uniform labeling standards and boundary shapes across all detected object instances.
+- **Multi-Instance Speedup:** Annotate dozens or hundreds of similar objects in seconds rather than hours.
+
+---
+
+## Step-by-Step Guide: Using SAM 3 Multi-Instance Auto-Labeling
+
+### 1. Initialize the Prompt
+- Open your image annotation project and choose the appropriate target label.
+- Draw a bounding box or polygon (using SAM) annotation on your object to serve as the visual prompt.
+
+### 2. Activate Similar Object Detection
+- Select the created annotation on the canvas.
+- Press **I** on your keyboard to trigger SAM 3 auto-annotation.
+- The model will process the visual signature and automatically annotate all similar objects across the image.
+
+### 3. Review and Save
+- Inspect the generated annotations.
+- Manually refine any boundaries if necessary, and click save to apply the updates.
+
+---
+
+## Future Roadmap
+
+- **Negative & Incremental Prompting:** Add support to exclude specific false-positives or add refined suggestions to improve detection accuracy.
+- **Granular Controls:** Introduce individual accept/reject controls for each detected instance (e.g., "accept all", "reject all").
+- **Latency Optimization:** Reduce inference and processing times for faster annotation cycles.
+- **Video Support:** Extend similar object tracking to video sequences for automated frame-by-frame propagation.
