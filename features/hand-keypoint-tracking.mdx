@@ -1,0 +1,59 @@
+---
+title: "Hand Keypoint Tracking"
+description: "Learn how Labellerr's Hand Keypoint Tracking supports up to 21 points for precise hand and finger gesture annotation on images and videos."
+icon: hand
+---
+
+<iframe
+  className="w-full aspect-video rounded-xl"
+  src="https://www.youtube.com/embed/B6zFULLIRAA"
+  title="Hand Keypoint Tracking on Image and Video"
+  frameBorder="0"
+  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+  allowFullScreen
+/>
+
+# Hand Keypoint Tracking
+
+Precise hand annotation is a critical requirement for many computer vision applications, especially in scenarios involving gesture interpretation, hand-object interaction, and egocentric understanding. 
+
+Labellerr supports **Hand Keypoint Tracking** across both images and videos with up to **21 keypoints per hand**, enabling teams to create detailed and structured annotations for hand movement and articulation. This enhancement allows annotation teams to define fine-grained hand positions with greater consistency, making it easier to build high-quality datasets for motion-centric AI workflows.
+
+---
+
+## Key Features
+
+- **21-Point Skeletal Mapping:** Captures the complete skeletal structure of the hand, including the wrist and five fingers with all joint articulations.
+- **Image & Video Compatibility:** Supports tracking across both static images and video timelines, maintaining temporal consistency.
+- **Preset Support:** Redesigned template setups allow teams to use standard hand presets without manual layout configuration.
+- **Egocentric Video Optimization:** Built specifically to support first-person views and handle complex rotations, occlusions, and hand-object interactions.
+
+---
+
+## Step-by-Step Guide: Using Hand Keypoint Tracking
+
+### 1. Configure the Hand Keypoint Template
+- Navigate to the **Label Configuration** section in your project setup.
+- Click on **Add Object**, enter a label name (e.g., `hand`), and select the **Keypoint** type.
+- Choose the **Hand Preset (21 Points)** from the template presets. This automatically generates the skeletal structure with predefined wrist and finger joint landmarks.
+- Click **Save** to apply the template to your project.
+
+### 2. Positioning the Keypoints
+- Open the labeling screen and select the `hand` label.
+- Click on the canvas to place the hand keypoint skeleton.
+- Adjust individual keypoints (e.g., finger tips, knuckles, wrist joint) to precisely align with the subject's hand structure.
+
+### 3. Tracking Across Video Frames
+- For video projects, select the hand annotation on the canvas.
+- Right-click and choose **Hand Tracking** (or use the keypoint tracking controls) to automatically propagate the skeleton across subsequent frames.
+- Review the tracked frames and manually adjust keypoints if there are minor drift issues caused by fast movements or severe occlusions.
+
+---
+
+## Use Cases
+
+- **Gesture Recognition:** Training models to interpret hand signs, gestures, and user interface controls.
+- **Human-Computer Interaction (HCI):** Capturing interactions in AR/VR and smart devices.
+- **Robotics:** Annotating hand movements for robotic manipulation and training.
+- **Egocentric Workflows:** Annotating tasks filmed from a first-person perspective, such as assembly lines, medical surgeries, or cooking tutorials.
+- **Sign Language Interpretation:** Capturing fine-grained finger spelling and movements for translation systems.
