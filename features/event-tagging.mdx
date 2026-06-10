@@ -1,10 +1,10 @@
 ---
-title: "Event Tagging"
+title: "Event/Action Tagging"
 description: "Learn how Labellerr's Event Tagging feature transforms raw video into structured, searchable data by marking and labeling specific segments in a video timeline."
 icon: tags
 ---
 
-**Event Tagging** is the process of marking specific segments or moments in a video timeline that correspond to important or noteworthy events. Each tag typically includes:
+**Event/Action Tagging** is the process of marking specific segments or moments in a video timeline that correspond to important or noteworthy events. Each tag typically includes:
 
 *   The **start time** of the event.
 *   The **end time** (adjustable).
@@ -13,7 +13,7 @@ icon: tags
 
 This transforms raw video into structured, searchable data that can be accessed instantly.
 
-## How to Use Labellerr’s Event Tagging Tool
+## How to Use Labellerr’s Event/Action Tagging Tool
 
 <iframe 
   className="w-full aspect-video rounded-xl" 
@@ -23,51 +23,77 @@ This transforms raw video into structured, searchable data that can be accessed 
   allowfullscreen>
 </iframe>
 
-### Step 1: Upload Your Video
+### Step 1: Create a Video Annotation Project
+- Create a video annotation project in Labellerr designed for event tagging.
 
-*   Upload your video file in the Labellerr platform’s video annotation section.
-*   Play the video to identify key moments you want to tag.
+<Frame>
+  <img src="https://storage.googleapis.com/labellerr-cdn/%200%20Labellerr-doc/Screenshot%202026-06-10%20122706.webp" alt="Create a Video Annotation Project" />
+</Frame>
 
-### Step 2: Set the Timeline Head at the Start of the Event
+### Step 2: Create an Annotation Template
+- Create an annotations template configured with the "event" criteria object.
 
-*   Move the video timeline slider to the exact timestamp where the event begins (e.g., a dunk, foul, or highlight).
+<Frame>
+  <img src="https://storage.googleapis.com/labellerr-cdn/%200%20Labellerr-doc/Screenshot%202026-06-10%20123309.webp" alt="Create an Annotation Template" />
+</Frame>
 
-### Step 3: Create an Event Tag
+### Step 3: Select and Adjust Event on the Timeline
+- While performing the video annotation, select the event annotation.
+- Adjust the start frame and end frame of that specific event directly on the timeline.
 
-*   Click on the **event tagging** button/icon.
-*   Enter a descriptive name for the event — for example, “Foul on LeBron” or “Clutch 2-pointer by Goran Dragic.”
+<Frame>
+  <img src="https://storage.googleapis.com/labellerr-cdn/%200%20Labellerr-doc/Screenshot%202026-06-10%20124846.webp" alt="Select and Adjust Event on the Timeline" />
+</Frame>
 
-### Step 4: Adjust Tag Duration
+### Step 4: Locate Created Event Annotations
+- Once configured, your event annotation will be displayed below the annotation bar.
 
-*   Adjust the length of the tag by dragging its edges on the timeline to cover the entire event duration.
-*   The tag can also be moved along the timeline to refine its placement.
+<Frame>
+  <img src="https://storage.googleapis.com/labellerr-cdn/%200%20Labellerr-doc/Screenshot%202026-06-10%20124947.webp" alt="Locate Created Event Annotations" />
+</Frame>
 
-### Step 5: Manage and Organize Tags
+### Step 5: Repeat for Other Annotations
+- Repeat the process for all other event annotations you want to tag in the video.
 
-*   Repeat the steps to map out additional key moments in your video.
-*   The collection of event tags forms a searchable, time-indexed database of important moments.
+<Frame>
+  <img src="https://storage.googleapis.com/labellerr-cdn/%200%20Labellerr-doc/Screenshot%202026-06-10%20125037.webp" alt="Repeat for Other Annotations" />
+</Frame>
 
 ---
 
-## Event Tag Attributes
+## Event/Action Tag Attributes
 
 Event tagging in Labellerr supports adding **attributes** directly to event annotations. With this capability, you can attach additional context, metadata, or specific details to any tagged event (e.g., player names, action intensity, success/failure states, or game quarters).
 
 <iframe 
   className="w-full aspect-video rounded-xl" 
   src="https://www.youtube.com/embed/k9qlUbyGHhQ?si=0hma0jZ1zu32J31_" 
-  title="Event Tagging with Attributes" 
+  title="Event/Action Tagging with Attributes" 
   frameborder="0" 
   allowfullscreen>
 </iframe>
 
-### How to Add Attributes to Event Tags
+### How to Add Attributes to Event/Action Tags
 
-1. **Configure Attributes in Project Setup:** Define the attributes and options (e.g., dropdowns, checkbox selections) linked to your event label in the project settings.
-2. **Tag an Event:** Create your event tag on the video timeline.
-3. **Assign Attributes:** Once the event annotation is created, select the annotation and press **E** on the keyboard to fill in the attributes you have created.
+1. **Enable Attributes in Annotation Settings:** When creating your project annotation guidelines, click **Edit** on your annotation class and click on **Add Attribute**.
 
-## Benefits of Event Tagging with Labellerr
+<Frame>
+  <img src="https://storage.googleapis.com/labellerr-cdn/%200%20Labellerr-doc/Screenshot%202026-06-10%20132137.webp" alt="Enable Attributes in Annotation Settings" />
+</Frame>
+
+2. **Add Attributes:** Configure the various attributes that you want to associate with your annotation class.
+
+<Frame>
+  <img src="https://storage.googleapis.com/labellerr-cdn/%200%20Labellerr-doc/Screenshot%202026-06-10%20132232.webp" alt="Add Attributes" />
+</Frame>
+
+3. **Fill Attributes During Annotation:** While annotating, once you select your event annotation class, an attribute filling box will appear on the screen automatically. Alternatively, you can press **E** on your keyboard to bring the attribute box onto the screen, and then fill in the attributes.
+
+<Frame>
+  <img src="https://storage.googleapis.com/labellerr-cdn/%200%20Labellerr-doc/Screenshot%202026-06-10%20132343.webp" alt="Fill Attributes During Annotation" />
+</Frame>
+
+## Benefits of Event/Action Tagging with Labellerr
 
 *   **Instant Access to Highlights:** Skip long videos to jump directly to key moments.
 *   **Structured Data for ML:** Tagged moments become datasets for machine learning, enabling recognition of patterns and automated video understanding.
