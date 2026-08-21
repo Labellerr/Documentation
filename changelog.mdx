@@ -1,0 +1,543 @@
+---
+title: "Changelog"
+description: "Version history and release notes for the Labellerr annotation tool"
+icon: clock-rotate-left
+---
+
+This page documents notable changes to the Labellerr annotation platform, organized into reconstructed semantic versions from repository history. The latest releases appear first.
+
+## About Versioning
+
+Labellerr did not consistently use release version numbers in its development history. The versions on this page have therefore been **reconstructed from merged pull requests across the Labellerr repositories**. They provide a consistent product history and should not be interpreted as original Git release tags.
+
+The reconstructed history follows Semantic Versioning principles:
+
+- **MAJOR** (`X.0.0`): Significant platform or workflow changes that can materially alter how the product is used.
+- **MINOR** (`X.Y.0`): New customer-facing capabilities and substantial backwards-compatible improvements. Each month with ≥1 customer-facing feature receives a MINOR bump — this is a time-based reconstruction, not original tags.
+- **PATCH** (`X.Y.Z`): Focused bug fixes, reliability fixes, and small backwards-compatible improvements. Fix-only months would receive a PATCH.
+
+Major versions are intentionally rare. Internal refactors, tests, CI changes, and infrastructure-only work are omitted unless they materially affected the product, performance, reliability, or security.
+
+## Changelog Categories
+
+- **Added**: New features and capabilities
+- **Changed**: Improvements or behavior changes to existing functionality
+- **Fixed**: Bug fixes and reliability improvements
+- **Security**: Security, authentication, access-control, or policy changes
+
+---
+
+## [2.0.1] - 2026-08-20
+
+### Fixed
+
+- **Export-service singleton and connection-reset** — Fixed export-service singleton and connection-reset issues affecting coordinate normalization, pagination, and service reinitialization.
+- **Export processing reliability** — Improved export processing reliability for data-type handling and aggregation preferences.
+
+---
+
+## [2.0.0] - 2026-08-18
+
+### Added
+
+- **Workspace management and access controls** — Added workspace settings, workspace-level user management, SSO enforcement, and IP allowlisting.
+- **WebCodecs/CMAF video playback** — Added client-side WebCodecs/CMAF playback with JPEG fallback, audio controls, enhanced timeline navigation, and frame-based mark-out controls.
+- **SAM2 tracking for segmented video** — Added frame acquisition and tracking support for videos stored as CMAF/HLS segments.
+
+### Changed
+
+- **Video playback and frame acquisition** — Improved video playback, frame acquisition, buffering, caching, and recovery across segmented and JPEG-backed video (CMAF decode tier, JPEG fallback, density-gated frame ranges).
+- **Video annotation draft handling** — Improved video annotation draft handling with accumulated changes and undo/redo support.
+- **Workspace access and error handling** — Improved workspace access and error handling.
+
+### Fixed
+
+- **Delta handling for video** — Improved delta handling for video annotation saves and made aggregation strategy a user preference (LABIMP-8894 — Actions #121, ExportsCore #69, labellingTool #1433).
+
+### Security
+
+- **Workspace-level SSO and IP** — Added workspace-level SSO and IP allowlist enforcement.
+- **Gateway-level CORS validation** — Improved gateway-level CORS validation and API-key handling.
+
+---
+
+## [1.21.0] - 2026-07-28
+
+### Added
+
+- **SAM3 text-prompt support** — Added SAM3 text-prompt support for annotation workflows.
+- **SAM3 support for bounding-box prompts** — Added SAM3 support for bounding-box prompts in the annotation tool.
+- **SAM3 cross-image similarity search** — Added SAM3 cross-image similarity search using reference regions or text prompts.
+- **Batch similarity-search processing across project images** — Added batch similarity-search processing across project images.
+- **Batch processing for saving inference answers** — Added batch processing for saving inference answers across multiple files.
+- **Per-file success and error reporting** — Added per-file success and error reporting for batch inference-answer operations.
+- **Activity associations and background indexing** — Added activity associations and background indexing support for inference saves.
+
+### Changed
+
+- **SAM3 prediction performance via cached instances** — Improved SAM3 prediction performance by reusing cached model instances.
+- **COCO pre-annotation exports with attributes** — Improved COCO pre-annotation exports to preserve annotation attributes as structured metadata.
+- **SAM3 validation and prediction filtering** — Improved SAM3 validation and prediction filtering.
+
+---
+
+## [1.20.0] - 2026-06-17
+
+### Added
+
+- **Active Events overlay** — Added an Active Events overlay for quickly identifying events present at a specific point in a video.
+- **Change Label action** — Added a Change Label action for event-tagging annotations in the video player.
+- **Display controls in toolbar** — Added display controls in the video annotation toolbar.
+- **Manual start/end frame controls** — Added manual controls for changing event start and end frames.
+- **Prefetching of upcoming video frames** — Added prefetching of upcoming video frames to improve playback responsiveness.
+- **AWS S3 support for video** — Added AWS S3 support for video frame retrieval.
+- **Background prefetch of next-video frames** — Added background prefetch of next-video frames using IDB store as cache for faster cold-start and transitions.
+
+### Changed
+
+- **Video playback buffering** — Improved video playback buffering, caching, and frame availability handling (tiered memory + persistent cache, scheduled signed URLs, stall/miss tolerance).
+- **Video-player controls and playback state** — Improved video-player controls and playback state management.
+- **Export handling for audio and multimodal** — Improved export handling for audio and multimodal data types.
+
+### Fixed
+
+- **Date filtering for files** — Fixed date filtering for files updated on the same day.
+- **User edit flow** — Fixed user edit flow in existing projects — project list readiness and filtering now update reliably without background polling.
+- **Modal layering** — Fixed modal layering that blocked S3 connection setup.
+
+---
+
+## [1.19.0] - 2026-05-28
+
+### Added
+
+- **MediaPipe landmark detection** — Added MediaPipe landmark detection for hand and pose keypoints, including egocentric video tracking.
+- **Per-keypoint attributes** — Added per-keypoint attributes for keypoint skeleton annotations.
+- **SAM2 tracking for polygons** — Added SAM2 tracking for polygons using bounding-box prompts.
+- **Attribute filtering for annotations** — Added attribute filtering for annotations.
+- **Improved keypoint guidelines based on MediaPipe** — Added improved keypoint guidelines based on MediaPipe landmarks.
+- **Per-keypoint attribute export in COCO** — Added per-keypoint attribute export in COCO JSON.
+- **Finish-on-N for polygon drawing** — Added finish-on-N for polygon drawing with ordered timeline tracks and improved tracking reliability.
+
+### Changed
+
+- **Video tracking frame-range handling** — Improved video tracking frame-range handling for landmark models.
+- **Annotation filtering** — Improved annotation filtering in image and video players.
+- **Export support for multiple data types** — Improved export support for multiple data types and video manifests (including per-file sharding).
+- **Connection handling and CORS** — Improved connection handling and optional CORS configuration for data connections, with warnings and test result panels.
+
+### Fixed
+
+- **Pixel-level polygon accuracy** — Fixed pixel-level polygon accuracy on scaled/zoomed canvases and improved anchor targeting.
+- **Timeline min/max length** — Fixed timeline min/max length and narrow single-frame visibility; improved dashboard layout and resize controls.
+- **Delete-project InProgress handling** — Fixed delete-project & InProgress handling for projects exceeding 24h threshold and refined polling.
+- **Export delete-button error** — Fixed export delete-button error and indexing chip display when indexing is active.
+
+---
+
+## [1.18.0] - 2026-04-24
+
+### Added
+
+- **Event-annotation attributes** — Added event-annotation attributes in the video player.
+- **Editing support in Gallery** — Added editing support in Gallery View and View Mode.
+- **Auto-Bordering for polygon** — Added Auto-Bordering for polygon annotations (Alt+click boundary-following, batch-aware undo/redo).
+- **Direct accept/reject actions** — Added direct accept/reject actions from View Mode.
+- **View-only annotation mode** — Added view-only annotation mode with permission-based controls and expanded domain for accept/reject across statuses.
+
+### Changed
+
+- **Attribute dialog UX** — Improved attribute dialog UX and visual context (short IDs, bulk editing, draggable headers).
+- **Audio annotation state** — Improved audio annotation state management and draft saving via ngRx store.
+- **Expanded workflow-state handling** — Expanded workflow-state handling for accept/reject actions.
+
+### Fixed
+
+- **Guideline creation navigation** — Fixed guideline creation navigation, pixel-level polygon issues, and UI stacking behavior.
+- **Attribute validation for required** — Fixed attribute validation for required attributes (including video-data skip and per-keypoint level checks).
+
+---
+
+## [1.17.0] - 2026-03-30
+
+### Added
+
+- **Keypoint annotation export** — Added keypoint annotation export to COCO JSON, including skeleton information.
+- **COCO pre-annotation support** — Added COCO pre-annotation support for keypoints.
+- **Edit-mode save API integration** — Added edit-mode save API integration.
+- **Transactional file assignment** — Added transactional file assignment to reduce conflicts when assigning files to users.
+
+### Changed
+
+- **Refactored image annotation** — Refactored image annotation workflows.
+- **Keypoint export validation** — Improved keypoint export validation and annotation retrieval.
+
+### Fixed
+
+- **Inline export error** — Improved inline export error handling and edit-mode reliability.
+
+---
+
+## [1.16.0] - 2026-02-16
+
+### Added
+
+- **More reliable export** — Added more reliable export processing through a Cloud Run Job and Apache Beam pipeline.
+- **S3 export support** — Added S3 export support.
+
+### Changed
+
+- **SAM request handling** — Improved SAM request handling by removing the deprecated image-link dependency.
+- **SAM3 prediction behavior** — Improved SAM3 prediction behavior so annotation attributes can be carried forward.
+- **GRPC connection reliability** — Improved gRPC connection reliability and retry handling (safer channel recreation, recoverable-error handling).
+
+---
+
+## [1.15.0] - 2026-01-31
+
+### Added
+
+- **Annotation activity logs** — Added annotation activity logs and fixed preservation of labelling transition time.
+- **SAM+ for Magic Wand** — Added SAM+ for Magic Wand and polygon refinement workflows (persistent model option, batch refinement, parallel warmup).
+- **SegRefiner/SAMPlus-based annotation refinement** — Added SegRefiner/SAMPlus-based annotation refinement.
+
+### Changed
+
+- **Video annotation attributes** — Improved video annotation attributes in the player (frame-aware dialogs, prior-frame retrieval).
+- **Project deletion and user-interface** — Improved project deletion and user-interface flows (typed confirmation, selected-project indicator).
+- **Annotation label-main architecture** — Improved annotation label-main architecture and activity tracking (centralized store-driven workflow, autosave, activity preview).
+
+---
+
+## [1.14.0] - 2025-12-26
+
+### Added
+
+- **Configurable API rate** — Added configurable API rate limiting (global per-client, 429 + Retry-After).
+- **Short video previews** — Added short video previews.
+- **Support for streaming** — Added support for streaming TS video content through the video data pipeline (HLS playlist + TS segment proxy, adapter-based storage).
+- **Selective project-based user** — Added selective project-based user import (guided two-step flow with per-step search and validation).
+
+### Changed
+
+- **Video-player stability when** — Improved video-player stability when switching videos (resource cleanup, preloading fixes).
+- **Annotation pagination and similar-file** — Improved annotation pagination and similar-file search pagination (consistent footers, improved control).
+- **Handling of missing** — Improved handling of missing video end-frame values with FPS/start-end fallbacks and manual annotation consistency.
+- **Visibility of bounding-box** — Improved visibility of bounding-box corners and annotation-setting previews.
+
+### Fixed
+
+- **Video-player pagination and search-navigation** — Fixed video-player, pagination, and search-navigation issues including rescaling/UI distortion on export↔files switching and pagination when searching similar files.
+
+---
+
+## [1.13.0] - 2025-11-29
+
+### Added
+
+- **File-queue thumbnails to make** — Added file-queue thumbnails to make navigation easier in full-page annotation view.
+- **Files Management milestone** — Added Files Management milestone 2 capabilities (table/grid/object views, virtualized grid, search/filter/sort, bulk select, export).
+- **Superset dashboarding support** — Added Superset dashboarding support (guest-token viewer).
+- **SAM3 exemplar-prompt support** — Added SAM3 exemplar-prompt support (dedicated prediction + warmup endpoints, runtime mode selection).
+- **Video pre-annotation processing** — Added video pre-annotation processing improvements (COCO-for-video, unified media pre-annotations with Pub/Sub).
+
+### Changed
+
+- **Grouping selection and polygon** — Improved grouping selection and polygon clipping workflows (precise containment, multi-piece clipping, G-shortcut).
+- **Annotation bounds handling** — Improved annotation bounds handling by keeping polygons and points within image boundaries (clamping/normalization).
+- **File switching stability** — Improved file switching stability and prevented annotations from carrying over between files (virtual scroll buffering, batched tree expansion).
+
+### Fixed
+
+- **Race conditions when** — Fixed race conditions when switching files quickly in the annotation gallery and when fetching file data via gallery strip.
+
+---
+
+## [1.12.0] - 2025-10-24
+
+### Added
+
+- **File-management capabilities** — Added file-management capabilities as an initial milestone of the Files Management module.
+- **File tagging support** — Added file tagging support and tagging APIs (single & batch, per-file success/failure, gRPC services, reserved-tag validation).
+- **Keyboard shortcuts for changing** — Added keyboard shortcuts for changing annotation labels (L for label, N for complete polygon).
+- **Polyline occlusion handling** — Added polyline occlusion handling with right-click interactions (gray dashed styling, persistence).
+- **Dedicated gRPC services** — Added dedicated gRPC services for file tagging and exports (with context propagation, background tasks, centralized error handling).
+
+### Changed
+
+- **Bulk inference handling** — Improved bulk inference handling for pre-label and review-ready predictions (cloud-bucket support, dual storage paths).
+- **Polygon editing and annotation** — Improved polygon editing and annotation workflows (including eraser transparency to 100% for target polygon).
+
+### Security
+
+- **Security fixes across** — Applied security fixes across export and gateway services.
+
+---
+
+## [1.11.0] - 2025-09-30
+
+### Added
+
+- **Project indexing progress** — Added project indexing progress tracking with ETA information.
+- **SAM2.1 support and updated** — Added SAM2.1 support and updated frame-loading behavior (removed old SAM dependency).
+- **Structured tracing and correlation** — Added structured tracing and correlation information for improved diagnostics (GCP logging spans).
+
+### Changed
+
+- **Annotation rendering after** — Improved annotation rendering after video load and handling of deleted/dangling video events.
+- **Logging and error reporting** — Improved logging and error reporting across core services (centralized error handling, context-based logging).
+- **Project indexing and file-processing** — Improved project indexing and file-processing visibility.
+
+### Fixed
+
+- **UUID compulsory enforcement** — Fixed UUID compulsory enforcement in requests and made error handling more robust.
+- **In-progress dataset selection** — Fixed in-progress dataset selection handling.
+
+### Security
+
+- **Access-control and gateway** — Addressed access-control and gateway security considerations alongside logging improvements.
+
+---
+
+## [1.10.0] - 2025-08-30
+
+<Note>
+  This period consolidates 38 PRs across 5 repos (July 28 → Aug 30) — the July–August sprint. Entries below merge them into themes.
+</Note>
+
+### Added
+
+- **Search experience** — Added a search experience for the file listing page, including support for legacy and newer query patterns (reusable search components, textarea mode, date-range guards).
+- **Multi-object tracking support** — Added multi-object tracking support (simultaneous tracking, multi-object API).
+- **Video keyframe and marker** — Added video keyframe and marker retrieval capabilities (keyframe/marker APIs, DataCore frame fetch).
+- **Richer SAM2 logging** — Added richer SAM2 logging and annotation history tracking for image and video workflows (GCS structure, session/history).
+- **Ability to see similar** — Added ability to see similar files already annotated on the labeling screen.
+- **Video dataset upload** — Added video dataset upload improvements with quality checks and new status chips.
+
+### Changed
+
+- **Delta-delete handling when** — Added delta-delete handling when saving annotations across supported data modalities (GCS + Firestore delta logic).
+- **Video dataset upload** — Improved video dataset upload states and playback-related workflows.
+- **File-list filtering pagination** — Improved file-list filtering, pagination, status indicators, and annotation navigation (pagination fixes, status chip normalization).
+- **Image adjustment controls** — Improved image adjustment controls (brightness/contrast) and similar-file search behavior.
+- **Pagination and annotation-count** — Improved pagination and annotation-count filtering (including annotation count filters and file-listing page fixes).
+
+### Fixed
+
+- **SAM2 frame coverage** — Fixed SAM2 frame coverage for last few frames, annotation counts, pagination, status display, and file transitions.
+- **Pagination on file listing** — Fixed pagination on file listing page (second-page reload, filter reset) and dataset page API params.
+- **Irregular status chips** — Fixed irregular status chips on file listing page.
+- **User-added refresh new** — Fixed user-added refresh — new users now appear via optimistic update without manual refresh.
+- **Dialog-box tests and stale** — Fixed dialog-box tests and stale SAM temp-state when deselecting questions.
+- **Bounding-box creation when** — Fixed bounding-box creation when release point is outside the Konva stage.
+- **Video annotation delta** — Fixed video annotation delta handling edge cases and in-progress dataset selection.
+
+---
+
+## [1.9.0] - 2025-07-27
+
+<Note>
+  This period consolidates 48 PRs across 6 repos (June 19 → July 27) — the June–July sprint. Entries below merge them into themes.
+</Note>
+
+### Added
+
+- **Delta-based saving for video** — Added delta-based saving for video annotations (firestore + caching optimization).
+- **Polyline annotation support** — Added polyline annotation support for satellite imagery.
+- **Similar-file discovery for previously** — Added similar-file discovery for previously annotated files.
+- **Project failure status** — Added project failure status visibility (red "Failed" pill for status_code 501).
+- **Annotation indexing improvements** — Added annotation indexing improvements for search (ES multimodal index flag, search bar suggestions).
+- **Template search and improved** — Added template search and improved project-creation validation (search reset on close, padding, name validation).
+- **Bounding-box validation for empty** — Added bounding-box validation for empty submissions and out-of-bounds handling.
+
+### Changed
+
+- **Video annotation change** — Improved video annotation change tracking and diff handling (diff updates for video annotation).
+- **File-list and project** — Improved file-list and project responsiveness and pagination (table-responsive, media queries, dataset pagination).
+- **Annotation validation and erased-region** — Improved annotation validation and erased-region handling (polygon validator for erased regions).
+- **SAM2 processing including** — Improved SAM2 processing, including support for multiple input points and concurrent processing (torch).
+
+### Fixed
+
+- **Responsive issues in project** — Fixed responsive issues in project table and dataset page not updating when more files available.
+- **Sentry issues on /files** — Fixed Sentry issues on /files and /dashboard routes and guideline page visibility.
+- **Export notification trigger** — Fixed export notification trigger inconsistency.
+- **Attribute filtering for pubsub** — Fixed attribute filtering for pubsub aggregate job and export pre-processor for erased regions.
+- **Latency for answer submission** — Fixed latency for answer submission by not waiting for pubsub (10–15s → 2–5s).
+
+---
+
+## [1.8.0] - 2025-06-19
+
+### Added
+
+- **Anonymous dataset search** — Added anonymous dataset search so users can explore datasets without logging in.
+- **Direct accept/reject actions** — Added direct accept/reject actions for review-stage files from grid view.
+- **File status information** — Added file status information to exports.
+- **Support for exporting** — Added support for exporting files across workflow statuses.
+
+### Changed
+
+- **Bounding-box validation and coordinate** — Added bounding-box validation and coordinate normalization to keep annotations within image boundaries.
+- **Validation behavior for submissions** — Improved validation behavior for submissions without annotations.
+- **The project dataset** — Improved the project, dataset, guideline, and export interfaces.
+- **Handling of failed file** — Improved handling of failed file references and reference errors in export controllers.
+
+---
+
+## [1.7.0] - 2025-05-13
+
+### Added
+
+- **Gemini-powered LLM API** — Added a Gemini-powered LLM API route.
+- **Fallback handling when** — Added fallback handling when file update timestamps are unavailable.
+- **Improved error reporting** — Added improved error reporting for cloud-storage operations.
+- **Validation for invalid** — Added validation for invalid polygon and bounding-box annotations (ignore invalid annotations).
+- **Richer activity information** — Added richer activity information for annotation and review workflows.
+
+### Changed
+
+- **Dataset and sample-file** — Improved dataset and sample-file retrieval APIs (including getting sample file from dataset id).
+- **Error reporting for cloud-storage** — Improved error reporting for cloud-storage operations.
+- **Rejected-file handling reassigned** — Improved rejected-file handling — reassigned to last annotator/reviewer who updated it and preserved annotator/reviewer email.
+- **Separated development and production** — Separated development and production export workflows and made workflow builds distinct per environment.
+- **Annotation-save latency for image** — Improved annotation-save latency for image workflows via cache service.
+
+### Fixed
+
+- **UUID handling issues** — Fixed UUID handling issues affecting request processing.
+- **Add-remark endpoint removal** — Fixed add-remark endpoint removal and fetching logic cleanup.
+
+---
+
+## [1.6.0] - 2025-03-28
+
+### Added
+
+- **Support for using fine-tuned** — Added support for using fine-tuned SAM models when available.
+- **Dedicated inference handling** — Added dedicated inference handling for fine-tuned SAM workflows.
+
+### Changed
+
+- **The Actions service** — Migrated the Actions service from Flask to FastAPI.
+- **Export processing to use** — Updated export processing to use YOLO11 instead of YOLOv5.
+- **SAM usage tracking** — Added SAM usage tracking.
+
+---
+
+## [1.5.0] - 2025-02-20
+
+### Added
+
+- **Label-based file filtering** — Added label-based file filtering.
+- **Export email notifications** — Added export email notifications and ordering support.
+
+### Changed
+
+- **Bulk file movement across** — Improved bulk file movement across workflow stages.
+- **Session management token** — Improved session management, token authentication, and cross-workspace session restrictions.
+- **Error logging and workflow** — Improved error logging and workflow timing information.
+
+---
+
+## [1.4.0] - 2025-01-30
+
+### Added
+
+- **Pre-annotation processing through** — Added pre-annotation processing through Cloud Run jobs.
+- **Simultaneous SAM2 tracking** — Added simultaneous SAM2 tracking and the ability to stop long-running SAM2 jobs.
+- **Validation hooks for missing** — Added validation hooks for missing or invalid annotations.
+- **Support for validating** — Added support for validating and ignoring invalid polygon and bounding-box annotations.
+- **Richer activity information** — Added richer activity information for annotation and review workflows.
+
+### Changed
+
+- **Annotation-save latency for image** — Improved annotation-save latency for image workflows.
+- **Rejection handling by preserving** — Improved rejection handling by preserving annotator/reviewer information and reassigning rejected files appropriately.
+- **Validation messages and attribute** — Improved validation messages and attribute handling.
+- **Time-taken tracking in Firestore** — Improved time-taken tracking in Firestore and error logging.
+
+### Security
+
+- **Reported API security** — Addressed reported API security vulnerabilities and tightened allowed origins.
+
+---
+
+## [1.3.0] - 2024-12-17
+
+### Added
+
+- **SAM2 support for bounding-box-driven** — Added SAM2 support for bounding-box-driven video annotation.
+- **Support for storing** — Added support for storing and retrieving image and auto-label annotations through the updated annotation flow.
+- **Annotation storage in managed** — Added annotation storage in managed object storage with compatibility for existing annotation data.
+- **Annotator identity information** — Added annotator identity information to activity records.
+
+### Changed
+
+- **Annotation persistence and retrieval** — Improved annotation persistence and retrieval across image and video workflows.
+
+---
+
+## [1.2.0] - 2024-11-25
+
+### Added
+
+- **SAM2-based inference capabilities** — Integrated SAM2-based inference capabilities.
+- **Support for SAM inputs** — Added support for SAM inputs encoded as base64 images.
+- **File-detail and frame-aware** — Added file-detail and frame-aware data retrieval APIs.
+- **Handling of video frame** — Improved handling of video frame answers when annotation IDs are unavailable.
+
+---
+
+## [1.1.0] - 2024-10-14
+
+### Added
+
+- **Decoding support for mask** — Added decoding support for mask annotations stored in base64 form.
+- **Inference responses for compact/binary** — Improved inference responses for compact/binary mask data.
+
+---
+
+## [1.0.0] - 2024-09-24
+
+<Note>
+  Historical baseline reconstructed from the earliest available repository changes.
+</Note>
+
+### Added
+
+- **File retrieval ordering** — Improved file retrieval ordering and foundational data APIs.
+
+---
+
+## Staying Updated
+
+To stay informed about new releases:
+
+- Watch the [Labellerr GitHub](https://github.com/labellerr) for release notifications
+- Visit the [Labellerr website](https://labellerr.com) for product announcements
+- Check the [Product Updates](/product-releases/2026) section for monthly feature roundups
+
+## Release Schedule
+
+Future Labellerr releases can continue using the same Semantic Versioning convention:
+
+- **Minor versions**: New features and substantial backwards-compatible improvements
+- **Patch versions**: Focused fixes and small improvements
+- **Major versions**: Significant or potentially breaking product/workflow changes
+
+For historical releases, the version numbers above are reconstructed milestones based on repository activity rather than original release tags.
+
+## Support
+
+<CardGroup cols={3}>
+  <Card title="Documentation" icon="book" href="/getting-started/introduction">
+    Guides and reference for the Labellerr annotation tool
+  </Card>
+  <Card title="Product Updates" icon="calendar" href="/product-releases/2026">
+    Monthly feature updates and announcements
+  </Card>
+  <Card title="Support" icon="life-ring" href="mailto:support@tensormatics.com">
+    Get help from our team
+  </Card>
+</CardGroup>
