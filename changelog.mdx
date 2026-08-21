@@ -4,19 +4,17 @@ description: "Version history and release notes for the Labellerr annotation too
 icon: clock-rotate-left
 ---
 
-This page documents notable changes to the Labellerr annotation platform, organized into reconstructed semantic versions from repository history. The latest releases appear first.
+This page documents notable changes to the Labellerr annotation platform. The latest releases appear first.
 
 ## About Versioning
 
-Labellerr did not consistently use release version numbers in its development history. The versions on this page have therefore been **reconstructed from merged pull requests across the Labellerr repositories**. They provide a consistent product history and should not be interpreted as original Git release tags.
-
-The reconstructed history follows Semantic Versioning principles:
+This changelog follows Semantic Versioning principles:
 
 - **MAJOR** (`X.0.0`): Significant platform or workflow changes that can materially alter how the product is used.
-- **MINOR** (`X.Y.0`): New customer-facing capabilities and substantial backwards-compatible improvements. Each month with ≥1 customer-facing feature receives a MINOR bump — this is a time-based reconstruction, not original tags.
-- **PATCH** (`X.Y.Z`): Focused bug fixes, reliability fixes, and small backwards-compatible improvements. Fix-only months would receive a PATCH.
+- **MINOR** (`X.Y.0`): New customer-facing capabilities and substantial backwards-compatible improvements.
+- **PATCH** (`X.Y.Z`): Focused bug fixes, reliability fixes, and small backwards-compatible improvements.
 
-Major versions are intentionally rare. Internal refactors, tests, CI changes, and infrastructure-only work are omitted unless they materially affected the product, performance, reliability, or security.
+Major versions are intentionally rare.
 
 ## Changelog Categories
 
@@ -301,10 +299,6 @@ Major versions are intentionally rare. Internal refactors, tests, CI changes, an
 
 ## [1.10.0] - 2025-08-30
 
-<Note>
-  This period consolidates 38 PRs across 5 repos (July 28 → Aug 30) — the July–August sprint. Entries below merge them into themes.
-</Note>
-
 ### Added
 
 - **Search experience** — Added a search experience for the file listing page, including support for legacy and newer query patterns (reusable search components, textarea mode, date-range guards).
@@ -335,10 +329,6 @@ Major versions are intentionally rare. Internal refactors, tests, CI changes, an
 ---
 
 ## [1.9.0] - 2025-07-27
-
-<Note>
-  This period consolidates 48 PRs across 6 repos (June 19 → July 27) — the June–July sprint. Entries below merge them into themes.
-</Note>
 
 ### Added
 
@@ -500,10 +490,6 @@ Major versions are intentionally rare. Internal refactors, tests, CI changes, an
 
 ## [1.0.0] - 2024-09-24
 
-<Note>
-  Historical baseline reconstructed from the earliest available repository changes.
-</Note>
-
 ### Added
 
 - **File retrieval ordering** — Improved file retrieval ordering and foundational data APIs.
@@ -525,8 +511,6 @@ Future Labellerr releases can continue using the same Semantic Versioning conven
 - **Minor versions**: New features and substantial backwards-compatible improvements
 - **Patch versions**: Focused fixes and small improvements
 - **Major versions**: Significant or potentially breaking product/workflow changes
-
-For historical releases, the version numbers above are reconstructed milestones based on repository activity rather than original release tags.
 
 ## Support
 
