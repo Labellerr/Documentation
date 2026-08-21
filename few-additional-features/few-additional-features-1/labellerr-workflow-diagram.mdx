@@ -6,28 +6,65 @@ icon: "arrow-progress"
 
 ## Labellerr Workflow Diagram
 
-We've designed a simple workflow that helps you label, review, and approve your data so it's always correct and ready to export.
+We've designed a structured, multi-stage workflow that helps your team label, review, and approve data to guarantee accuracy before exporting.
 
 <Frame>
-  <img src="https://cdn.labellerr.com/1%20%20Documentation/cf0d7825-8b60-4f87-bd53-6800165354ed.webp" alt="Labellerr Workflow Diagram" />
+  <img src="https://storage.googleapis.com/labellerr-cdn/%20%201%20%20opus4.7/ChatGPT%20Image%20Aug%2020%2C%202026%2C%2011_17_10%20PM.webp" alt="Labellerr Workflow Diagram" />
 </Frame>
 
-## Data Flow Diagram: AWS S3 to Annotator
+---
 
-Detailed architecture and security reference diagram illustrating how data travels from your Amazon S3 bucket, through the Labellerr annotation platform, to an annotator's browser — and back on export.
+## Workflow Breakdown
 
-<Card title="Download / View Architecture PDF" icon="file-pdf" href="https://storage.googleapis.com/labellerr-cdn/%20%201%20EMMA/Labellerr-DataFlow-S3-to-Annotator.pdf">
-  Click to open or download the complete AWS S3 to Labellerr Data Flow Reference PDF.
-</Card>
+The Labellerr lifecycle consists of three structured review phases leading to export readiness:
 
-<iframe
-  src="https://storage.googleapis.com/labellerr-cdn/%20%201%20EMMA/Labellerr-DataFlow-S3-to-Annotator.pdf"
-  width="100%"
-  height="700px"
-  style={{ borderRadius: '8px', border: '1px solid #e5e7eb', marginTop: '16px' }}
-/>
+### 1. Annotation Phase
+
+The primary stage where raw data is labeled by assigned annotators.
+
+* **Unlabeled Files**: Freshly ingested files enter the pipeline ready for annotation.
+* **User Visits Label Section**: Annotators access their assigned tasks in the **Label** tab.
+* **Annotator Assigned Files**: Files are allocated to annotators based on project assignments or batch distribution.
+* **Annotator Actions**:
+  * **Submit File**: Annotations are completed and submitted, moving the file forward into the **Review Phase**.
+  * **Skip File**: If an asset is corrupted, unclear, or out-of-scope, annotators can skip it, moving it to **Skipped by Annotator Files**.
+
+---
+
+### 2. Review Phase
+
+Internal quality assurance where designated reviewers validate and audit annotator submissions.
+
+* **Review Files Queue**: Holds all submitted files awaiting inspection.
+* **Reviewer Visits Review Section**: Reviewers navigate to the **Review** tab to inspect completed annotations.
+* **Review Assigned Files**: Reviewers evaluate labels against annotation guidelines.
+* **Reviewer Actions**:
+  * **Accept File**: 
+    * If **Client Review is NOT enabled**, the file transitions directly to **Ready for Export**.
+    * If **Client Review IS enabled**, the file advances to the **Client Review Phase**.
+  * **Reject File**: File is rejected and sent back to **Unlabeled Files** (or re-assigned to annotators) with remarks for correction.
+  * **Skip File**: File is set aside in **Skipped by Reviewer Files** and can be re-queued into **Review Files** if needed.
+
+---
+
+### 3. Client Review Phase (CR)
+
+An optional external or client-level audit layer for final customer sign-off.
+
+* **Client Review Files**: Files approved by internal reviewers enter this queue.
+* **User Visits CR Section**: External reviewers or client managers access the **Client Review** section.
+* **Client Review Assigned Files**: Client auditors evaluate annotations against enterprise quality standards.
+* **Client Reviewer Actions**:
+  * **Accept File**: File is fully approved and marked as **Ready for Export**.
+  * **Reject File**: Sent back with file-level feedback to internal **Review Files** for rework.
+  * **Skip File**: Placed into **Skipped by CR** and can return to the client review queue.
+
+---
+
+### 4. Ready for Export
+
+Once files pass all active review gates (internal review and optional client review), they are placed into the **Ready for Export** state. These finalized datasets can then be exported in formats such as JSON, COCO JSON, CSV, or synced directly back to your cloud storage (e.g., AWS S3 / GCS).
 
 <Note>
 For further assistance contact <a href="mailto:support@tensormatics.com">support@tensormatics.com</a>
 </Note>
-

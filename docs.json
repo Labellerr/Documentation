@@ -159,13 +159,9 @@
           {
             "group": "Product Guide",
             "pages": [
-              {
-                "group": "Workflow Guides",
-                "pages": [
-                  "few-additional-features/few-additional-features-1/labellerr-workflow-diagram",
-                  "few-additional-features/few-additional-features-1/reviewing-file-level-remarks-by-annotators-reviewers"
-                ]
-              }
+              "few-additional-features/few-additional-features-1/labellerr-workflow-diagram",
+              "few-additional-features/few-additional-features-1/aws-s3-data-flow",
+              "few-additional-features/few-additional-features-1/reviewing-file-level-remarks-by-annotators-reviewers"
             ]
           },
           {
