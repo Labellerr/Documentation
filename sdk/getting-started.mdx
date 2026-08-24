@@ -58,6 +58,12 @@ To use the Labellerr SDK, you'll need three credentials: `api_key`, `api_secret`
 
 Once you have your credentials, import and initialize the `LabellerrClient`. This client handles all communication with the Labellerr platform.
 
+<Note>
+**Workspace IP Restriction / Allowlisting**
+
+If your workspace has [IP Allowlisting](/enterprise-security/ip-allowlisting) enabled under **Workspace Settings**, ensure that the IP address running your Python script/SDK environment is added to the allowed IP ranges. SDK requests made from non-allowlisted IP addresses will be blocked by the server.
+</Note>
+
 ### Understanding the SDK Structure
 
 The Labellerr SDK uses a **modular architecture** that organizes functionality into specialized modules:
@@ -363,5 +369,9 @@ Once you've created and tested a cloud connection (S3 or GCS), you can use it to
   
   <Accordion title="Where can I find my API credentials?">
     You can obtain your `api_key` and `api_secret` by visiting: `https://<your-workspace-name>.labellerr.com/workspace/api-keys`
+  </Accordion>
+
+  <Accordion title="Why am I getting connection/authorization errors when my credentials are correct?">
+    If your workspace has IP allowlisting / IP restriction enabled, make sure the outgoing IP address of your machine, server, or CI/CD runner is included in the allowlist in **Workspace Settings**. See [IP Allowlisting](/enterprise-security/ip-allowlisting) for instructions.
   </Accordion>
 </AccordionGroup>
