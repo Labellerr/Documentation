@@ -25,12 +25,24 @@ Major versions are intentionally rare.
 
 ---
 
+## [2.0.2] - 2026-08-27
+
+### Fixed
+
+- **Deterministic file IDs for dataset creation** — Generate consistent and deterministic `file_ids` to make dataset creation idempotent.
+- **Reconcile file count after ingestion** — Reconcile file count for the dataset once file ingestion is complete.
+- **Duplicate fields error in Firestore query** — Fix duplicate fields error in the Firestore query for flexible sorting and pagination.
+- **Delete docs from ES when dataset detached** — Delete the docs from ElasticSearch when a dataset is detached from a project.
+
+---
+
 ## [2.0.1] - 2026-08-20
 
 ### Fixed
 
 - **Export-service singleton and connection-reset** — Fixed export-service singleton and connection-reset issues affecting coordinate normalization, pagination, and service reinitialization.
 - **Export processing reliability** — Improved export processing reliability for data-type handling and aggregation preferences.
+- **Populate updated_at alongside created_at** — Populate `updated_at` along with `created_at` in Firestore documents.
 
 ---
 
@@ -123,6 +135,7 @@ Major versions are intentionally rare.
 - **Annotation filtering** — Improved annotation filtering in image and video players.
 - **Export support for multiple data types** — Improved export support for multiple data types and video manifests (including per-file sharding).
 - **Connection handling and CORS** — Improved connection handling and optional CORS configuration for data connections, with warnings and test result panels.
+- **Decoupled CORS policy check** — Decouple CORS policy check for connectors from data connection permissions — CORS issues now surface as soft-warnings with auto-fix.
 
 ### Fixed
 
@@ -164,6 +177,7 @@ Major versions are intentionally rare.
 - **COCO pre-annotation support** — Added COCO pre-annotation support for keypoints.
 - **Edit-mode save API integration** — Added edit-mode save API integration.
 - **Transactional file assignment** — Added transactional file assignment to reduce conflicts when assigning files to users.
+- **DLQ handling for dataset operations** — Added Dead Letter Queue endpoint to capture failed message data with complete context.
 
 ### Changed
 
@@ -198,6 +212,7 @@ Major versions are intentionally rare.
 - **Annotation activity logs** — Added annotation activity logs and fixed preservation of labelling transition time.
 - **SAM+ for Magic Wand** — Added SAM+ for Magic Wand and polygon refinement workflows (persistent model option, batch refinement, parallel warmup).
 - **SegRefiner/SAMPlus-based annotation refinement** — Added SegRefiner/SAMPlus-based annotation refinement.
+- **Projects delete API** — Added project deletion capability with bulk storage-class updates and search-index cleanup.
 
 ### Changed
 
@@ -212,9 +227,11 @@ Major versions are intentionally rare.
 ### Added
 
 - **Configurable API rate** — Added configurable API rate limiting (global per-client, 429 + Retry-After).
+- **Rate-limits per client API** — Added API to update rate limits per client id.
 - **Short video previews** — Added short video previews.
 - **Support for streaming** — Added support for streaming TS video content through the video data pipeline (HLS playlist + TS segment proxy, adapter-based storage).
 - **Selective project-based user** — Added selective project-based user import (guided two-step flow with per-step search and validation).
+- **Error messaging for failed video processing** — Added error messaging for failed video processing jobs to surface dataset error state.
 
 ### Changed
 
@@ -222,6 +239,9 @@ Major versions are intentionally rare.
 - **Annotation pagination and similar-file** — Improved annotation pagination and similar-file search pagination (consistent footers, improved control).
 - **Handling of missing** — Improved handling of missing video end-frame values with FPS/start-end fallbacks and manual annotation consistency.
 - **Visibility of bounding-box** — Improved visibility of bounding-box corners and annotation-setting previews.
+- **Project creation polling for dataset readiness** — Added validations and polling for project creation to wait till attached datasets are ready.
+- **Bulk sync and selected file indexing** — Added bulk project-file sync and support for indexing selected file ids of a project.
+- **ES multimodal indexing status** — Handled status update for ES multimodal indexing with transactional state.
 
 ### Fixed
 
@@ -238,6 +258,9 @@ Major versions are intentionally rare.
 - **Superset dashboarding support** — Added Superset dashboarding support (guest-token viewer).
 - **SAM3 exemplar-prompt support** — Added SAM3 exemplar-prompt support (dedicated prediction + warmup endpoints, runtime mode selection).
 - **Video pre-annotation processing** — Added video pre-annotation processing improvements (COCO-for-video, unified media pre-annotations with Pub/Sub).
+- **Dataset sync for S3/GCS** — Added dataset sync endpoint to trigger synchronization across S3 and GCS.
+- **File links flags in search results** — Added flags to return file links along with search results.
+- **Client ID request support** — Added client ID request support for tracking access requests.
 
 ### Changed
 
@@ -260,11 +283,14 @@ Major versions are intentionally rare.
 - **Keyboard shortcuts for changing** — Added keyboard shortcuts for changing annotation labels (L for label, N for complete polygon).
 - **Polyline occlusion handling** — Added polyline occlusion handling with right-click interactions (gray dashed styling, persistence).
 - **Dedicated gRPC services** — Added dedicated gRPC services for file tagging and exports (with context propagation, background tasks, centralized error handling).
+- **Tags mapping to ES** — Added tags mapping to ElasticSearch for project-file search filtering.
+- **Pub/Sub observability** — Added observability for pub/sub with correlation IDs.
 
 ### Changed
 
 - **Bulk inference handling** — Improved bulk inference handling for pre-label and review-ready predictions (cloud-bucket support, dual storage paths).
 - **Polygon editing and annotation** — Improved polygon editing and annotation workflows (including eraser transparency to 100% for target polygon).
+- **gRPC client logging** — Added logging for gRPC clients with request context propagation.
 
 ### Security
 
@@ -290,6 +316,7 @@ Major versions are intentionally rare.
 
 - **UUID compulsory enforcement** — Fixed UUID compulsory enforcement in requests and made error handling more robust.
 - **In-progress dataset selection** — Fixed in-progress dataset selection handling.
+- **Validation and cleanup for datasets** — Added validation, cleanup, generic error handling and pagination improvements for datasets.
 
 ### Security
 
@@ -307,6 +334,7 @@ Major versions are intentionally rare.
 - **Richer SAM2 logging** — Added richer SAM2 logging and annotation history tracking for image and video workflows (GCS structure, session/history).
 - **Ability to see similar** — Added ability to see similar files already annotated on the labeling screen.
 - **Video dataset upload** — Added video dataset upload improvements with quality checks and new status chips.
+- **Video dataset permission handling** — Added permission handling for video-based datasets.
 
 ### Changed
 
@@ -315,6 +343,8 @@ Major versions are intentionally rare.
 - **File-list filtering pagination** — Improved file-list filtering, pagination, status indicators, and annotation navigation (pagination fixes, status chip normalization).
 - **Image adjustment controls** — Improved image adjustment controls (brightness/contrast) and similar-file search behavior.
 - **Pagination and annotation-count** — Improved pagination and annotation-count filtering (including annotation count filters and file-listing page fixes).
+- **GCS file name preservation** — Refactored GCSConnectorService to preserve file names via `os.path.basename` for local uploads.
+- **ES indexing via Cloud Run** — Moved ES indexing from gRPC call to Cloud Run job.
 
 ### Fixed
 
@@ -325,6 +355,9 @@ Major versions are intentionally rare.
 - **Dialog-box tests and stale** — Fixed dialog-box tests and stale SAM temp-state when deselecting questions.
 - **Bounding-box creation when** — Fixed bounding-box creation when release point is outside the Konva stage.
 - **Video annotation delta** — Fixed video annotation delta handling edge cases and in-progress dataset selection.
+- **GCP auth retries** — Added retries to authenticate with GCP.
+- **Duplicate projects listed** — Fix duplicate projects getting listed in the project listing API.
+- **ES jobs and multimodal jobs** — Added ES jobs and size-based multimodal job handling.
 
 ---
 
@@ -354,6 +387,8 @@ Major versions are intentionally rare.
 - **Export notification trigger** — Fixed export notification trigger inconsistency.
 - **Attribute filtering for pubsub** — Fixed attribute filtering for pubsub aggregate job and export pre-processor for erased regions.
 - **Latency for answer submission** — Fixed latency for answer submission by not waiting for pubsub (10–15s → 2–5s).
+- **Email normalization to lowercase** — Normalize email IDs to lowercase in user registration and update endpoints.
+- **Image orientations handling** — Handle image orientations while storing image dimensions (height, width).
 
 ---
 
@@ -365,6 +400,8 @@ Major versions are intentionally rare.
 - **Direct accept/reject actions** — Added direct accept/reject actions for review-stage files from grid view.
 - **File status information** — Added file status information to exports.
 - **Support for exporting** — Added support for exporting files across workflow statuses.
+- **Store activity data on ES** — Added code to store activity data on ElasticSearch server.
+- **Auth0 gRPC for user details** — Added auth0 gRPC to get user details.
 
 ### Changed
 
@@ -372,6 +409,9 @@ Major versions are intentionally rare.
 - **Validation behavior for submissions** — Improved validation behavior for submissions without annotations.
 - **The project dataset** — Improved the project, dataset, guideline, and export interfaces.
 - **Handling of failed file** — Improved handling of failed file references and reference errors in export controllers.
+- **Prevent deletion of attached datasets** — Updated code to prevent deletion of datasets which are attached to a project.
+- **Annotated and reviewed query** — Updated query to get annotated and reviewed files and added migration script.
+- **ES server default timeout** — Updated default timeout of ES server.
 
 ---
 
@@ -384,6 +424,8 @@ Major versions are intentionally rare.
 - **Improved error reporting** — Added improved error reporting for cloud-storage operations.
 - **Validation for invalid** — Added validation for invalid polygon and bounding-box annotations (ignore invalid annotations).
 - **Richer activity information** — Added richer activity information for annotation and review workflows.
+- **Retry mechanism for importing users** — Added retry mechanism while importing users.
+- **Connectors v2 for dataset creation** — Added Connectors v2 for new dataset creation process.
 
 ### Changed
 
@@ -392,6 +434,7 @@ Major versions are intentionally rare.
 - **Rejected-file handling reassigned** — Improved rejected-file handling — reassigned to last annotator/reviewer who updated it and preserved annotator/reviewer email.
 - **Separated development and production** — Separated development and production export workflows and made workflow builds distinct per environment.
 - **Annotation-save latency for image** — Improved annotation-save latency for image workflows via cache service.
+- **Project creation polling after dataset** — Project creation will only start after dataset has been successfully created, else will poll.
 
 ### Fixed
 
@@ -421,6 +464,8 @@ Major versions are intentionally rare.
 
 - **Label-based file filtering** — Added label-based file filtering.
 - **Export email notifications** — Added export email notifications and ordering support.
+- **Atomic project create/delete operations** — Added atomic project create and delete operations.
+- **New create project flow** — Added new create project flow.
 
 ### Changed
 
@@ -439,6 +484,8 @@ Major versions are intentionally rare.
 - **Validation hooks for missing** — Added validation hooks for missing or invalid annotations.
 - **Support for validating** — Added support for validating and ignoring invalid polygon and bounding-box annotations.
 - **Richer activity information** — Added richer activity information for annotation and review workflows.
+- **S3 lastModified timestamp** — Extract S3 object last modified timestamp and add in pubsub packet as created_at.
+- **Gdrive connector as Cloud Run job** — Added Gdrive connector service as a Cloud Run job.
 
 ### Changed
 
@@ -446,6 +493,7 @@ Major versions are intentionally rare.
 - **Rejection handling by preserving** — Improved rejection handling by preserving annotator/reviewer information and reassigning rejected files appropriately.
 - **Validation messages and attribute** — Improved validation messages and attribute handling.
 - **Time-taken tracking in Firestore** — Improved time-taken tracking in Firestore and error logging.
+- **Datasets status files_count** — Updated datasets status API to return `files_count`.
 
 ### Security
 
@@ -461,6 +509,7 @@ Major versions are intentionally rare.
 - **Support for storing** — Added support for storing and retrieving image and auto-label annotations through the updated annotation flow.
 - **Annotation storage in managed** — Added annotation storage in managed object storage with compatibility for existing annotation data.
 - **Annotator identity information** — Added annotator identity information to activity records.
+- **Concurrent uploadToLocal** — Updated `uploadToLocal` method to upload files concurrently.
 
 ### Changed
 
@@ -476,6 +525,8 @@ Major versions are intentionally rare.
 - **Support for SAM inputs** — Added support for SAM inputs encoded as base64 images.
 - **File-detail and frame-aware** — Added file-detail and frame-aware data retrieval APIs.
 - **Handling of video frame** — Improved handling of video frame answers when annotation IDs are unavailable.
+- **Altair integration** — Added Altair integration with updated flow as per Labellerr pricing plan.
+- **Delete Users API** — Added Delete Users API and Altair License integration.
 
 ---
 
