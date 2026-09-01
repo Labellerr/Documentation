@@ -50,3 +50,8 @@ ehthumbs.db
 Thumbs.db
 
 .history/
+.venv/
+.env
+.env.example
+AGENTS.md
+scripts/monthly-changelog/dry-run.sh

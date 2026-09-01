@@ -1,0 +1,13 @@
+{
+  "exclude": [
+    "linter",
+    "format",
+    "ci",
+    "sonar",
+    "sonarqube",
+    "cypress",
+    "dependabot",
+    "gcloud track",
+    "claude duplicate"
+  ]
+}

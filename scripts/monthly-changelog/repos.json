@@ -1,0 +1,18 @@
+{
+  "repositories": [
+    "tensormatics/Actions",
+    "tensormatics/APIGateway",
+    "tensormatics/AuthCore",
+    "tensormatics/Connectors",
+    "tensormatics/DataCore",
+    "tensormatics/Datasets",
+    "tensormatics/ElasticSearch",
+    "tensormatics/ExportsCore",
+    "tensormatics/InferenceCore",
+    "tensormatics/Projects",
+    "tensormatics/UsersCore",
+    "tensormatics/WorkspaceCore",
+    "tensormatics/frame-processor",
+    "tensormatics/labellingTool"
+  ]
+}
