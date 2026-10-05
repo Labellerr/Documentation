@@ -1031,23 +1031,19 @@ def main() -> int:
         except Exception:
             pass
 
-        branch_exists = False
         # check local
         r = run_git("branch", "--list", branch_name, capture=True, check=False)
-        if branch_name in (r.stdout or ""):
-            branch_exists = True
-        else:
-            # check remote
-            r2 = run_git("ls-remote", "--heads", "origin", branch_name, capture=True, check=False)
-            if branch_name in (r2.stdout or ""):
-                branch_exists = True
+        local_branch_exists = branch_name in (r.stdout or "")
+        # check remote
+        r2 = run_git("ls-remote", "--heads", "origin", branch_name, capture=True, check=False)
+        remote_branch_exists = branch_name in (r2.stdout or "")
 
-        if branch_exists:
-            log(f"Branch {branch_name} exists — updating")
-            # checkout existing branch
-            # try to checkout -B
+        if remote_branch_exists:
+            log(f"Branch {branch_name} exists remotely — basing update on origin/{branch_name}")
+            run_git("checkout", "-B", branch_name, f"origin/{branch_name}")
+        elif local_branch_exists:
+            log(f"Branch {branch_name} exists locally — updating")
             run_git("checkout", "-B", branch_name)
-            # if remote exists, try to pull? Not needed, we will overwrite
         else:
             log(f"Creating branch {branch_name}")
             run_git("checkout", "-b", branch_name)
