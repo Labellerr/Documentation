@@ -999,10 +999,6 @@ def main() -> int:
         log(f"Existing entry for {target_month} found just before write — aborting to avoid duplicate.")
         return 0
 
-    # Write new changelog
-    changelog_path.write_text(new_text, encoding="utf-8")
-    log(f"Wrote {changelog_path}")
-
     # Git operations — only if GITHUB_TOKEN available and we are in git repo
     github_token = os.environ.get("GITHUB_TOKEN", "").strip()
     github_repo = os.environ.get("GITHUB_REPOSITORY", "Labellerr/Documentation")
@@ -1047,6 +1043,14 @@ def main() -> int:
         else:
             log(f"Creating branch {branch_name}")
             run_git("checkout", "-b", branch_name)
+
+        if has_existing_entry(changelog_path.read_text(encoding="utf-8"), release_date):
+            log(f"Existing entry for {target_month} found on branch {branch_name} — skipping to avoid duplicate.")
+            return 0
+
+        # Write new changelog after branch checkout so checkout cannot fail due to local modifications
+        changelog_path.write_text(new_text, encoding="utf-8")
+        log(f"Wrote {changelog_path}")
 
         # Add and commit
         run_git("add", str(changelog_path))
