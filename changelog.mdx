@@ -25,6 +25,21 @@ Major versions are intentionally rare.
 
 ---
 
+## [2.1.0] - 2026-09-30
+
+### Added
+
+- **Faster Pre‑Annotation Indexing** — Pre‑annotation uploads are now queued for indexing, so users see their data indexed quickly without upload interruptions, improving workflow speed and reliability.
+- **On‑Demand Project Reindexing** — Teams can trigger a reindex for any project via a new API, instantly refreshing search results and ensuring data stays up‑to‑date without manual database work.
+- **Instance Metrics Analytics Screen** — Users can view detailed instance usage metrics on a new analytics screen, helping them monitor performance and optimize resource allocation.
+
+### Fixed
+
+- **Accurate Video Processing Status** — Video dataset cards now correctly display processing, success, incomplete, or failure states, preventing missing information and allowing annotators to act on the right datasets.
+- **Reliable Dataset Completion & Lower Memory Use** — Datasets now finish only after all videos are processed and segment uploads stream from disk, preventing premature completion and out‑of‑memory errors, which improves data quality and system stability.
+- **Reduced Elasticsearch Retry Load** — Retry logic has been tightened to stop excess retries, lowering load on the search service and keeping the platform responsive during indexing.
+
+---
 ## [2.0.2] - 2026-08-27
 
 ### Fixed
