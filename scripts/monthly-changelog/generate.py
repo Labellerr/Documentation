@@ -1085,8 +1085,11 @@ def main() -> int:
             log("No GITHUB_TOKEN, skipping PR creation")
             return 0
 
+        # Use CHANGELOG_GH_PAT for PR API calls because some repos/orgs
+        # disallow PR creation with the default GITHUB_TOKEN.
+        pr_api_token = gh_pat or github_token
         headers = {
-            "Authorization": f"Bearer {github_token}",
+            "Authorization": f"token {pr_api_token}",
             "Accept": "application/vnd.github+json",
             "X-GitHub-Api-Version": "2022-11-28",
         }
