@@ -16,6 +16,10 @@ The SDK provides functionality to export project data locally. This feature allo
     *   `None`, `'assigned'`, `'review'`, `'r_assigned'`, `'client_review'`, `'cr_assigned'`, `'accepted'`, `'rejected'`, `'client_rejected'`, `'skipped'`, `'r_skipped'`, `'cr_skipped'`, `'critical'`, `'r_critical'`, `'cr_critical'`
 *   **export_format**: Output format for the exported data
     *   `'json'`, `'coco_json'`, `'csv'`, `'png'`
+*   **export_layout** *(optional)*: How the export is structured. See [Export Layout and Delivery Format](#export-layout-and-delivery-format)
+    *   `'monolithic'`, `'per_file'`
+*   **delivery_format** *(optional)*: How the export is delivered. See [Export Layout and Delivery Format](#export-layout-and-delivery-format)
+    *   `'data_file'`, `'manifest'`
 
 <Accordion title="What do these status values mean?" icon="circle-info">
   
@@ -82,6 +86,148 @@ except LabellerrError as e:
 ```
 
 **Note**: The export process creates a downloadable file link of your project's annotations based on the specified status filters. This is useful for backup purposes or when you need to process the annotations offline.
+
+---
+
+### Export Layout and Delivery Format
+
+<Note>
+  **New Feature**: Choose whether your export is a single combined file or one file per asset, and how it is delivered.
+</Note>
+
+Two optional parameters on `CreateExportParams` control the shape of the export:
+
+*   **`export_layout`**: How annotations are grouped
+    *   `'monolithic'` - All files' annotations in a single export file
+    *   `'per_file'` - A separate export file for each asset (image or video)
+*   **`delivery_format`**: How the export is delivered to you
+    *   `'data_file'` - A single file (`.json` / `.csv`). Used with `monolithic`
+    *   `'manifest'` - A `manifest.json` listing every per-file export with its download link. Used with `per_file`
+
+You can also import the enums instead of passing strings:
+
+```python
+from labellerr.core.schemas import ExportLayout, DeliveryFormat
+
+ExportLayout.MONOLITHIC   # 'monolithic'
+ExportLayout.PER_FILE     # 'per_file'
+DeliveryFormat.DATA_FILE  # 'data_file'
+DeliveryFormat.MANIFEST   # 'manifest'
+```
+
+#### Default Behavior
+
+If you don't pass `export_layout` and `delivery_format`, the defaults depend on the project's data type:
+
+| Project Type | Default `export_layout` | Default `delivery_format` |
+|--------------|-------------------------|---------------------------|
+| Image | `monolithic` | `data_file` |
+| Video | `per_file` | `manifest` |
+
+Existing code that does not pass these parameters keeps working exactly as before.
+
+#### Valid Combinations
+
+| `export_layout` | Allowed `delivery_format` |
+|-----------------|---------------------------|
+| `monolithic` | `data_file` |
+| `per_file` | `manifest` |
+
+#### Format Rules
+
+Some export formats only support specific project types or layouts:
+
+| Export Format | Project Type | Required Layout | Required Delivery Format |
+|---------------|--------------|-----------------|--------------------------|
+| `json` | Image, Video, Audio, Text, Document | Any | Any valid for the layout |
+| `csv` | Image (classification projects only) | Any | Any valid for the layout |
+| `coco_json` | Image | Any | Any valid for the layout |
+| `png` | Image | `per_file` | `manifest` |
+
+<Warning>
+  `csv` exports are only supported for **image classification** projects. Using `csv` for video projects, or for image projects with other annotation types (bounding box, polygon, etc.), is not supported.
+</Warning>
+
+#### Example Usage - Single File Export (Image):
+
+```python Monolithic Export Example lines icon="file"
+from labellerr.client import LabellerrClient
+from labellerr.core.projects import LabellerrProject
+from labellerr.core.schemas import CreateExportParams
+from labellerr.core.exceptions import LabellerrError
+
+client = LabellerrClient(
+    api_key='your_api_key',
+    api_secret='your_api_secret',
+    client_id='your_client_id'
+)
+
+project = LabellerrProject(client=client, project_id='your_image_project_id')
+
+try:
+    export = project.create_export(
+        CreateExportParams(
+            export_name="COCO Single File Export",
+            export_description="All annotations in one COCO JSON file",
+            export_format="coco_json",
+            statuses=['review', 'accepted'],
+            export_layout="monolithic",
+            delivery_format="data_file"
+        )
+    )
+    print(f"Export created. Export ID: {export.report_id}")
+    export.status()  # Polls until export is complete
+
+except LabellerrError as e:
+    print(f"Export creation failed: {str(e)}")
+```
+
+#### Example Usage - Video Export with Manifest:
+
+```python Video Manifest Export Example lines icon="film"
+from labellerr.core.schemas import CreateExportParams
+
+video_project = LabellerrProject(client=client, project_id='your_video_project_id')
+
+# per_file + manifest is the default for video, so both parameters can be omitted
+export = video_project.create_export(
+    CreateExportParams(
+        export_name="Video Per-File Export",
+        export_description="One JSON file per video with a manifest",
+        export_format="json",
+        statuses=['accepted'],
+        export_layout="per_file",
+        delivery_format="manifest"
+    )
+)
+print(f"Export created. Export ID: {export.report_id}")
+export.status()
+```
+
+#### Validation Errors
+
+Invalid combinations are rejected when the export is created, so no export is started:
+
+- Unknown values (for example `export_layout="per_page"`) raise a `pydantic.ValidationError` in the SDK before any request is sent.
+- Combinations that break the rules above (for example `png` with `monolithic`, or `monolithic` with `manifest`) raise a `LabellerrError` from the API with a message describing the rule.
+
+```python
+from labellerr.core.exceptions import LabellerrError
+
+try:
+    project.create_export(
+        CreateExportParams(
+            export_name="Invalid Export",
+            export_description="png requires per_file",
+            export_format="png",
+            statuses=['accepted'],
+            export_layout="monolithic",
+            delivery_format="data_file"
+        )
+    )
+except LabellerrError as e:
+    print(e)  # Export format 'png' requires layout 'per_file'. Got 'monolithic' instead.
+```
 
 ---
 
@@ -435,6 +581,10 @@ except LabellerrError as e:
   <Card title="Local Export" icon="download" href="#local-export">
     Export annotations to downloadable files
   </Card>
+
+  <Card title="Layout & Delivery Format" icon="layer-group" href="#export-layout-and-delivery-format">
+    Export as a single file or as per-file exports with a manifest
+  </Card>
   
   <Card title="S3 Export" icon="cloud" href="#s3-export">
     Export directly to AWS S3 buckets
@@ -455,12 +605,19 @@ except LabellerrError as e:
 
 ### Export Formats
 
-| Format | Description | Use Case |
-|--------|-------------|----------|
-| `json` | Standard JSON format | General purpose, easy to parse |
-| `coco_json` | COCO dataset format | Computer vision, object detection |
-| `csv` | Comma-separated values | Spreadsheet analysis, reports |
-| `png` | Image format | Visual verification, masks |
+| Format | Description | Use Case | Project Type |
+|--------|-------------|----------|--------------|
+| `json` | Standard JSON format | General purpose, easy to parse | Image, Video |
+| `coco_json` | COCO dataset format | Computer vision, object detection | Image |
+| `csv` | Comma-separated values | Spreadsheet analysis, reports | Image (classification only) |
+| `png` | Image format | Visual verification, masks | Image |
+
+### Export Layout & Delivery Format
+
+| `export_layout` | `delivery_format` | Output | Default For |
+|-----------------|-------------------|--------|-------------|
+| `monolithic` | `data_file` | Single `.json` / `.csv` file | Image projects |
+| `per_file` | `manifest` | `manifest.json` with a download link per file | Video projects |
 
 ### Export Statuses
 
