@@ -25,6 +25,38 @@ Major versions are intentionally rare.
 
 ---
 
+## [2.2.0] - 2026-10-31
+
+### Added
+
+- **Selective Batch File Assignment** — Batch file searches can now return only the fields you need and fetch smaller pages, making assignments quicker and reducing data transfer.
+- **Automatic Indexing Recovery** — The system now automatically reconciles missed or dead‑lettered files, tracks indexing progress, and provides detailed failure info, ensuring searchable data stays up‑to‑date.
+- **Track Annotation Update Times** — Each annotation now records when it was last updated, improving auditability and helping sync changes accurately.
+- **Direct Signed URL Video Segments** — Video segments are fetched directly from storage via signed URLs, speeding playback and lowering server load while preserving fallback safety.
+- **Secure Signed Video Playlists** — Annotators can stream video playlists with optional signed URLs, improving content protection and avoiding cross‑origin issues.
+- **Enhanced Bulk Attribute Editing** — Annotators can edit attributes in bulk with clear change tracking and avoid duplicate predictions, speeding up labeling and improving data quality.
+- **Extended SAM Video Length** — SAM2 can now process videos up to 5,000 frames, letting annotators work with longer footage without splitting files.
+- **Project Stats Refresh API** — Teams can trigger and schedule project statistics updates, keeping dashboards current without manual effort.
+- **Show Sync Performer on Batch** — Users can see who performed the latest sync batch, improving traceability and collaboration.
+- **Enhanced Projects Workspace with Health Metrics** — Teams can browse, sort, and filter projects with health scores, progress bars, and quick actions, speeding up management and boosting data quality.
+
+### Changed
+
+- **Faster Export File Retrieval** — Export file searches now return only needed fields and use smaller pages, speeding up export preparation and reducing data load.
+- **Improved Annotation Change Detection** — Search now uses annotation timestamps to detect updates, delivering more accurate results and reducing missed changes.
+
+### Fixed
+
+- **Accurate Search After File Assignment** — File status changes from the view page are now instantly reflected in search results, preventing stale data and saving re‑work.
+- **Reliable Video Preview Uploads** — Video preview segments now upload to S3 without errors, ensuring previews are available for annotators.
+- **Reliable SAM2 Job Status** — SAM2 job status requests now reach the correct endpoint, ensuring accurate progress tracking for video labeling.
+- **Unstuck Project Reconciliation** — Reconciliation jobs no longer hang on deleted projects, keeping index data current and preventing processing delays.
+- **Enforced File Assignment Limits** — Annotators are now capped at two active files, preventing overload and ensuring focused, high‑quality labeling.
+- **Accurate Dataset File Count** — Dataset file totals stay correct after connector syncs, ensuring reliable reporting and planning.
+- **More Reliable Frame Processing Deployments** — Deployments now use correct dev and prod configurations and update reliably, reducing processing downtime.
+- **Accurate Permission Loading After Login** — After login, users are returned to their original page and permissions load only after the workspace is identified, preventing access errors and streamlining work.
+
+---
 ## [2.1.0] - 2026-09-30
 
 ### Added
