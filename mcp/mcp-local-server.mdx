@@ -1,0 +1,250 @@
+---
+title: "Local MCP Server"
+sidebarTitle: "Local Server"
+description: "Run the Labellerr MCP server on your local machine with Claude Desktop, Cursor, or Claude Code using your API credentials."
+icon: terminal
+---
+
+## Introduction
+
+The **Labellerr Local MCP Server** runs locally on your workstation or server, communicating with AI assistants like **Claude Desktop**, **Cursor**, or **Claude Code** via standard input/output (`stdio`). It authenticates using your Labellerr API credentials and provides **23 tools**, including direct support for uploading local files and directories from your hard drive.
+
+<Tip>
+  **Which one should you use?**
+  For most users and teams, the **[Hosted Connector](/mcp/mcp-server)** is recommended: zero local installation, OAuth sign-in in the browser, and seamless support in Claude.ai (web).
+  Choose the **Local Server** if you need to upload files directly from your local filesystem or use **Cursor**.
+</Tip>
+
+---
+
+## Quick Start
+
+### Prerequisites
+
+- **Python 3.10** or higher
+- **Git** installed on your system
+- **Labellerr API credentials** (`API Key`, `API Secret`, `Client ID`) — [Get credentials](https://docs.labellerr.com/sdk/getting-started#obtaining-api-credentials)
+- **Claude Desktop**, **Cursor**, or **Claude Code** installed
+
+### Installation
+
+Clone the `SDKPython` repository and install the necessary dependencies:
+
+```bash Clone & Install
+git clone https://github.com/Labellerr/SDKPython.git
+cd SDKPython
+pip install -r requirements.txt
+```
+
+---
+
+## Configuration
+
+Configure your AI assistant with the absolute path to `server.py` and your API credentials.
+
+<Tabs>
+  <Tab title="Cursor">
+    Add the configuration to `~/.cursor/mcp.json`:
+
+```json Cursor Configuration
+{
+  "mcpServers": {
+    "labellerr": {
+      "command": "python3",
+      "args": ["/FULL/PATH/TO/SDKPython/labellerr/mcp_server/server.py"],
+      "env": {
+        "LABELLERR_API_KEY": "your_api_key",
+        "LABELLERR_API_SECRET": "your_api_secret",
+        "LABELLERR_CLIENT_ID": "your_client_id"
+      }
+    }
+  }
+}
+```
+  </Tab>
+
+  <Tab title="Claude Desktop">
+    Add to your Claude Desktop configuration file:
+    - **macOS**: `~/Library/Application Support/Claude/claude_desktop_config.json`
+    - **Windows**: `%APPDATA%\Claude\claude_desktop_config.json`
+
+```json Claude Desktop Configuration
+{
+  "mcpServers": {
+    "labellerr": {
+      "command": "python3",
+      "args": ["/FULL/PATH/TO/SDKPython/labellerr/mcp_server/server.py"],
+      "env": {
+        "LABELLERR_API_KEY": "your_api_key",
+        "LABELLERR_API_SECRET": "your_api_secret",
+        "LABELLERR_CLIENT_ID": "your_client_id"
+      }
+    }
+  }
+}
+```
+  </Tab>
+
+  <Tab title="Claude Code">
+    Register the local server directly in Claude Code:
+
+```bash Claude Code Configuration
+claude mcp add --scope user labellerr \
+  -e LABELLERR_API_KEY=your_api_key \
+  -e LABELLERR_API_SECRET=your_api_secret \
+  -e LABELLERR_CLIENT_ID=your_client_id \
+  -- python3 /FULL/PATH/TO/SDKPython/labellerr/mcp_server/server.py
+```
+  </Tab>
+</Tabs>
+
+<Warning>
+  **Important**: Always provide the **absolute path** to `server.py`. Completely restart your AI assistant application after updating configuration files. Keep configuration files secure: your API secret grants full access to your Labellerr workspace.
+</Warning>
+
+---
+
+## Available Tools
+
+The local server provides **23 comprehensive tools** organized into 5 categories:
+
+<AccordionGroup>
+  <Accordion title="Project Management (4 tools)" icon="folder-tree">
+    - `project_create`: Create a new annotation project (requires `dataset_id` and `template_id`)
+    - `project_list`: List all projects in your workspace
+    - `project_get`: Retrieve detailed information about a specific project
+    - `project_update_rotation`: Update annotation, review, and client-review rotation counts
+  </Accordion>
+
+  <Accordion title="Dataset Management (5 tools)" icon="database">
+    - `dataset_create`: Create dataset with automatic file upload and status polling
+    - `dataset_upload_files`: Upload individual files to create a dataset
+    - `dataset_upload_folder`: Upload an entire local directory of files
+    - `dataset_list`: List all datasets with filtering options
+    - `dataset_get`: Get detailed information and file counts for a dataset
+  </Accordion>
+
+  <Accordion title="Annotation Operations (6 tools)" icon="pen-to-square">
+    - `template_create`: Create annotation template with questions and guidelines
+    - `annotation_export`: Export project annotations in JSON, COCO, CSV, or PNG
+    - `annotation_check_export_status`: Check status of export jobs
+    - `annotation_download_export`: Get download URL for completed exports
+    - `annotation_upload_preannotations`: Upload pre-annotations (synchronous)
+    - `annotation_upload_preannotations_async`: Upload pre-annotations (asynchronous)
+  </Accordion>
+
+  <Accordion title="Monitoring Tools (4 tools)" icon="chart-line">
+    - `monitor_system_health`: Check MCP server health and connection status
+    - `monitor_active_operations`: List all active operations and their status
+    - `monitor_project_progress`: Get progress statistics for a project
+    - `monitor_job_status`: Monitor background job status
+  </Accordion>
+
+  <Accordion title="Query Tools (4 tools)" icon="magnifying-glass">
+    - `query_project_statistics`: Get detailed statistics for a project
+    - `query_dataset_info`: Get detailed information about a dataset
+    - `query_operation_history`: Query history of operations performed
+    - `query_search_projects`: Search for projects by name or type
+  </Accordion>
+</AccordionGroup>
+
+---
+
+## Local Server vs. Hosted Connector Tools
+
+Both the Hosted Connector and Local Server provide **23 comprehensive tools** tailored to their operating environments:
+
+| Tool Category | Local Server Tools | Hosted Connector Equivalent | Capability & Scope |
+| :--- | :--- | :--- | :--- |
+| **System** | `monitor_system_health` | `health` | Connection and authentication status verification |
+| **Project Creation** | `project_create` | `project_create`, `project_setup` | Create projects (atomic one-step or from existing templates) |
+| **Project Search** | `query_search_projects` | `search_projects` | Search workspace projects by name or type |
+| **Project Inspection** | `project_get`, `project_list` | `project_get`, `project_list` | Inspect and list projects |
+| **Passes & Rotation** | `project_update_rotation` | `project_update_rotation` | Configure annotation and review passes |
+| **Dataset Creation** | `dataset_create`, `dataset_upload_folder` | `dataset_create` | Local folder upload (local) vs S3/GCS/Drive ingestion (hosted) |
+| **Dataset Inspection** | `dataset_get`, `query_dataset_info`, `dataset_list` | `dataset_get`, `dataset_list` | Query dataset metadata and file counts |
+| **Cloud Storage** | *via script* | `connect_cloud_source`, `list_connections` | Guided secure connection to S3/GCS |
+| **Templates** | `template_create` | `template_create`, `list_templates` | Build and inspect question schemas |
+| **Pre-annotations** | `annotation_upload_preannotations`, `annotation_upload_preannotations_async` | `upload_preannotations`, `upload_preannotations_async` | COCO pre-annotations with dry-run verification |
+| **Exporting** | `annotation_export`, `annotation_check_export_status`, `annotation_download_export` | `export_annotations`, `check_export_status`, `download_export` | Trigger, monitor, and download annotation exports |
+| **Monitoring & Analytics** | `monitor_active_operations`, `monitor_project_progress`, `query_project_statistics`, `monitor_job_status` | `monitor_active_operations`, `monitor_project_progress`, `query_project_statistics`, `get_job_status` | Real-time progress, live operation auditing, and task tracking |
+
+---
+
+## Usage Examples
+
+### Create a Complete Project from Local Files
+
+```text Prompt
+Create an image annotation project called "Product Detection" with 
+bounding boxes for "Product" and "Defect". Upload images from 
+/Users/me/products and use my email user@example.com
+```
+
+**Automated execution:**
+1. Uploads all valid images from `/Users/me/products`
+2. Creates and indexes a new dataset
+3. Generates the annotation template with bounding box questions
+4. Creates and links the project ready for labeling
+
+### Monitor Project Progress
+
+```text Prompt
+What's the progress on all my annotation projects?
+```
+
+### Export Annotations
+
+```text Prompt
+Export all accepted annotations from project abc123 in COCO JSON format.
+```
+
+### Upload Additional Data
+
+```text Prompt
+Upload images from /Users/me/more-data to dataset xyz789.
+```
+
+---
+
+## Troubleshooting
+
+<AccordionGroup>
+  <Accordion title="AI assistant doesn't show tools" icon="eye-slash">
+    - Restart your AI assistant completely (quit and reopen application).
+    - Ensure the path to `server.py` is **absolute** (starts with `/` on macOS/Linux or `C:\` on Windows).
+    - Manually test the server script: `python3 /path/to/server.py`.
+    - Check JSON configuration syntax (commas, unescaped slashes, quotes).
+  </Accordion>
+
+  <Accordion title="Authentication errors" icon="triangle-exclamation">
+    - Verify your `LABELLERR_API_KEY`, `LABELLERR_API_SECRET`, and `LABELLERR_CLIENT_ID` are valid in your Labellerr workspace settings.
+    - Confirm all three environment variables are present in the config file.
+    - Completely restart the assistant after editing credentials.
+  </Accordion>
+
+  <Accordion title="File upload issues" icon="file-slash">
+    - Ensure file paths passed to the assistant are absolute, not relative.
+    - Verify read permissions on the directory.
+    - Confirm file formats match the specified data type (JPG, PNG, MP4, MP3, PDF, TXT).
+  </Accordion>
+</AccordionGroup>
+
+---
+
+## Additional Resources
+
+<CardGroup cols={2}>
+  <Card title="GitHub Repository" icon="github" href="https://github.com/Labellerr/SDKPython">
+    Source code and installation files for the Python SDK and MCP server.
+  </Card>
+  <Card title="Hosted Connector" icon="cloud" href="/mcp/mcp-server">
+    Switch to the zero-install hosted connector for Claude.
+  </Card>
+  <Card title="SDK Documentation" icon="code" href="/sdk/getting-started">
+    Programmatic Python SDK documentation for custom automation scripts.
+  </Card>
+  <Card title="MCP Tools Reference" icon="wrench" href="/mcp/mcp-tools-reference">
+    Reference documentation for hosted MCP tools.
+  </Card>
+</CardGroup>

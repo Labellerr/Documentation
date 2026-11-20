@@ -197,11 +197,21 @@
               "sdk/magic-wand-confidence-filtering",
               "sdk/changelog"
             ]
-          },
+          }
+        ]
+      },
+      {
+        "tab": "MCP Server",
+        "groups": [
           {
             "group": "MCP Server",
             "pages": [
-              "sdk/mcp-server"
+              "mcp/mcp-server",
+              "mcp/mcp-tools-reference",
+              "mcp/mcp-connect-s3-gcs",
+              "mcp/mcp-workflows",
+              "mcp/mcp-local-server",
+              "mcp/mcp-changelog"
             ]
           }
         ]
@@ -306,6 +316,10 @@
     {
       "source": "/labellerr/documentation-labellerr/actions/actions/client-review-using-grid-view",
       "destination": "/actions/client-review-grid"
+    },
+    {
+      "source": "/sdk/mcp-server",
+      "destination": "/mcp/mcp-server"
     }
   ]
 }

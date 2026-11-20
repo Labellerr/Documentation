@@ -1,0 +1,436 @@
+---
+title: "MCP Tools Reference"
+sidebarTitle: "Tools Reference"
+description: "Detailed input, output, limit, and job-tracking specifications for all 23 tools provided by the Labellerr MCP Server."
+icon: wrench
+---
+
+## Introduction
+
+The **Labellerr MCP Server** provides **23 specialized tools** categorized into 6 functional groups. Claude automatically selects and executes the appropriate tool based on your conversational prompt.
+
+Each tool is classified as **Read-only** or **Write**:
+- **Read-only tools**: Safely inspect and query workspace data without modifying any state.
+- **Write tools**: Create or update resources (e.g. templates, projects, datasets, exports). You can configure Claude to request explicit confirmation before write operations execute.
+
+<Info>
+  **Privacy & Security Guarantee**: Tools return only resource IDs, names, and short status updates. They **never** output API keys, passwords, cloud access secrets, or raw file contents into the chat.
+</Info>
+
+---
+
+## All Tools at a Glance
+
+| Group | Tool | Type | Status | Description |
+| :--- | :--- | :--- | :--- | :--- |
+| **System** | `health` | Read-only | <Check>Available</Check> | Check server health, version, tool count (23 tools), and active user |
+| **Projects** | `project_list` | Read-only | <Check>Available</Check> | List workspace projects with pagination |
+| | `search_projects` | Read-only | <Check>Available</Check> | Search projects by name or data type |
+| | `project_get` | Read-only | <Check>Available</Check> | Retrieve full details and status of a specific project |
+| | `project_setup` | Write | <Check>Available</Check> | Create template and project simultaneously from a label list |
+| | `project_create` | Write | <Check>Available</Check> | Create a project from an existing template and dataset |
+| | `project_update_rotation` | Write | <Check>Available</Check> | Configure annotation, review, and client-review passes |
+| **Datasets & Connections** | `dataset_list` | Read-only | <Check>Available</Check> | List datasets filtered by data type and scope |
+| | `dataset_get` | Read-only | <Check>Available</Check> | Get dataset status and file count |
+| | `list_connections` | Read-only | <Check>Available</Check> | List saved AWS S3 and Google Cloud Storage connections |
+| | `connect_cloud_source` | Read-only | <Check>Available</Check> | Get a direct, secure connection URL and setup instructions |
+| | `dataset_create` | Write | <Check>Available</Check> | Create a dataset from S3/GCS or Google Drive |
+| **Templates** | `list_templates` | Read-only | <Check>Available</Check> | List existing annotation templates and questions |
+| | `template_create` | Write | <Check>Available</Check> | Create a custom annotation template with typed questions |
+| **Annotations** | `upload_preannotations` | Write | <Check>Available</Check> | Upload COCO pre-annotations (inline, URL, or dry run) |
+| | `upload_preannotations_async` | Write | <Check>Available</Check> | Upload large pre-annotations asynchronously with background monitoring |
+| | `export_annotations` | Write | <Check>Available</Check> | Trigger asynchronous annotation export in COCO/JSON/CSV/PNG |
+| | `check_export_status` | Read-only | <Check>Available</Check> | Check completion status and download availability of exports |
+| | `download_export` | Read-only | <Check>Available</Check> | Generate a secure, short-lived download URL for an export |
+| **Jobs & Monitoring** | `get_job_status` | Read-only | <Check>Available</Check> | Universal status and error tracker for long-running jobs |
+| | `monitor_active_operations` | Read-only | <Check>Available</Check> | List all active background operations and their status |
+| | `monitor_project_progress` | Read-only | <Check>Available</Check> | Get real-time progress statistics and completion rate for a project |
+| | `query_project_statistics` | Read-only | <Check>Available</Check> | Retrieve detailed project analytics and label distributions |
+
+---
+
+## System
+
+### `health` <Badge color="gray">Read-only</Badge>
+
+Use this tool first to diagnose connection or authentication issues.
+
+- **Inputs**: None
+- **Returns**: Status (`ok`), MCP server version, `tool_count` (`23`), client ID, and currently signed-in user account.
+
+---
+
+## Projects
+
+### `project_list` <Badge color="gray">Read-only</Badge>
+
+Lists projects in the active workspace with ID, name, data type, and status (`ready`, `processing`, or `failed`).
+
+| Parameter | Type | Default | Description |
+| :--- | :--- | :--- | :--- |
+| `limit` | integer | `50` | Number of projects per page (maximum `100`). |
+| `offset` | integer | `0` | Offset count for pagination. |
+
+---
+
+### `search_projects` <Badge color="gray">Read-only</Badge>
+
+Finds projects whose name or data type contains the query string (case-insensitive).
+
+| Parameter | Type | Default | Description |
+| :--- | :--- | :--- | :--- |
+| `query` | string | *Required* | Search text to match (e.g., `vehicle` or `video`). |
+| `limit` | integer | `50` | Maximum number of results to return (up to `100`). |
+
+---
+
+### `project_get` <Badge color="gray">Read-only</Badge>
+
+Retrieves detailed configuration and current status of a specific project.
+
+| Parameter | Type | Default | Description |
+| :--- | :--- | :--- | :--- |
+| `project_id` | string | *Required* | The unique project identifier. |
+
+---
+
+### `project_setup` <Badge color="orange">Write</Badge>
+
+Creates both the annotation template and the project in a single atomic call from a plain list of labels. Used whenever you say *"Create a project for cats and dogs on this dataset"*.
+
+| Parameter | Type | Default | Description |
+| :--- | :--- | :--- | :--- |
+| `project_name` | string | *Required* | Name of the new project. |
+| `labels` | list | *Required* | List of label names (`["cat", "dog"]`), or label objects `{"name": "cat", "type": "polygon"}`. Valid label types: `BoundingBox` (default), `polygon`, `polyline`, or `dot`. |
+| `dataset_id` | string | *Required* | A dataset with status `ready` containing files. |
+| `data_type` | string | `image` | Target data type: `image`, `video`, `audio`, `document`, or `text`. |
+
+- **Returns**: `project_id` and `template_id`.
+
+<Note>
+  All precondition checks execute before any resource is created; a rejected request never leaves an orphaned template behind. For complex question types (radio, dropdown, text input, boolean), use `template_create` followed by `project_create`.
+</Note>
+
+---
+
+### `project_create` <Badge color="orange">Write</Badge>
+
+Creates a project from a pre-existing annotation template and a ready dataset.
+
+| Parameter | Type | Default | Description |
+| :--- | :--- | :--- | :--- |
+| `project_name` | string | *Required* | Name of the project. |
+| `data_type` | string | *Required* | `image`, `video`, `audio`, `document`, or `text`. |
+| `dataset_id` | string | *Required* | A dataset with `ready` status. |
+| `annotation_template_id` | string | *Required* | Template ID from `template_create` or `list_templates`. |
+| `annotation_rotation_count` | integer | `1` | Number of labeling passes per file. |
+| `review_rotation_count` | integer | `1` | Number of review passes per file. |
+| `client_review_rotation_count` | integer | `1` | Number of client-review passes per file. |
+| `autolabel` | boolean | `false` | Enable automatic labeling algorithms. |
+
+- **Returns**: The new `project_id`.
+
+---
+
+### `project_update_rotation` <Badge color="orange">Write</Badge>
+
+Adjusts the number of labeling, review, and client-review passes assigned to each file in a project.
+
+| Parameter | Type | Default | Description |
+| :--- | :--- | :--- | :--- |
+| `project_id` | string | *Required* | The unique project identifier. |
+| `annotation_rotation_count` | integer | `1` | Number of annotation passes (minimum `1`). |
+| `review_rotation_count` | integer | `1` | Number of internal review passes (minimum `1`). |
+| `client_review_rotation_count` | integer | `1` | Number of client review passes (minimum `1`). |
+
+---
+
+## Datasets & Connections
+
+### `dataset_list` <Badge color="gray">Read-only</Badge>
+
+Lists datasets filtered by data type and visibility scope.
+
+| Parameter | Type | Default | Description |
+| :--- | :--- | :--- | :--- |
+| `data_type` | string | `image` | `image`, `video`, `audio`, `document`, or `text`. |
+| `scope` | string | `client` | `client` (current workspace), `project`, or `public`. |
+| `limit` | integer | `50` | Maximum number of datasets returned. |
+| `last_dataset_id` | string | *Optional* | Cursor ID from previous page for pagination. |
+
+---
+
+### `dataset_get` <Badge color="gray">Read-only</Badge>
+
+Retrieves status (`ready`, `processing`, `failed`, or `not_found`) and total file count for a dataset.
+
+| Parameter | Type | Default | Description |
+| :--- | :--- | :--- | :--- |
+| `dataset_id` | string | *Required* | Unique dataset ID. |
+
+---
+
+### `list_connections` <Badge color="gray">Read-only</Badge>
+
+Lists saved cloud storage connections in reverse chronological order (newest first).
+
+| Parameter | Type | Default | Description |
+| :--- | :--- | :--- | :--- |
+| `connector` | string | `s3` | Connector type: `s3` or `gcs`. |
+
+- **Returns**: `connection_id`, `name`, `provider`, `connection_type`, and creation timestamp.
+
+---
+
+### `connect_cloud_source` <Badge color="gray">Read-only</Badge>
+
+Provides a secure link to Labellerr's connection screen in the web app. Credentials are typed directly into the Labellerr console and never passed through Claude.
+
+| Parameter | Type | Default | Description |
+| :--- | :--- | :--- | :--- |
+| `connector` | string | `s3` | Cloud provider: `s3` or `gcs`. |
+
+- **Returns**:
+  - `url`: Direct link to the Labellerr web app connection form.
+  - `steps`: Step-by-step setup instructions.
+  - `next`: Automated follow-up actions once you confirm the connection has been saved.
+
+---
+
+### `dataset_create` <Badge color="orange">Write</Badge>
+
+Creates a dataset by importing files from a saved S3/GCS connection or from a public Google Drive link.
+
+| Parameter | Type | Default | Description |
+| :--- | :--- | :--- | :--- |
+| `dataset_name` | string | *Required* | Name of the dataset. |
+| `data_type` | string | *Required* | `image`, `video`, `audio`, `document`, or `text`. |
+| `connection_id` | string | *Optional* | Saved connection ID from `list_connections` (for S3/GCS). |
+| `path` | string | `""` | Subfolder within bucket (e.g. `retail/shelves/`) or Google Drive URL. |
+| `dataset_description` | string | `""` | Optional human-readable description. |
+| `wait_seconds` | integer | `0` | Seconds to wait synchronously (max `120`) before returning. |
+
+- **Returns**: `dataset_id`, initial status (typically `processing`), and a `job_id` for tracking via `get_job_status`.
+
+---
+
+## Templates
+
+### `list_templates` <Badge color="gray">Read-only</Badge>
+
+Lists existing annotation templates with their configured questions and label classes.
+
+| Parameter | Type | Default | Description |
+| :--- | :--- | :--- | :--- |
+| `data_type` | string | `image` | `image`, `video`, `audio`, `document`, or `text`. |
+| `limit` | integer | `50` | Maximum results to return. |
+| `offset` | integer | `0` | Offset for pagination. |
+
+---
+
+### `template_create` <Badge color="orange">Write</Badge>
+
+Creates an annotation template with questions, labeling shapes, and classification options.
+
+| Parameter | Type | Default | Description |
+| :--- | :--- | :--- | :--- |
+| `template_name` | string | *Required* | Template name. |
+| `data_type` | string | *Required* | `image`, `video`, `audio`, `document`, or `text`. |
+| `questions` | list | *Required* | List of `{question, question_type, options?, required?, color?}`. Supported `question_type`: `BoundingBox`, `polygon`, `polyline`, `dot`, `radio`, `dropdown`, `select`, `boolean`, `input`. |
+
+```json Example Questions Payload
+[
+  {
+    "question": "Vehicle",
+    "question_type": "BoundingBox",
+    "color": "#FF6B35"
+  },
+  {
+    "question": "Weather Condition",
+    "question_type": "radio",
+    "options": ["Sunny", "Rain", "Fog"],
+    "required": true
+  }
+]
+```
+
+- **Returns**: `template_id`.
+
+---
+
+## Annotations
+
+### `upload_preannotations` <Badge color="orange">Write</Badge>
+
+Uploads model predictions or existing ground truth as pre-annotations in standard COCO JSON format. Supports dry-run validation to test for missing files and category mismatches before writing.
+
+| Parameter | Type | Default | Description |
+| :--- | :--- | :--- | :--- |
+| `project_id` | string | *Required* | Target project ID. |
+| `coco_json` | object | *Optional* | Inline COCO JSON object (for smaller payloads). |
+| `file_url` | string | *Optional* | Public HTTPS link to the COCO JSON file. Provide either `coco_json` or `file_url`. |
+| `annotation_format` | string | `coco_json` | Annotation file format (`coco_json`). |
+| `wait_seconds` | integer | `0` | Seconds to wait synchronously (max `120`). |
+
+- **Returns**: A `job_id` tracking processing status.
+- **Dry-run mode**: Claude validates file names (detecting case discrepancies such as `IMG_1.jpg` vs `IMG_1.JPG`), category alignment, and coordinates before committing.
+
+<Warning>
+  Image file names in the COCO file must match the dataset file names **strictly**, including letter case and extension. Pre-annotation file size limit is **25 MB**.
+</Warning>
+
+---
+
+### `upload_preannotations_async` <Badge color="orange">Write</Badge>
+
+Uploads large pre-annotation batches asynchronously without blocking the conversational thread, returning immediately with a task tracker.
+
+| Parameter | Type | Default | Description |
+| :--- | :--- | :--- | :--- |
+| `project_id` | string | *Required* | Target project ID. |
+| `file_url` | string | *Required* | Direct URL to remote annotation file. |
+| `annotation_format` | string | `coco_json` | COCO JSON format. |
+
+- **Returns**: `job_id` for tracking through `get_job_status`.
+
+---
+
+### `export_annotations` <Badge color="orange">Write</Badge>
+
+Initiates an asynchronous export job for project annotations.
+
+| Parameter | Type | Default | Description |
+| :--- | :--- | :--- | :--- |
+| `project_id` | string | *Required* | Project identifier. |
+| `export_name` | string | *Required* | Name for the export bundle. |
+| `export_format` | string | `coco_json` | `json`, `coco_json`, `csv`, or `png`. |
+| `statuses` | list | *Optional* | Annotation statuses to include. Defaults to `["review", "r_assigned", "client_review", "cr_assigned", "accepted"]`. |
+| `export_description` | string | `""` | Optional description. |
+
+- **Returns**: `export_id` and `job_id`. Once completed, obtain the signed link via `download_export`.
+
+---
+
+### `check_export_status` <Badge color="gray">Read-only</Badge>
+
+Queries the status of one or more export jobs. When `is_completed` is `true`, a direct signed `download_url` is returned.
+
+| Parameter | Type | Default | Description |
+| :--- | :--- | :--- | :--- |
+| `project_id` | string | *Required* | Project ID. |
+| `export_ids` | list | *Required* | List of export IDs to check. |
+
+---
+
+### `download_export` <Badge color="gray">Read-only</Badge>
+
+Generates a secure, temporary pre-signed download URL for a completed export bundle.
+
+| Parameter | Type | Default | Description |
+| :--- | :--- | :--- | :--- |
+| `project_id` | string | *Required* | Project ID. |
+| `export_id` | string | *Required* | Export ID. |
+
+---
+
+## Jobs & Monitoring
+
+### `get_job_status` <Badge color="gray">Read-only</Badge>
+
+Queries the status of any background job started by `dataset_create`, `upload_preannotations`, `upload_preannotations_async`, or `export_annotations`.
+
+| Parameter | Type | Default | Description |
+| :--- | :--- | :--- | :--- |
+| `job_id` | string | *Required* | The job identifier returned by the initiation tool. |
+| `wait_seconds` | integer | `0` | Wait up to this many seconds (max `120`) before responding. |
+
+- **Returns**:
+  - `status`: `running`, `succeeded`, or `failed`.
+  - `error`: Explanatory message when status is `failed`.
+  - For pre-annotation uploads: specific files and label categories that were skipped or not applied.
+
+### Job ID Formats
+
+| Initiated by | Job ID Prefix Format | Example |
+| :--- | :--- | :--- |
+| `dataset_create` | `ds:<dataset_id>` | `ds:6738b1f48a1` |
+| `upload_preannotations` | `pre:<project_id>:<job_id>` | `pre:proj_92a:job_551` |
+| `export_annotations` | `exp:<project_id>:<export_id>` | `exp:proj_92a:exp_104` |
+
+---
+
+### `monitor_active_operations` <Badge color="gray">Read-only</Badge>
+
+Lists all background operations currently in progress across datasets, exports, and pre-annotation jobs.
+
+- **Inputs**: None
+- **Returns**: List of active operations with operation ID, operation type, start time, elapsed duration, and status.
+
+---
+
+### `monitor_project_progress` <Badge color="gray">Read-only</Badge>
+
+Retrieves real-time progress metrics for an ongoing labeling project.
+
+| Parameter | Type | Default | Description |
+| :--- | :--- | :--- | :--- |
+| `project_id` | string | *Required* | Target project ID. |
+
+- **Returns**: Total files, annotated files, files pending review, rejected files, accepted files, and overall completion percentage.
+
+---
+
+### `query_project_statistics` <Badge color="gray">Read-only</Badge>
+
+Retrieves detailed analytical breakdown and label frequency counts for a project.
+
+| Parameter | Type | Default | Description |
+| :--- | :--- | :--- | :--- |
+| `project_id` | string | *Required* | Target project ID. |
+
+- **Returns**: Label occurrence distributions, class counts, bounding box counts, and average annotations per asset.
+
+---
+
+## Operational Limits
+
+| Limit | Value | Notes |
+| :--- | :--- | :--- |
+| **Tool synchronous timeout** (`wait_seconds`) | `120` seconds | Claude resumes waiting or returns job ID for polling |
+| **Pre-annotation file size** | `25 MB` | Larger COCO files should be partitioned by image list |
+| **Pre-annotation formats** | COCO JSON | Validated against dataset file names |
+| **Export formats** | `json`, `coco_json`, `csv`, `png` | Full ground truth and segmentation masks supported |
+| **Google Drive import limit** | `2,500` files / `2.5 GB` | Public shared links ("Anyone with the link") |
+| **Items per page** | `100` items | `project_list`, `search_projects`, `dataset_list` |
+| **Delete operations** | None | Destructive deletion is blocked via MCP for safety |
+
+---
+
+## Supported Data Types
+
+| Data Type | Supported File Formats |
+| :--- | :--- |
+| **Image** | JPG, JPEG, PNG, TIFF |
+| **Video** | MP4 |
+| **Audio** | MP3, WAV |
+| **Document** | PDF |
+| **Text** | TXT |
+
+---
+
+## Related Documentation
+
+<CardGroup cols={2}>
+  <Card title="Overview & Setup" icon="robot" href="/mcp/mcp-server">
+    Set up the connector in Claude and authenticate your account.
+  </Card>
+  <Card title="Connect S3, GCS & Drive" icon="cloud" href="/mcp/mcp-connect-s3-gcs">
+    Secure data connections without credential exposure.
+  </Card>
+  <Card title="Workflows & Examples" icon="diagram-project" href="/mcp/mcp-workflows">
+    Practical examples of chaining these tools into end-to-end automations.
+  </Card>
+  <Card title="Changelog" icon="clock-rotate-left" href="/mcp/mcp-changelog">
+    See all recent tools and enhancements.
+  </Card>
+</CardGroup>
