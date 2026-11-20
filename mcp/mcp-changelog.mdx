@@ -1,0 +1,79 @@
+---
+title: "MCP Changelog"
+sidebarTitle: "MCP Changelog"
+description: "Release history, feature additions, and updates for the Labellerr MCP connector and server."
+icon: clock-rotate-left
+---
+
+<Note>
+  **Latest Release: November 2026** — Launch of the Hosted MCP Connector with 23 comprehensive tools, per-user OAuth sign-in, atomic project setup, secure S3/GCS/Google Drive ingestion, dry-run validations, and Claude-assisted pre-labeling.
+</Note>
+
+---
+
+## November 2026
+
+### Hosted Connector Launch
+
+The Labellerr MCP server is now available as a managed, high-performance **Hosted Connector** with all **23 tools** fully supported and zero local installation required.
+
+- **One URL for Claude**: Add `https://mcp.labellerr.com/mcp` as a custom connector across **Claude.ai**, **Claude Desktop**, and **Claude Code**.
+- **Per-User OAuth Sign-in**: Users authenticate with their own Labellerr login in the browser and select their workspace. Tool calls execute under the signed-in user's individual roles and project permissions rather than a single static API key.
+- **End-to-End Encryption & Security**: Stored sessions are encrypted; tokens given to Claude are stored only as one-way hashes. Removing the connector immediately revokes access.
+- **Structured Claude Outputs**: Tools return concise, structured data models (IDs, names, status flags) and clear next steps, ensuring Claude never outputs API keys, secrets, or raw file contents into the chat.
+
+---
+
+### Features & Capabilities <Badge color="green">All 23 Tools Available</Badge>
+
+| Feature | Description | Status |
+| :--- | :--- | :--- |
+| **`project_setup`** | Creates both the label template and project in one atomic call from a plain label list (`BoundingBox`, `polygon`, `polyline`, `dot`). Pre-validates all inputs before modifying workspace state. | <Check>Available</Check> |
+| **`connect_cloud_source`** | Directs users to Labellerr's secure web console to connect AWS S3 or Google Cloud Storage buckets. Secrets never pass through conversational chats. | <Check>Available</Check> |
+| **`get_job_status`** | Universal status checker for asynchronous operations (`dataset_create`, `upload_preannotations`, `export_annotations`). Tracks progress and provides audit error reports. | <Check>Available</Check> |
+| **`monitor_active_operations` & `monitor_project_progress`** | Real-time tracking of active tasks, overall completion percentages, and review stages. | <Check>Available</Check> |
+| **`query_project_statistics`** | Granular project analytics and label frequency breakdowns. | <Check>Available</Check> |
+| **Google Drive Import** | Import images directly from Google Drive links shared as "Anyone with the link". Supports up to 2,500 images and 2.5 GB per import. | <Check>Available</Check> |
+| **COCO Dry Run Validation** | Pre-upload inspection of COCO JSON files against target projects. Checks exact file matches (detects case discrepancies like `IMG_1.jpg` vs `IMG_1.JPG`), validates categories, and flags out-of-bounds bounding boxes. | <Check>Available</Check> |
+| **Claude-Drawn Pre-Labels with Review** | Claude inspects sample images using Claude Vision, proposes bounding boxes according to the project's label schema, and presents them for visual confirmation before uploading. | <Check>Available</Check> |
+| **Resource Discovery** | Added `list_connections`, `list_templates`, and `search_projects` for fast natural-language discovery. | <Check>Available</Check> |
+
+---
+
+### Improvements & Fixes
+
+- **Pre-annotation flexibility**: `upload_preannotations` accepts COCO JSON either inline or via public URL (up to 25 MB) and returns a persistent `job_id` immediately upon submission. For larger datasets, `upload_preannotations_async` allows non-blocking asynchronous processing.
+- **Data type resilience**: `project_list` and `search_projects` gracefully handle legacy projects without explicit data types without raising exceptions.
+- **Cloud ingestion**: `dataset_create` supports folder-level scoping (`path`) within S3/GCS buckets and public Google Drive folder links.
+
+---
+
+## Earlier Releases
+
+### Local MCP Server
+
+The initial release of the Labellerr MCP Server operates locally over `stdio` using Python and Labellerr API credentials (`LABELLERR_API_KEY`, `LABELLERR_API_SECRET`, `LABELLERR_CLIENT_ID`).
+
+- **23 Tools**: Full coverage across Project Management, Dataset Management, Annotation Operations, System Monitoring, and Querying.
+- **Direct Local Uploads**: Includes `dataset_upload_files` and `dataset_upload_folder` for streaming local hard drive directories directly into Labellerr.
+- **Full IDE Compatibility**: Supports Claude Desktop, Cursor, and Claude Code.
+- See [Local MCP Server](/mcp/mcp-local-server) for full documentation and setup instructions.
+
+---
+
+## Related Documentation
+
+<CardGroup cols={2}>
+  <Card title="Overview & Setup" icon="robot" href="/mcp/mcp-server">
+    Add the hosted connector and sign in.
+  </Card>
+  <Card title="Tools Reference" icon="wrench" href="/mcp/mcp-tools-reference">
+    Detailed specifications for all 23 tools.
+  </Card>
+  <Card title="Connect Cloud Storage" icon="cloud" href="/mcp/mcp-connect-s3-gcs">
+    Secure AWS S3, GCS, and Google Drive connections.
+  </Card>
+  <Card title="MCP Workflows" icon="diagram-project" href="/mcp/mcp-workflows">
+    End-to-end recipes and automation prompts.
+  </Card>
+</CardGroup>

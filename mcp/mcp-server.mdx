@@ -1,0 +1,256 @@
+---
+title: "Labellerr MCP Server & Hosted Connector"
+sidebarTitle: "Overview & Setup"
+description: "Use Labellerr from Claude through the Model Context Protocol (MCP): sign in with your Labellerr account, import data, set up projects, and manage annotations in plain language."
+icon: robot
+---
+
+## Introduction
+
+The **Labellerr MCP Server** lets AI assistants such as **Claude** work directly with your Labellerr workspace. Built on the [Model Context Protocol (MCP)](https://modelcontextprotocol.io), it turns plain-language requests into Labellerr actions: find datasets, import data from cloud storage or Google Drive, create label templates and projects, upload pre-annotations, track live progress, and export finished annotations.
+
+```text Example Prompt
+Create a project called "Shelf Audit" for product and price-tag boxes
+on my "Store Images" dataset, then tell me when it is ready.
+```
+
+Labellerr offers the MCP server in two forms:
+
+| Feature | Hosted connector (Recommended) | Local server |
+| :--- | :--- | :--- |
+| **How you add it** | Paste one URL into Claude | Install Python code and edit a config file |
+| **How you sign in** | Your own Labellerr login, in the browser (OAuth) | API Key, API Secret, and Client ID in config file |
+| **Permissions** | Your own Labellerr roles and project access | Whatever the API credentials allow |
+| **Works with** | Claude.ai, Claude Desktop, Claude Code | Claude Desktop, Cursor, Claude Code |
+| **Data sources** | Saved S3 and GCS connections, Google Drive links | S3 & GCS connections, plus local files and folders |
+| **Long tasks** | Return a `job_id` you can track at any time | Run until finished inside the call |
+| **Tools** | 23 tools | 23 tools |
+
+<CardGroup cols={2}>
+  <Card title="Hosted Connector" icon="cloud">
+    **Recommended**: Add Labellerr to Claude with one URL and sign in securely with your Labellerr account.
+  </Card>
+  <Card title="Local Server" icon="terminal" href="/mcp/mcp-local-server">
+    Run the server on your own machine using API credentials when you need local file uploads or Cursor support.
+  </Card>
+</CardGroup>
+
+---
+
+## Connect the Hosted Connector
+
+### Prerequisites
+
+- A Labellerr account with access to at least one workspace.
+- One of: **Claude.ai** (web), **Claude Desktop**, or **Claude Code**.
+- Permission to add custom connectors in Claude (on Team and Enterprise plans, a workspace owner may need to allow custom connectors).
+
+### Connector URL
+
+```text Connector URL
+https://mcp.labellerr.com/mcp
+```
+
+<Info>
+  **Safe to Share**: The URL holds no secret or credentials. Every person signs in with their own Labellerr account, so it is completely safe to share this URL across your team.
+</Info>
+
+### Add the Connector
+
+<Tabs>
+  <Tab title="Claude.ai (Web)">
+    <Steps>
+      <Step title="Open Connectors">
+        Navigate to **Settings** → **Connectors** in Claude.ai and select **Add custom connector**.
+      </Step>
+      <Step title="Add the URL">
+        Name the connector `Labellerr` and paste `https://mcp.labellerr.com/mcp` as the URL. Click **Add**.
+      </Step>
+      <Step title="Sign in">
+        Click **Connect**. Claude opens the Labellerr sign-in page in a new window. Sign in with your Labellerr account, choose your workspace on the consent page, and click **Allow**.
+      </Step>
+      <Step title="Enable in Chat">
+        In a new chat, open the tools menu and ensure **Labellerr** is enabled.
+      </Step>
+    </Steps>
+  </Tab>
+
+  <Tab title="Claude Desktop">
+    <Steps>
+      <Step title="Open Connectors">
+        Open Claude Desktop, go to **Settings** → **Connectors**, and select **Add custom connector**.
+      </Step>
+      <Step title="Add the URL">
+        Name the connector `Labellerr` and paste `https://mcp.labellerr.com/mcp` as the URL.
+      </Step>
+      <Step title="Sign in">
+        Click **Connect**. In the browser window that opens, sign in with your Labellerr login, select your workspace, and click **Allow**.
+      </Step>
+    </Steps>
+
+    <Note>
+      Connectors added in Claude.ai also appear automatically in Claude Desktop when you are signed into the same Claude account.
+    </Note>
+  </Tab>
+
+  <Tab title="Claude Code">
+    <Steps>
+      <Step title="Add the Connector CLI command">
+        Run the following command in your terminal to register the connector for your user:
+        ```bash
+        claude mcp add --transport http --scope user labellerr https://mcp.labellerr.com/mcp
+        ```
+      </Step>
+      <Step title="Authenticate">
+        Start Claude Code, run `/mcp`, select `labellerr`, and choose **Authenticate**. Your browser will open the Labellerr sign-in page; sign in, choose your workspace, and click **Allow**.
+      </Step>
+    </Steps>
+  </Tab>
+</Tabs>
+
+---
+
+## Check the Connection
+
+To verify that the connector is properly configured and active, ask Claude:
+
+```text
+Check my Labellerr connection.
+```
+
+Claude will call the `health` tool, returning:
+- The server status and version
+- Total tool count (**23 tools**)
+- Your Labellerr `client_id`
+- The user account you are authenticated as
+
+---
+
+## Sign-in and Permissions
+
+### How Sign-in Works
+
+The hosted connector uses standard **OAuth 2.0**. Claude never sees your password or login credentials:
+1. You sign in on Labellerr's official login page.
+2. You select your workspace on the consent screen.
+3. Claude receives a scoped connector token valid exclusively with the Labellerr MCP server.
+
+After signing in, every tool call runs with your own user identity. You see the exact same projects and datasets as in the Labellerr web app, and any permission restrictions that apply in the web app are enforced through Claude as well.
+
+### What the Connector Stores
+
+- **Encrypted authentication**: Your Labellerr sign-in session is stored encrypted, preventing you from having to sign in repeatedly.
+- **One-way hashed tokens**: Tokens issued to Claude are stored only as secure one-way hashes.
+- **Zero data retention**: The connector does not store your datasets, files, labels, or exports. All assets reside securely in Labellerr.
+- **No secrets in responses**: Tool outputs never include API keys, passwords, or cloud credentials.
+
+### Signing in Again
+
+Your authentication token remains active for a standard session period. When it expires, Claude displays a **Connect** or **Authenticate** prompt for Labellerr. Simply authenticate again; any ongoing operations (imports, uploads, exports) continue running in Labellerr uninterrupted.
+
+### Disconnecting
+
+To revoke access, remove the Labellerr connector in Claude (**Settings** → **Connectors**, or `claude mcp remove labellerr` in Claude Code). Removing it immediately revokes the token and clears the stored session. Your active session in the Labellerr web app is not affected.
+
+---
+
+## What You Can Do
+
+<CardGroup cols={2}>
+  <Card title="Find Your Work" icon="magnifying-glass">
+    List, search, and inspect projects, datasets, templates, and saved cloud connections using natural language.
+  </Card>
+  <Card title="Import Cloud & Drive Data" icon="cloud-arrow-down">
+    Connect AWS S3 or Google Cloud Storage buckets securely, or import directly from Google Drive links.
+  </Card>
+  <Card title="One-Step Project Setup" icon="bolt">
+    Provide a list of label names and a dataset; Claude builds the template and launches the project together.
+  </Card>
+  <Card title="Pre-annotations & Exports" icon="file-export">
+    Run dry-run validations on COCO files, generate Claude pre-labels with visual review, track project metrics, and export annotations in COCO, JSON, CSV, or PNG.
+  </Card>
+</CardGroup>
+
+### Example Requests
+
+```text
+1. "What projects do I have, and which ones are still processing?"
+2. "Connect my S3 bucket and import the images under retail/shelves/ as a dataset called 'Shelf Images'."
+3. "Import images from my Google Drive link https://drive.google.com/drive/folders/... as 'Drive Shelf Data'."
+4. "Create an image project 'Vehicle Detection' on the Shelf Images dataset with boxes for car, truck, and bus."
+5. "Check this COCO pre-annotation file before uploading to project abc123: https://example.com/labels/coco.json"
+6. "Show me progress statistics and completion rate for project abc123."
+7. "Export all accepted annotations from 'Vehicle Detection' in COCO JSON and give me the download link."
+```
+
+---
+
+## Feature Status
+
+All 23 features of the Labellerr MCP Server are **fully available**:
+
+| Feature | Tools / Mechanism | Status |
+| :--- | :--- | :--- |
+| **Find projects, datasets, templates, and connections** | `project_list`, `search_projects`, `project_get`, `dataset_list`, `dataset_get`, `list_templates`, `list_connections` | <Check>Available</Check> |
+| **Sign in with your own Labellerr account** | Connector OAuth sign-in | <Check>Available</Check> |
+| **Create templates and projects** | `template_create`, `project_create`, `project_update_rotation` | <Check>Available</Check> |
+| **Project and labels in one step** | `project_setup` | <Check>Available</Check> |
+| **Import dataset from S3 or GCS** | `dataset_create` | <Check>Available</Check> |
+| **Pre-annotations and exports** | `upload_preannotations`, `upload_preannotations_async`, `export_annotations`, `check_export_status`, `download_export` | <Check>Available</Check> |
+| **Connect a new S3 or GCS bucket from Claude** | `connect_cloud_source` | <Check>Available</Check> |
+| **Universal job status check for long tasks** | `get_job_status` | <Check>Available</Check> |
+| **Active operations & project progress monitoring** | `monitor_active_operations`, `monitor_project_progress`, `query_project_statistics` | <Check>Available</Check> |
+| **Import from Google Drive link** | `dataset_create` (Drive support up to 2,500 images / 2.5 GB) | <Check>Available</Check> |
+| **COCO dry run verification before upload** | `upload_preannotations` pre-validation check | <Check>Available</Check> |
+| **Claude-drawn pre-labels with user review** | Claude Vision pre-labeling + approval workflow | <Check>Available</Check> |
+
+---
+
+## Troubleshooting
+
+<AccordionGroup>
+  <Accordion title="Claude doesn't show Labellerr tools" icon="eye-slash">
+    - Verify that the connector is enabled for your current chat (check the tools menu in Claude.ai or Claude Desktop, or run `/mcp` in Claude Code).
+    - If the connector prompts with **Connect** or **Authenticate**, sign in again.
+    - Start a new chat session after adding the connector.
+  </Accordion>
+
+  <Accordion title="Sign-in is refused or fails" icon="triangle-exclamation">
+    - Make sure you use the exact email and password associated with your Labellerr web app account.
+    - On the consent screen, verify you select a workspace where you have active membership.
+    - If you previously canceled the consent window, remove the connector in Claude and add it again.
+  </Accordion>
+
+  <Accordion title="Session expired or not signed in" icon="clock">
+    - Your session token has expired. Click the connector prompt in Claude to authenticate again.
+    - Long-running operations (imports, uploads, exports) are not lost when a session expires; they continue executing on Labellerr servers.
+  </Accordion>
+
+  <Accordion title="Server connectivity check" icon="heart-pulse">
+    - Ask Claude: *"Check my Labellerr connection."*
+    - The `health` tool will verify whether the server is reachable and identify the authenticated user.
+    - If connectivity fails, contact [Labellerr Support](mailto:support@labellerr.com) with the error timestamp.
+  </Accordion>
+</AccordionGroup>
+
+---
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Tools Reference" icon="wrench" href="/mcp/mcp-tools-reference">
+    Comprehensive reference for all 23 tools, inputs, outputs, and limits.
+  </Card>
+  <Card title="Connect S3, GCS & Drive" icon="cloud" href="/mcp/mcp-connect-s3-gcs">
+    Learn how to connect cloud storage and Google Drive without sharing credentials in chat.
+  </Card>
+  <Card title="Workflows & Examples" icon="diagram-project" href="/mcp/mcp-workflows">
+    End-to-end recipes from cloud data to project creation, dry runs, and export.
+  </Card>
+  <Card title="Local MCP Server" icon="terminal" href="/mcp/mcp-local-server">
+    Run the server on your local machine with Python and API keys.
+  </Card>
+  <Card title="MCP Changelog" icon="clock-rotate-left" href="/mcp/mcp-changelog">
+    Read the latest release notes and updates.
+  </Card>
+</CardGroup>

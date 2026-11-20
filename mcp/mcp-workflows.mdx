@@ -1,0 +1,282 @@
+---
+title: "MCP Workflows"
+sidebarTitle: "Workflows & Examples"
+description: "End-to-end natural language recipes for the Labellerr MCP connector: from cloud data to projects, pre-annotations, and exports."
+icon: diagram-project
+---
+
+## Introduction
+
+The **Labellerr MCP Connector** enables autonomous multi-step labeling workflows through conversational prompts. Claude chains all 23 tools intelligently: creating datasets, establishing label templates, deploying projects, checking annotations, monitoring live progress, and exporting ground truth.
+
+<Info>
+  All workflows below use the **Hosted Connector**. Ensure you have connected Labellerr in Claude settings: see [Overview & Setup](/mcp/mcp-server).
+</Info>
+
+---
+
+## Full Workflow: Bucket to Export
+
+You can execute a complete end-to-end computer vision pipeline through Claude in a single conversational thread:
+
+```text Complete Pipeline
+Connect bucket ──► Import dataset ──► Set up project ──► Load pre-annotations ──► Annotate/Review ──► Export annotations
+```
+
+<Steps>
+  <Step title="Step 1: Connect your cloud storage">
+    ```text Prompt
+    Connect my S3 bucket to Labellerr.
+    ```
+    Claude calls `connect_cloud_source`. You save the bucket connection securely in the Labellerr web app, then tell Claude when finished. (See [Connect Cloud Storage](/mcp/mcp-connect-s3-gcs)).
+  </Step>
+
+  <Step title="Step 2: Import data as a dataset">
+    ```text Prompt
+    Import the images under vehicles/2026-11/ from my S3 connection as a dataset called "Vehicles Nov".
+    ```
+    Claude calls `list_connections`, retrieves the connection ID, invokes `dataset_create`, and tracks the job with `get_job_status` until the dataset is `ready`.
+  </Step>
+
+  <Step title="Step 3: Set up the project in one step">
+    ```text Prompt
+    Create a project "Vehicle Detection" on Vehicles Nov with boxes for car, truck, and bus.
+    ```
+    Claude calls `project_setup`, creating both the label schema and the annotation project together.
+  </Step>
+
+  <Step title="Step 4: Load pre-annotations (with dry-run validation)">
+    ```text Prompt
+    Validate and upload the COCO pre-annotations at https://example.com/vehicles-nov-coco.json to Vehicle Detection.
+    ```
+    Claude validates file names, label categories, and coordinate boundaries (dry-run check), then calls `upload_preannotations` (or `upload_preannotations_async`) and monitors the import.
+  </Step>
+
+  <Step title="Step 5: Label and review in Labellerr">
+    Annotators, quality auditors, and reviewers complete labeling and review tasks in the Labellerr web interface as normal. You can ask Claude *"What is the progress on project Vehicle Detection?"* to inspect completion rates via `monitor_project_progress`.
+  </Step>
+
+  <Step title="Step 6: Export annotations">
+    ```text Prompt
+    Export all accepted annotations from Vehicle Detection in COCO JSON format.
+    ```
+    Claude calls `export_annotations`, tracks completion with `get_job_status`, and delivers a signed download link via `download_export`.
+  </Step>
+</Steps>
+
+<Tip>
+  **All-in-One Prompt**: You can combine these commands into a single request:
+  *"Import vehicles/2026-11/ from my S3 connection as 'Vehicles Nov', then create an image project 'Vehicle Detection' on it with boxes for car, truck, and bus."*
+</Tip>
+
+---
+
+## Finding Your Work
+
+Quickly survey your assets across projects, datasets, templates, and storage connections:
+
+```text Prompt Examples
+- "What projects do I have, and which ones are still processing?"
+- "Find all my video annotation projects."
+- "Show me all image datasets in my workspace and how many files each contains."
+- "Which cloud storage connections are currently configured?"
+```
+
+| Request | Primary Tools Executed | Returned Data |
+| :--- | :--- | :--- |
+| **Inspect Projects** | `project_list`, `search_projects`, `project_get` | Project ID, name, data type, status |
+| **Inspect Datasets** | `dataset_list`, `dataset_get` | Dataset ID, name, status, file count |
+| **Inspect Templates & Connectors** | `list_templates`, `list_connections` | Templates with question schemas; saved S3/GCS buckets |
+| **Monitor Active Jobs** | `monitor_active_operations`, `get_job_status` | Running background operations and tasks |
+
+---
+
+## One-Step Project Setup from Label List
+
+The fastest way to configure a project. Simply specify label names and the dataset; Claude handles the rest.
+
+```text Prompt
+Create an image project "Shelf Audit" on the Shelf Images dataset with 
+boxes for product and price tag, and a polygon for shelf edge.
+```
+
+Claude translates this into an atomic `project_setup` call:
+
+```json project_setup Payload
+{
+  "project_name": "Shelf Audit",
+  "dataset_id": "ds_6738b1f48a1",
+  "data_type": "image",
+  "labels": [
+    "product",
+    "price tag",
+    {
+      "name": "shelf edge",
+      "type": "polygon"
+    }
+  ]
+}
+```
+
+- **Output**: Returns `project_id` and `template_id`. The project is immediately visible in the Labellerr web app with all three label classes configured.
+
+<Note>
+  The target dataset must be in `ready` status and contain files. If you do not yet have a dataset, Claude will prompt you to import one first.
+</Note>
+
+---
+
+## Projects with Advanced Question Types
+
+For projects requiring multi-class classification, radio buttons, dropdown menus, boolean flags, or freeform text inputs, configure the template explicitly:
+
+```text Prompt
+Create an image template "Vehicle QA" with:
+- Bounding box: "Vehicle"
+- Required radio question: "Weather" with options ["Sunny", "Rain", "Fog"]
+- Dropdown question: "Time of Day" with options ["Morning", "Afternoon", "Night"]
+
+Then create a project "Vehicle QA" on Vehicles Nov using that template, 
+with two review passes per file.
+```
+
+Claude executes the following workflow:
+1. Calls `template_create` with the structured question schema.
+2. Calls `project_create` linking the new `template_id` to `Vehicles Nov`.
+3. Configures `review_rotation_count: 2`.
+
+---
+
+## Pre-Annotations & AI Pre-Labeling
+
+Accelerate labeling by seeding projects with model predictions or Claude-assisted pre-labels.
+
+### 1. Upload COCO Pre-annotations
+
+```text Prompt
+Upload these COCO pre-annotations to project abc123:
+https://storage.example.com/exports/model-v3-coco.json
+```
+
+1. **Send payload**: `upload_preannotations` (or `upload_preannotations_async` for large datasets) sends the COCO JSON and receives a `job_id`.
+2. **Backend processing**: Labellerr matches each image entry in the COCO file against dataset filenames.
+3. **Status & audit**: `get_job_status` returns `succeeded` alongside an audit report of any unmatched files or unmapped categories.
+
+<Warning>
+  Image filenames in the COCO file must match dataset filenames **strictly**, including case and file extension (e.g., `IMG_1.jpg` vs `IMG_1.JPG`). Maximum file size is **25 MB**.
+</Warning>
+
+### 2. COCO Dry Run Validation <Badge color="green">Available</Badge>
+
+Verify a COCO JSON file against your project before committing annotations:
+
+```text Prompt
+Check my COCO file https://example.com/preds.json against project abc123 before uploading.
+```
+
+Claude performs a pre-flight dry run:
+- Identifies exact filename matches and warns of case mismatches (`frame_01.PNG` vs `frame_01.png`).
+- Flags categories present in the COCO file that are missing from the project template.
+- Detects bounding box coordinates that exceed image dimensions.
+- Presents a summary report for your approval before writing any data.
+
+### 3. Claude-Assisted Pre-Labeling with Review <Badge color="green">Available</Badge>
+
+Let Claude propose initial bounding boxes and preview them for human review:
+
+```text Prompt
+Look at 5 sample images from project abc123 and propose pre-labels for "product" and "price tag". Show me the boxes before uploading.
+```
+
+1. Claude inspects sample images using Claude Vision.
+2. Claude predicts bounding boxes matching the project's label schema.
+3. Claude presents the proposed boxes visually or as structured coordinates for your inspection.
+4. Upon your confirmation (*"Looks good, apply to the project"*), Claude uploads the annotations as pre-labels for human annotators to refine.
+
+---
+
+## Live Progress & Analytics Monitoring <Badge color="green">Available</Badge>
+
+Monitor project metrics and annotator throughput in real time:
+
+```text Prompt
+What's the progress and label distribution for project abc123?
+```
+
+Claude queries `monitor_project_progress` and `query_project_statistics`:
+- Total files vs completed vs review stages
+- Completion percentage and audit status
+- Distribution across bounding box classes and categories
+
+---
+
+## Google Drive Import Workflow <Badge color="green">Available</Badge>
+
+Import image batches directly from shared Google Drive folders:
+
+```text Prompt
+Import the images from my Google Drive link https://drive.google.com/drive/folders/1XYZabc... as a dataset called "Retail Shelf Photos", then set up an image project "Retail Audit" with boxes for "item" and "tag".
+```
+
+Claude executes:
+1. `dataset_create` with the Google Drive link (supports up to 2,500 images and 2.5 GB).
+2. Monitors import completion with `get_job_status`.
+3. Immediately invokes `project_setup` once the dataset is ready.
+
+---
+
+## Exporting Annotations
+
+Export finished annotations for model training or downstream analytics:
+
+```text Prompt
+Export all accepted annotations from "Vehicle Detection" in COCO JSON format and give me the download link.
+```
+
+| Step | Tool Executed | Description |
+| :--- | :--- | :--- |
+| **Trigger Export** | `export_annotations` | Supports formats: `coco_json`, `json`, `csv`, or `png`. Filter by status (e.g. `accepted`). |
+| **Monitor Job** | `get_job_status` / `check_export_status` | Tracks export package generation. |
+| **Download** | `download_export` | Returns a secure, short-lived signed URL to download the zip/archive. |
+
+<Tip>
+  Signed export download links expire after a short duration for security. If your link expires, simply ask Claude: *"Generate a new download link for export exp_abc123 in project proj_456"*.
+</Tip>
+
+---
+
+## Resuming Long Tasks Across Sessions
+
+Dataset imports, large pre-annotation uploads, and complex exports run asynchronously on Labellerr servers. If you close your browser or Claude chat, your tasks continue uninterrupted.
+
+Every asynchronous operation returns a `job_id`:
+- Dataset imports: `ds:<dataset_id>`
+- Pre-annotation uploads: `pre:<project_id>:<job_id>`
+- Exports: `exp:<project_id>:<export_id>`
+
+In any future Claude chat, simply ask:
+
+```text Prompt
+What is the status of job exp:proj_vehicle_qa:exp_882a?
+```
+
+Claude calls `get_job_status` and returns the current status, completion timestamp, or download link.
+
+---
+
+## Related Documentation
+
+<CardGroup cols={2}>
+  <Card title="MCP Tools Reference" icon="wrench" href="/mcp/mcp-tools-reference">
+    Detailed specifications for all 23 tools and parameters.
+  </Card>
+  <Card title="Connect Cloud Storage" icon="cloud" href="/mcp/mcp-connect-s3-gcs">
+    Secure AWS S3, GCS, and Google Drive integrations.
+  </Card>
+  <Card title="Upload Pre-annotations (SDK)" icon="code" href="/sdk/upload-preannotation-sdk">
+    COCO format standards and Python SDK pre-annotation methods.
+  </Card>
+  <Card title="Create Exports (SDK)" icon="download" href="/sdk/create-export-sdk">
+    Explore export formats and metadata structures in detail.
+  </Card>
+</CardGroup>

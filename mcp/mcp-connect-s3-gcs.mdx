@@ -1,0 +1,262 @@
+---
+title: "Connect S3, GCS, and Google Drive"
+sidebarTitle: "Connect Cloud Storage"
+description: "Bring data from Amazon S3, Google Cloud Storage, or Google Drive into Labellerr through Claude without ever sharing credentials in chat."
+icon: cloud
+---
+
+## Introduction
+
+With the **Labellerr MCP Connector**, you can import data directly from your Amazon S3 buckets, Google Cloud Storage buckets, or shared Google Drive links using natural language:
+
+```text Example Prompt
+Connect my S3 bucket and import the images under retail/shelves/ as a dataset called "Shelf Images".
+```
+
+Claude orchestrates the entire flow: it guides you to Labellerr's secure credential interface, identifies the saved connection, creates the dataset, and tracks the import until the data is ready for annotation.
+
+<Warning>
+  **Zero-Credential Chat Security**: Your cloud credentials never pass through Claude or the chat window. AWS access keys and GCS service-account keys are entered solely within Labellerr's encrypted web interface. Claude is explicitly instructed to refuse credentials pasted into chat, and the MCP connector exposes no tools that accept secret keys.
+</Warning>
+
+---
+
+## How It Works
+
+```text Connection Flow
+1. Ask Claude to connect a bucket  ──►  Claude calls connect_cloud_source
+2. Enter keys in Labellerr UI     ──►  Keys tested and encrypted in Labellerr
+3. Confirm saved to Claude        ──►  Claude calls list_connections
+4. Specify folder & import        ──►  Claude calls dataset_create
+5. Claude monitors progress       ──►  Claude tracks with get_job_status
+```
+
+<Steps>
+  <Step title="Ask Claude to connect storage">
+    Claude calls `connect_cloud_source` and returns a direct link to the **Create Dataset** screen of the Labellerr web console, along with step-by-step instructions.
+  </Step>
+  <Step title="Save connection in Labellerr">
+    In the Labellerr web app, you paste your credentials, click **Test Connection**, and save the connection. Labellerr validates your credentials before saving.
+  </Step>
+  <Step title="Claude identifies the connection">
+    Once you notify Claude that the connection is saved, Claude invokes `list_connections`. The newest connection appears at the top; Claude sees only its ID and human-friendly name.
+  </Step>
+  <Step title="Claude triggers the import">
+    You specify the target folder within the bucket (e.g. `retail/shelves/`), and Claude invokes `dataset_create`. Labellerr launches an asynchronous import job and returns a `job_id`.
+  </Step>
+  <Step title="Claude notifies you upon completion">
+    Claude periodically checks `get_job_status` (or `dataset_get`) until the dataset enters `ready` status. You can immediately launch an annotation project on the new dataset.
+  </Step>
+</Steps>
+
+<Info>
+  **Already have saved connections?** You can skip setup entirely. Just ask: *"Which S3 connections do I have?"* and tell Claude to import from an existing connection.
+</Info>
+
+---
+
+## Before You Start: Cloud Permissions
+
+Ensure your bucket credentials provide the necessary read permissions for Labellerr.
+
+### Amazon S3
+
+Create an IAM User or IAM Role with the following permissions on your target bucket:
+
+| Permission | Purpose | Requirement |
+| :--- | :--- | :--- |
+| `s3:GetObject` | Read image, video, audio, or document files | **Required** |
+| `s3:ListBucket` | Enumerate bucket directories and objects | **Required** |
+| `s3:GetBucketLocation` | Determine the bucket's AWS region | **Required** |
+| `s3:GetBucketCors` | Read bucket CORS rules | Optional |
+| `s3:PutBucketCors` | Auto-configure CORS for web preview | Optional |
+
+For detailed AWS IAM setup instructions, refer to our [AWS S3 Connection Guide](/getting-started/connect-aws-s3).
+
+### Google Cloud Storage (GCS)
+
+Generate a Service Account JSON key file with the following IAM roles or permissions:
+
+| Permission | Purpose | Requirement |
+| :--- | :--- | :--- |
+| `storage.objects.get` | Retrieve file contents | **Required** |
+| `storage.objects.list` | List objects and folders in the bucket | **Required** |
+| `storage.buckets.get` | Inspect bucket metadata | **Required** |
+| `storage.buckets.update` | Configure CORS policy | Optional |
+
+For detailed Google Cloud IAM setup, refer to our [GCS Connection Guide](/getting-started/connect-gcs).
+
+---
+
+## Step 1: Save a Connection in Labellerr
+
+Ask Claude:
+
+```text
+I want to connect my S3 bucket to Labellerr.
+```
+*or*
+```text
+Help me connect a Google Cloud Storage bucket.
+```
+
+Claude calls `connect_cloud_source` and provides a direct URL and guided steps:
+
+<Tabs>
+  <Tab title="Amazon S3">
+    1. Open the link provided by Claude and sign in to Labellerr if requested.
+    2. Enter any placeholder dataset name, choose your data type (e.g., **Image**), and click **Next**.
+    3. Select **Amazon S3**, then click **Create new connection**.
+    4. Enter your **Access Key ID**, **Secret Access Key**, and the S3 path (`s3://your-bucket-name/path/to/data/`). Click **Test Connection**.
+    5. When the test succeeds, enter a memorable connection name (e.g. `retail-prod-s3`) and click **Save**.
+    6. Click **Cancel** to exit the Create Dataset wizard (the connection remains securely saved in your workspace).
+    7. Return to Claude and say: *"Done, the connection is saved."*
+  </Tab>
+
+  <Tab title="Google Cloud Storage">
+    1. Open the link provided by Claude and sign in to Labellerr if requested.
+    2. Enter a placeholder dataset name, select your data type, and click **Next**.
+    3. Select **GCS**, then click **Create new connection**.
+    4. Upload your **Service Account JSON** file and enter the GCS path (`gs://your-bucket-name/path/to/data/`). Click **Test Connection**.
+    5. Once verified, enter a connection name (e.g. `gcs-training-data`) and click **Save**.
+    6. Click **Cancel** to exit the wizard.
+    7. Return to Claude and say: *"Done, the connection is saved."*
+  </Tab>
+</Tabs>
+
+<Tip>
+  Use descriptive names for connections (such as `retail-shelves-s3` or `autonomous-vehicles-gcs`). Claude will display these names when listing available storage.
+</Tip>
+
+---
+
+## Step 2: Import a Dataset
+
+Claude calls `list_connections`, retrieves the newly saved connection, and prompts for the subfolder to import:
+
+```text Example Prompt
+Import the folder retail/shelves/ from the retail-shelves-s3 connection as an image dataset called "Shelf Images".
+```
+
+Claude invokes `dataset_create` with:
+
+| Input | Example | Description |
+| :--- | :--- | :--- |
+| `dataset_name` | `Shelf Images` | Name displayed in Labellerr |
+| `data_type` | `image` | `image`, `video`, `audio`, `document`, or `text` |
+| `connection_id` | `conn_98a2f...` | Automatically filled by Claude from `list_connections` |
+| `path` | `retail/shelves/` | Relative folder path inside bucket (empty for entire bucket) |
+
+The dataset is initialized in `processing` status. Labellerr scans the target path and imports all files matching the specified data type (for images: `.jpg`, `.jpeg`, `.png`, `.tiff`).
+
+---
+
+## Step 3: Monitor Import Status
+
+Imports run on Labellerr cloud servers, so they proceed even if you close Claude or shut down your computer. You can check progress at any time:
+
+```text Prompt
+Is the Shelf Images dataset ready?
+```
+
+Claude queries `get_job_status` (or `dataset_get`):
+
+| Status | Meaning | Next Step |
+| :--- | :--- | :--- |
+| `processing` / `running` | Labellerr is indexing and transferring files | Wait or ask again in a few moments |
+| `ready` / `succeeded` | Import complete; files are ready | Proceed to project setup |
+| `failed` | Import stopped due to an error | Check the `error` field (e.g. permission or path error) |
+
+---
+
+## Google Drive Import
+
+You can import datasets directly from **Google Drive** without setting up IAM policies or cloud access keys:
+
+<Check>
+  **Available**: Google Drive links can be imported directly through Claude!
+</Check>
+
+### How to Use Google Drive Import
+
+1. In Google Drive, right-click the folder or file you wish to import.
+2. Select **Share** → **Share**, and set General Access to **"Anyone with the link"** (Viewer permission).
+3. Copy the link and share it directly with Claude:
+
+```text Example Prompt
+Import images from my Google Drive link https://drive.google.com/drive/folders/1a2B3c4D5e... as an image dataset called "Drive Product Photos".
+```
+
+### Specifications and Limits
+
+- **Maximum Files**: Up to **2,500 images** per import.
+- **Maximum Size**: Up to **2.5 GB** total dataset size.
+- **Supported Formats**: JPG, JPEG, PNG, TIFF.
+- **Error Handling**: Links not set to *"Anyone with the link"* fail immediately with an explicit permission error. Claude reports any skipped or unreadable files alongside the reason.
+
+---
+
+## Security Architecture
+
+<AccordionGroup>
+  <Accordion title="Where do cloud credentials reside?" icon="shield-check">
+    Credentials never touch Claude, the conversational prompt, or the MCP connector layer. Access keys and service accounts are transmitted over HTTPS directly to Labellerr's backend and stored encrypted in accordance with SOC 2 compliance standards.
+  </Accordion>
+
+  <Accordion title="What can Claude see?" icon="eye">
+    Claude can only see metadata returned by `list_connections`: connection ID, connection label/name, provider (`s3` or `gcs`), connection type, and creation date. Folder paths passed in chat are visible to Claude, so avoid using proprietary identifiers in bucket path strings if needed.
+  </Accordion>
+
+  <Accordion title="Who can use a saved connection?" icon="users">
+    Claude inherits your authenticated Labellerr workspace identity. It cannot access connections belonging to other workspaces or projects where you lack permissions.
+  </Accordion>
+
+  <Accordion title="How to remove a connection" icon="trash">
+    The MCP connector intentionally does not expose deletion tools to prevent accidental loss. To delete a connection, remove it via the Labellerr web console under **Settings** → **Data Connections** or use the Labellerr Python SDK.
+  </Accordion>
+</AccordionGroup>
+
+---
+
+## Troubleshooting
+
+<AccordionGroup>
+  <Accordion title="Connection not found" icon="circle-exclamation">
+    - Ensure you saved the connection under the exact same workspace you selected when signing in to Claude.
+    - Ask Claude: *"List my S3 connections"* or *"List my GCS connections"* to see all registered connections.
+  </Accordion>
+
+  <Accordion title="Test Connection fails in Labellerr web app" icon="triangle-exclamation">
+    - **AWS S3**: Verify that the Access Key and Secret Key are active and possess `s3:GetObject` and `s3:ListBucket` permissions. Ensure the bucket path uses `s3://bucket-name/folder/` format with a trailing slash.
+    - **Google Cloud Storage**: Ensure you uploaded the correct JSON service-account key file and that the service account has `Storage Object Viewer` privileges.
+  </Accordion>
+
+  <Accordion title="Dataset has 0 or fewer files than expected" icon="filter">
+    - S3 and GCS paths are **case-sensitive**. Verify the exact spelling and capitalization of bucket folder names.
+    - Files with unsupported extensions are skipped automatically. Ensure your images are `.jpg`, `.jpeg`, `.png`, or `.tiff`.
+  </Accordion>
+
+  <Accordion title="Import failed" icon="xmark">
+    - Ask Claude: *"What was the error for the Shelf Images import?"*
+    - Claude reads the `error` attribute from `get_job_status`. Correct the root cause (typically IAM permissions or incorrect bucket name) and re-trigger the import.
+  </Accordion>
+</AccordionGroup>
+
+---
+
+## Related Documentation
+
+<CardGroup cols={2}>
+  <Card title="MCP Tools Reference" icon="wrench" href="/mcp/mcp-tools-reference">
+    Inspect inputs and outputs for `dataset_create`, `connect_cloud_source`, and `list_connections`.
+  </Card>
+  <Card title="MCP Workflows" icon="diagram-project" href="/mcp/mcp-workflows">
+    See end-to-end workflows chaining cloud imports with project creation and exports.
+  </Card>
+  <Card title="AWS S3 Setup Guide" icon="aws" href="/getting-started/connect-aws-s3">
+    Step-by-step AWS IAM user and bucket policy creation.
+  </Card>
+  <Card title="GCS Setup Guide" icon="google" href="/getting-started/connect-gcs">
+    Step-by-step Google Cloud service account key configuration.
+  </Card>
+</CardGroup>
