@@ -61,32 +61,97 @@ https://mcp.labellerr.com/mcp
   <Tab title="Claude.ai (Web)">
     <Steps>
       <Step title="Open Connectors">
-        Navigate to **Settings** → **Connectors** in Claude.ai and select **Add custom connector**.
+        In Claude.ai, click **Plugins** in the sidebar, select **Connectors**, click **Add**, and then click **Add custom connector**.
+
+        <Frame>
+          <img src="https://storage.googleapis.com/labellerr-cdn/%20%201%20mcp_web/Annotated%20Plugins%20Connector%20Setup.webp" alt="Plugins and Connectors page in Claude.ai with Add custom connector" />
+        </Frame>
       </Step>
       <Step title="Add the URL">
         Name the connector `Labellerr` and paste `https://mcp.labellerr.com/mcp` as the URL. Click **Add**.
+
+        <Frame>
+          <img src="https://storage.googleapis.com/labellerr-cdn/%20%201%20mcp_web/Add%20Custom%20Connector%20Continue%20Button.webp" alt="Add custom connector dialog in Claude.ai with the Labellerr MCP URL" />
+        </Frame>
+
+        <Note>
+          After you enter the name and URL, Claude may show extra **Authentication**, **OAuth client**, and **Request headers** settings. The correct options are detected automatically, so leave them as they are. Scroll down and click **Add**.
+        </Note>
       </Step>
       <Step title="Sign in">
-        Click **Connect**. Claude opens the Labellerr sign-in page in a new window. Sign in with your Labellerr account, choose your workspace on the consent page, and click **Allow**.
+        Click **Connect**. Claude opens the Labellerr sign-in page in your browser. Sign in with your Labellerr account.
+
+        <Frame>
+          <img src="https://storage.googleapis.com/labellerr-cdn/%20%201%20mcp_web/labellerrlogin.webp" alt="Labellerr sign-in page" />
+        </Frame>
       </Step>
-      <Step title="Enable in Chat">
-        In a new chat, open the tools menu and ensure **Labellerr** is enabled.
+      <Step title="Select your workspace">
+        On the consent page, select the workspace you want Claude to use and click **Connect**.
+
+        <Frame>
+          <img src="https://storage.googleapis.com/labellerr-cdn/%20%201%20mcp_web/selectworkspace.webp" alt="Labellerr consent page for selecting a workspace" />
+        </Frame>
+      </Step>
+      <Step title="Start chatting with Claude">
+        Return to Claude.ai and open a new chat. Open the tools menu, make sure **Labellerr** is enabled, and start asking Claude to work with your Labellerr data.
+
+        <Frame>
+          <img src="https://storage.googleapis.com/labellerr-cdn/%20%201%20mcp_web/chattoconnectmcp.webp" alt="New Claude.ai chat with the Labellerr connector enabled" />
+        </Frame>
       </Step>
     </Steps>
+
+    <Warning>
+      You must have at least one workspace registered in your Labellerr account. Without one, there is no workspace to select and the connection cannot be completed.
+    </Warning>
   </Tab>
 
   <Tab title="Claude Desktop">
     <Steps>
       <Step title="Open Connectors">
-        Open Claude Desktop, go to **Settings** → **Connectors**, and select **Add custom connector**.
+        Open Claude Desktop, click **Plugins** in the sidebar, select **Connectors**, click **Add**, and then click **Add custom connector**.
+
+        <Frame>
+          <img src="https://storage.googleapis.com/labellerr-cdn/%20%201%20mcp_web/Annotated%20Plugins%20Connector%20Setup.webp" alt="Plugins and Connectors page in Claude Desktop with Add custom connector" />
+        </Frame>
       </Step>
       <Step title="Add the URL">
         Name the connector `Labellerr` and paste `https://mcp.labellerr.com/mcp` as the URL.
+
+        <Frame>
+          <img src="https://storage.googleapis.com/labellerr-cdn/%20%201%20mcp_web/Add%20Custom%20Connector%20Continue%20Button.webp" alt="Add custom connector dialog in Claude Desktop with the Labellerr MCP URL" />
+        </Frame>
+
+        <Note>
+          After you enter the name and URL, Claude Desktop may show extra **Authentication**, **OAuth client**, and **Request headers** settings. The correct options are detected automatically, so leave them as they are. Scroll down and click **Add**.
+        </Note>
       </Step>
       <Step title="Sign in">
-        Click **Connect**. In the browser window that opens, sign in with your Labellerr login, select your workspace, and click **Allow**.
+        Click **Connect**. Claude Desktop opens the Labellerr sign-in page in your browser. Sign in with your Labellerr account.
+
+        <Frame>
+          <img src="https://storage.googleapis.com/labellerr-cdn/%20%201%20mcp_web/labellerrlogin.webp" alt="Labellerr sign-in page" />
+        </Frame>
+      </Step>
+      <Step title="Select your workspace">
+        On the consent page, select the workspace you want Claude to use and click **Connect**.
+
+        <Frame>
+          <img src="https://storage.googleapis.com/labellerr-cdn/%20%201%20mcp_web/selectworkspace.webp" alt="Labellerr consent page for selecting a workspace" />
+        </Frame>
+      </Step>
+      <Step title="Start chatting with Claude">
+        Return to Claude Desktop and open a new chat. Open the tools menu, make sure **Labellerr** is enabled, and start asking Claude to work with your Labellerr data.
+
+        <Frame>
+          <img src="https://storage.googleapis.com/labellerr-cdn/%20%201%20mcp_web/chattoconnectmcp.webp" alt="New Claude Desktop chat with the Labellerr connector enabled" />
+        </Frame>
       </Step>
     </Steps>
+
+    <Warning>
+      You must have at least one workspace registered in your Labellerr account. Without one, there is no workspace to select and the connection cannot be completed.
+    </Warning>
 
     <Note>
       Connectors added in Claude.ai also appear automatically in Claude Desktop when you are signed into the same Claude account.
@@ -102,7 +167,7 @@ https://mcp.labellerr.com/mcp
         ```
       </Step>
       <Step title="Authenticate">
-        Start Claude Code, run `/mcp`, select `labellerr`, and choose **Authenticate**. Your browser will open the Labellerr sign-in page; sign in, choose your workspace, and click **Allow**.
+        Start Claude Code, run `/mcp`, select `labellerr`, and choose **Authenticate**. Your browser will open the Labellerr sign-in page; sign in, select your workspace, and click **Connect**.
       </Step>
     </Steps>
   </Tab>
@@ -150,7 +215,7 @@ Your authentication token remains active for a standard session period. When it 
 
 ### Disconnecting
 
-To revoke access, remove the Labellerr connector in Claude (**Settings** → **Connectors**, or `claude mcp remove labellerr` in Claude Code). Removing it immediately revokes the token and clears the stored session. Your active session in the Labellerr web app is not affected.
+To revoke access, remove the Labellerr connector in Claude (**Plugins** → **Connectors** in Claude.ai or Claude Desktop, or `claude mcp remove labellerr` in Claude Code). Removing it immediately revokes the token and clears the stored session. Your active session in the Labellerr web app is not affected.
 
 ---
 
