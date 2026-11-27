@@ -18,7 +18,7 @@ Labellerr offers the MCP server in two forms:
 
 | Feature | Hosted connector (Recommended) | Local server |
 | :--- | :--- | :--- |
-| **How you add it** | Paste one URL into Claude | Install Python code and edit a config file |
+| **How you add it** | Search for **Labellerr** in Claude's connectors, or paste one URL as a custom connector | Install Python code and edit a config file |
 | **How you sign in** | Your own Labellerr login, in the browser (OAuth) | API Key, API Secret, and Client ID in config file |
 | **Permissions** | Your own Labellerr roles and project access | Whatever the API credentials allow |
 | **Works with** | Claude.ai, Claude Desktop, Claude Code | Claude Desktop, Cursor, Claude Code |
@@ -28,7 +28,7 @@ Labellerr offers the MCP server in two forms:
 
 <CardGroup cols={2}>
   <Card title="Hosted Connector" icon="cloud">
-    **Recommended**: Add Labellerr to Claude with one URL and sign in securely with your Labellerr account.
+    **Recommended**: Find the official Labellerr connector in Claude (or add it with one URL) and sign in securely with your Labellerr account.
   </Card>
   <Card title="Local Server" icon="terminal" href="/mcp/mcp-local-server">
     Run the server on your own machine using API credentials when you need local file uploads or Cursor support.
@@ -39,13 +39,56 @@ Labellerr offers the MCP server in two forms:
 
 ## Connect the Hosted Connector
 
+There are two ways to add the hosted connector. Both connect to the same Labellerr MCP server and give you the same 23 tools:
+
+- **Official connector (Recommended)**: search for **Labellerr** in Claude's connectors and click **Connect**. No URL needed.
+- **Custom connector (Manual setup)**: add `https://mcp.labellerr.com/mcp` yourself. Use this for Claude Code, or when you need to control the connector settings.
+
 ### Prerequisites
 
 - A Labellerr account with access to at least one workspace.
 - One of: **Claude.ai** (web), **Claude Desktop**, or **Claude Code**.
-- Permission to add custom connectors in Claude (on Team and Enterprise plans, a workspace owner may need to allow custom connectors).
+- For the custom connector only: permission to add custom connectors in Claude (on Team and Enterprise plans, a workspace owner may need to allow custom connectors).
 
-### Connector URL
+### Option 1: Official Labellerr Connector (Recommended)
+
+Labellerr is listed as an official connector in Claude, so you can add it by searching for it. This works in both **Claude.ai** and **Claude Desktop**.
+
+<Steps>
+  <Step title="Open Connectors">
+    In Claude.ai or Claude Desktop, click **Plugins** in the sidebar, select **Connectors**, and click **Add**.
+  </Step>
+  <Step title="Search for Labellerr">
+    Browse the connector directory, type `Labellerr` in the search box, and select the **Labellerr** connector.
+  </Step>
+  <Step title="Connect and sign in">
+    Click **Connect**. Claude opens the Labellerr sign-in page in your browser. Sign in with your Labellerr account.
+  </Step>
+  <Step title="Select your workspace">
+    On the consent page, select the workspace you want Claude to use and click **Connect**.
+  </Step>
+  <Step title="Start chatting with Claude">
+    Return to Claude and open a new chat. Open the tools menu, make sure **Labellerr** is enabled, and start asking Claude to work with your Labellerr data.
+  </Step>
+</Steps>
+
+<Warning>
+  You must have at least one workspace registered in your Labellerr account. Without one, there is no workspace to select and the connection cannot be completed.
+</Warning>
+
+<Note>
+  On Team and Enterprise plans, a Claude workspace owner may need to enable the Labellerr connector for the organization before members can connect it.
+</Note>
+
+<Tip>
+  Signing in, permissions, token storage, and disconnecting work the same way for the official connector and the custom connector. The rest of this page applies to both.
+</Tip>
+
+### Option 2: Custom Connector (Manual Setup)
+
+Use this method if you prefer to add the server URL yourself, or if you are using **Claude Code**. It is also the reference setup for developers who want full control over how the connector is configured.
+
+#### Connector URL
 
 ```text Connector URL
 https://mcp.labellerr.com/mcp
@@ -55,7 +98,7 @@ https://mcp.labellerr.com/mcp
   **Safe to Share**: The URL holds no secret or credentials. Every person signs in with their own Labellerr account, so it is completely safe to share this URL across your team.
 </Info>
 
-### Add the Connector
+#### Add the Connector
 
 <Tabs>
   <Tab title="Claude.ai (Web)">
